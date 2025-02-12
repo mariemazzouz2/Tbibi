@@ -8,38 +8,69 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Enum\Statut;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\CategorieEv;
+use App\Entity\Utilisateur;
+
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
 {
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le titre ne peut pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le titre ne peut pas dépasser 255 caractères.")]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "La description ne peut pas dépasser 255 caractères.")]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull(message: "La date de début est obligatoire.")]
+    #[Assert\Type("DateTimeInterface")]
     private ?\DateTimeInterface $dateDebut = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull(message: "La date de fin est obligatoire.")]
+    #[Assert\Type("DateTimeInterface")]
+    #[Assert\GreaterThan(propertyPath: "dateDebut", message: "La date de fin doit être postérieure à la date de début.")]
     private ?\DateTimeInterface $dateFin = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le lieu ne peut pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le lieu ne peut pas dépasser 255 caractères.")]
     private ?string $lieu = null;
+
     #[ORM\Column(type: 'string', enumType: Statut::class)]
+    #[Assert\NotNull(message: "Le statut est obligatoire.")]
+    #[Assert\Choice(choices: [Statut::EN_ATTENTE, Statut::CONFIRME, Statut::ANNULE, Statut::TERMINE], message: "Le statut doit être valide.")]
     private Statut $statut;
 
     #[ORM\ManyToOne(targetEntity: CategorieEv::class, inversedBy: 'evenements')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "La catégorie est obligatoire.")]
     private ?CategorieEv $categorie = null;
 
-    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'evenements')]
-    #[ORM\JoinTable(name: 'evenement_utilisateur')]
-    private Collection $participants;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+  
 
 
     public function getId(): ?int
@@ -126,27 +157,7 @@ class Evenement
         $this->categorie = $categorie;
         return $this;
     }
-    public function getParticipants(): Collection
-    {
-        return $this->participants;
-    }
+  
 
-    public function addParticipant(Utilisateur $utilisateur): static
-    {
-        if (!$this->participants->contains($utilisateur)) {
-            $this->participants->add($utilisateur);
-            $utilisateur->addEvenement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeParticipant(Utilisateur $utilisateur): static
-    {
-        if ($this->participants->removeElement($utilisateur)) {
-            $utilisateur->removeEvenement($this);
-        }
-
-        return $this;
-    }
+    
 }
