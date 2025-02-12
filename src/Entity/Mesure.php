@@ -41,8 +41,8 @@ class Mesure
 
     public function setType(string $type): static
     {
-        assert(!empty($type), 'Le type ne peut pas être vide.');
         $this->type = $type;
+
         return $this;
     }
 
@@ -53,8 +53,8 @@ class Mesure
 
     public function setDatemesure(\DateTimeInterface $datemesure): static
     {
-        assert($datemesure <= new \DateTime(), 'La date de la mesure ne peut pas être dans le futur.');
         $this->datemesure = $datemesure;
+
         return $this;
     }
 
@@ -65,8 +65,8 @@ class Mesure
 
     public function setMesure(float $mesure): static
     {
-        assert($mesure >= 0, 'La mesure ne peut pas être négative.');
         $this->mesure = $mesure;
+
         return $this;
     }
 
@@ -77,8 +77,8 @@ class Mesure
 
     public function setUnité(string $unité): static
     {
-        assert(!empty($unité), 'L\'unité ne peut pas être vide.');
         $this->unité = $unité;
+
         return $this;
     }
 
@@ -90,6 +90,7 @@ class Mesure
     public function setDoss(?Dossiermedical $doss): static
     {
         $this->doss = $doss;
+
         return $this;
     }
 }

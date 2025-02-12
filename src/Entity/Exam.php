@@ -41,8 +41,8 @@ class Exam
 
     public function setType(string $type): static
     {
-        assert(!empty($type), 'Le type ne peut pas être vide.');
         $this->type = $type;
+
         return $this;
     }
 
@@ -53,8 +53,8 @@ class Exam
 
     public function setDateexam(\DateTimeInterface $dateexam): static
     {
-        assert($dateexam <= new \DateTime(), 'La date de l'examen ne peut pas être dans le futur.');
         $this->dateexam = $dateexam;
+
         return $this;
     }
 
@@ -65,8 +65,8 @@ class Exam
 
     public function setDiagnostic(string $diagnostic): static
     {
-        assert(!empty($diagnostic), 'Le diagnostic ne peut pas être vide.');
         $this->diagnostic = $diagnostic;
+
         return $this;
     }
 
@@ -77,8 +77,8 @@ class Exam
 
     public function setData(array $data): static
     {
-        assert(is_array($data), 'Les données doivent être un tableau.');
         $this->data = $data;
+
         return $this;
     }
 
@@ -90,6 +90,7 @@ class Exam
     public function setDosss(?DossierMedical $dosss): static
     {
         $this->dosss = $dosss;
+
         return $this;
     }
 }

@@ -34,6 +34,12 @@ class DossierMedical
      */
     #[ORM\OneToMany(targetEntity: Exam::class, mappedBy: 'dosss')]
     private Collection $exams;
+
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $fichier = null;
     public function __construct()
     {
         $this->suivis = new ArrayCollection();
@@ -125,6 +131,30 @@ class DossierMedical
                 $exam->setDosss(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getFichier(): ?string
+    {
+        return $this->fichier;
+    }
+
+    public function setFichier(string $fichier): static
+    {
+        $this->fichier = $fichier;
 
         return $this;
     }

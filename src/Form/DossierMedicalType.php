@@ -21,6 +21,7 @@ class DossierMedicalType extends AbstractType
                 'class' => Utilisateur::class,
                 'choice_label' => 'id',
             ])
+            ->add('type')
         ;
     }
 
