@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ question.titre }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>{{ question.titre }}</h1>
+        <p>{{ question.contenu }}</p>
+
+        <h3>Réponses :</h3>
+        <ul class="list-group">
+            {% for reponse in reponses %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        {{ reponse.contenu }}  
+                    </div>
+                    <div>
+                        <!-- Boutons de vote -->
+                        <a href="{{ path('vote', {id: reponse.id, type: 'like'}) }}" class="btn btn-success btn-sm">
+                            👍 {{ reponse.votes|filter(v => v.valeur.value == 'like')|length }}
+                        </a>
+                        <a href="{{ path('vote', {id: reponse.id, type: 'dislike'}) }}" class="btn btn-danger btn-sm">
+                            👎 {{ reponse.votes|filter(v => v.valeur.value == 'dislike')|length }}
+                        </a>
+                    </div>
+                </li>
+            {% else %}
+                <p>Aucune réponse pour le moment.</p>
+            {% endfor %}
+        </ul>
+
+        <h3 class="mt-4">Ajouter une réponse :</h3>
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.contenu, 'Votre réponse') }}
+                {{ form_widget(form.contenu, { 'attr': {'class': 'form-control', 'rows': 4} }) }}
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Répondre</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

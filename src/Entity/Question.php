@@ -114,6 +114,12 @@ class Question
     {
         return $this->date_creation;
     }
+    public function setDateCreation(DateTimeImmutable $dateCreation): static
+{
+    $this->date_creation = $dateCreation;
+    return $this;
+}
+
 
     public function __construct()
     {
