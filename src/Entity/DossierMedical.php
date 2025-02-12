@@ -23,12 +23,22 @@ class DossierMedical
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
-    #[ORM\OneToMany(targetEntity: Suivie::class, mappedBy: "dossierMedical", cascade: ["persist", "remove"])]
-    private Collection $suivis;
+    /**
+     * @var Collection<int, Mesure>
+     */
+    #[ORM\OneToMany(targetEntity: Mesure::class, mappedBy: 'doss')]
+    private Collection $mesures;
 
+    /**
+     * @var Collection<int, Exam>
+     */
+    #[ORM\OneToMany(targetEntity: Exam::class, mappedBy: 'dosss')]
+    private Collection $exams;
     public function __construct()
     {
         $this->suivis = new ArrayCollection();
+        $this->mesures = new ArrayCollection();
+        $this->exams = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -48,35 +58,6 @@ class DossierMedical
         return $this;
     }
 
-    /**
-     * @return Collection<int, Suivie>
-     */
-    public function getSuivis(): Collection
-    {
-        return $this->suivis;
-    }
-
-    public function addSuivi(Suivie $suivi): static
-    {
-        if (!$this->suivis->contains($suivi)) {
-            $this->suivis->add($suivi);
-            $suivi->setDossierMedical($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSuivi(Suivie $suivi): static
-    {
-        if ($this->suivis->removeElement($suivi)) {
-            if ($suivi->getDossierMedical() === $this) {
-                $suivi->setDossierMedical(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getUtilisateur(): ?Utilisateur
     {
         return $this->utilisateur;
@@ -85,6 +66,66 @@ class DossierMedical
     public function setUtilisateur(?Utilisateur $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mesure>
+     */
+    public function getMesures(): Collection
+    {
+        return $this->mesures;
+    }
+
+    public function addMesure(Mesure $mesure): static
+    {
+        if (!$this->mesures->contains($mesure)) {
+            $this->mesures->add($mesure);
+            $mesure->setDoss($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMesure(Mesure $mesure): static
+    {
+        if ($this->mesures->removeElement($mesure)) {
+            // set the owning side to null (unless already changed)
+            if ($mesure->getDoss() === $this) {
+                $mesure->setDoss(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Exam>
+     */
+    public function getExams(): Collection
+    {
+        return $this->exams;
+    }
+
+    public function addExam(Exam $exam): static
+    {
+        if (!$this->exams->contains($exam)) {
+            $this->exams->add($exam);
+            $exam->setDosss($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExam(Exam $exam): static
+    {
+        if ($this->exams->removeElement($exam)) {
+            // set the owning side to null (unless already changed)
+            if ($exam->getDosss() === $this) {
+                $exam->setDosss(null);
+            }
+        }
+
         return $this;
     }
 }

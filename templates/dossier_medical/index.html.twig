@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dossier Médical{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <h1 class="section-title text-center">Liste des Dossiers Médicaux</h1>
+
+        <table class="table table-bordered">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dossier_medical in dossier_medicals %}
+                    <tr>
+                        <td>{{ dossier_medical.id }}</td>
+                        <td>{{ dossier_medical.date ? dossier_medical.date|date('Y-m-d') : '' }}</td>
+                        <td>
+                            <a href="{{ path('app_dossier_medical_show', {'id': dossier_medical.id}) }}" class="btn btn-info">Voir</a>
+                            <a href="{{ path('app_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning">Modifier</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">Aucun dossier trouvé</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_dossier_medical_new') }}" class="btn btn-success">Créer un nouveau dossier</a>
+    </div>
+
+{% endblock %}
