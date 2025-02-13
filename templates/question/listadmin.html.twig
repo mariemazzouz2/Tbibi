@@ -1,0 +1,51 @@
+{% extends 'back.html.twig' %}
+
+
+{% block content %}
+
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Liste des Questions (Administration)</h1>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Contenu</th>
+                    <th scope="col">Date</th>
+
+                    <th scope="col">Réponses</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in questions %}
+                    <tr>
+                        <th scope="row">{{ question.id }}</th>
+                        <td>{{ question.titre }}</td>
+                        <td>{{ question.contenu|slice(0, 50) ~ '...' }}</td>
+                                                <td>{{ question.getDateCreation() |date('D/M/Y')}}</td>
+
+                        <td>
+    <a href="{{ path('view_reponses', {id: question.id}) }}" class="btn btn-info btn-sm">Voir les réponses</a>
+                        </td>
+                        <td>
+                            <div style="display:flex">
+                            <a href="{{ path('app_question_edit', {id: question.id}) }}" class="btn btn-success btn-sm" style="margin-right:5px">👉</a>
+                            <a href="{{ path('app_question_delete_admin', {id: question.id}) }}" 
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette question ?');">🗑</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">Aucune question disponible.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+   
+{% endblock %}

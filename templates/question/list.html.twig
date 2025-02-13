@@ -17,17 +17,38 @@
             <a href="{{path ('app_question_add')}}" class="btn btn-success mr-2">Poser une question</a>
 		</div>
 
-		<!-- Liste des questions -->
-		<div class="list-group">
-			{% for question in questions %}
-				<a href=""{{path ('app_question_add')}}"" class="list-group-item list-group-item-action">
-					<h5 class="mb-1">{{ question.titre }}</h5>
-					<p class="mb-1">{{ question.contenu|slice(0, 100) ~ '...' }}</p>
-				</a>
-			{% else %}
-				<p>Aucune question disponible.</p>
-			{% endfor %}
-		</div>
+	<div class="list-group">
+    {% for question in questions %}
+        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-1">{{ question.titre }}</h5>
+                <p class="mb-1">{{ question.contenu|slice(0, 100) ~ '...' }}</p>
+
+                <!-- Affichage des réponses -->
+                {% if question.reponses is not empty %}
+                    <div class="mt-2 p-2 border-top">
+                        <strong>Réponses :</strong>
+                        {% for reponse in question.reponses %}
+                            <p class="text-muted">{{ reponse.contenu }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Bouton de suppression sans CSRF -->
+            <a href="{{ path('app_question_delete', { 'id': question.id }) }}" 
+               class="btn btn-danger" 
+               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette question ?');">
+                🗑 Supprimer
+            </a>
+        </div>
+    {% else %}
+        <p>Aucune question disponible.</p>
+    {% endfor %}
+</div>
+
+
+		
 
 		<!-- Bouton pour poser une question -->
 

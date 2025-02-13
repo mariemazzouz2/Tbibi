@@ -4,38 +4,56 @@
 
 {% block body %}
     <div class="container mt-4">
-        <h1>{{ question.titre }}</h1>
-        <p>{{ question.contenu }}</p>
+        <h1 class="mb-3">{{ question.titre }}</h1>
+        <p class="lead">{{ question.contenu }}</p>
 
-        <h3>Réponses :</h3>
-        <ul class="list-group">
-            {% for reponse in reponses %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        {{ reponse.contenu }}  
-                    </div>
-                    <div>
-                        <!-- Boutons de vote -->
-                        <a href="{{ path('vote', {id: reponse.id, type: 'like'}) }}" class="btn btn-success btn-sm">
-                            👍 {{ reponse.votes|filter(v => v.valeur.value == 'like')|length }}
-                        </a>
-                        <a href="{{ path('vote', {id: reponse.id, type: 'dislike'}) }}" class="btn btn-danger btn-sm">
-                            👎 {{ reponse.votes|filter(v => v.valeur.value == 'dislike')|length }}
-                        </a>
-                    </div>
-                </li>
-            {% else %}
-                <p>Aucune réponse pour le moment.</p>
-            {% endfor %}
-        </ul>
+        <h3 class="mt-4">Réponses :</h3>
+
+        {% if reponses is not empty %}
+            <ul class="list-group">
+                {% for reponse in reponses %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-1">{{ reponse.contenu }}</p>
+                            </div>
+                            <div>
+                                <!-- Bouton de suppression -->
+                                <a href="{{ path('app_reponse_delete', {id: reponse.id}) }}" 
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">
+                                    🗑 Supprimer
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Section des votes -->
+                        <div class="mt-2 d-flex gap-2">
+                            <a href="{{ path('vote', {id: reponse.id, type: 'like'}) }}" 
+                               class="btn btn-outline-success btn-sm d-flex align-items-center">
+                                👍 <span class="ms-1">{{ reponse.votes|filter(v => v.valeur.value == 'like')|length }}</span>
+                            </a>
+                            <a href="{{ path('vote', {id: reponse.id, type: 'dislike'}) }}" 
+                               class="btn btn-outline-danger btn-sm d-flex align-items-center">
+                                👎 <span class="ms-1">{{ reponse.votes|filter(v => v.valeur.value == 'dislike')|length }}</span>
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Aucune réponse pour le moment.</p>
+        {% endif %}
 
         <h3 class="mt-4">Ajouter une réponse :</h3>
-        {{ form_start(form) }}
-            <div class="form-group">
-                {{ form_label(form.contenu, 'Votre réponse') }}
-                {{ form_widget(form.contenu, { 'attr': {'class': 'form-control', 'rows': 4} }) }}
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Répondre</button>
-        {{ form_end(form) }}
+        <div class="card p-3 mt-3 shadow-sm">
+            {{ form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.contenu, 'Votre réponse', {'label_attr': {'class': 'fw-bold'}}) }}
+                    {{ form_widget(form.contenu, { 'attr': {'class': 'form-control', 'rows': 4} }) }}
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Répondre</button>
+            {{ form_end(form) }}
+        </div>
     </div>
 {% endblock %}

@@ -40,4 +40,15 @@ class QuestionRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findQuestionsWithResponsesByUser(int $userId)
+{
+    return $this->createQueryBuilder('q')
+        ->leftJoin('q.reponses', 'r') // Jointure avec la table des réponses
+        ->addSelect('r') // Sélectionne également les réponses pour éviter les requêtes supplémentaires
+        ->where('q.patient = :userId') // Filtrer les questions par patient
+        ->setParameter('userId', $userId)
+        ->getQuery()
+        ->getResult();
+}
 }

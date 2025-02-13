@@ -18,11 +18,11 @@ class Reponse
 
     #[ORM\ManyToOne(inversedBy: 'reponses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?question $question = null;
+    private ?Question $question = null;
 
     #[ORM\ManyToOne(inversedBy: 'reponses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?utilisateur $medecin = null;
+    private ?Utilisateur $medecin = null;
 
     #[ORM\Column(length: 255)]
     private ?string $contenu = null;
@@ -33,7 +33,7 @@ class Reponse
     /**
      * @var Collection<int, Vote>
      */
-    #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'reponse')]
+    #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'reponse', cascade: ['remove'], orphanRemoval: true)]
     private Collection $votes;
 
     public function getId(): ?int
@@ -75,6 +75,11 @@ class Reponse
         $this->contenu = $contenu;
 
         return $this;
+    }
+    public function setDateReponse(?DateTimeImmutable $date_reponse): static
+    {
+         $this->date_reponse=$date_reponse;
+         return $this;
     }
 
     public function getDateReponse(): ?DateTimeImmutable

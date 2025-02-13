@@ -43,7 +43,7 @@ class Question
     /**
      * @var Collection<int, Reponse>
      */
-    #[ORM\OneToMany(targetEntity: Reponse::class, mappedBy: 'question')]
+    #[ORM\OneToMany(mappedBy: 'question', targetEntity: Reponse::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $reponses;
 
     public function getId(): ?int

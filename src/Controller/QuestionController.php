@@ -20,14 +20,28 @@ final class QuestionController extends AbstractController
 {
     #[Route('/questions', name: 'app_forum')]
     public function list(QuestionRepository $questionRepository): Response
-    {
-        $questions = $questionRepository->findAll();
+    {    $userId = 1; // ID de l'utilisateur spécifique
+        //$this->getUser()
+        $questions = $questionRepository->findBy(['patient' => $userId]);
+
 
         return $this->render('question/list.html.twig', [
             'questions' => $questions,
         ]);
     }
 
+    #[Route('/admin/questions', name: 'app_forum_admin')]
+    public function listadmin(QuestionRepository $questionRepository): Response
+    {
+        $questions = $questionRepository->findAll();
+
+
+        return $this->render('question/listadmin.html.twig', [
+            'questions' => $questions,
+        ]);
+    }
+
+    
     #[Route('/docteur/questions', name: 'app_forum_doc')]
     public function listdoct(QuestionRepository $questionRepository): Response
     {
@@ -78,6 +92,31 @@ final class QuestionController extends AbstractController
         ]);
     }
 
+    #[Route('/edit/{id}', name: 'app_question_edit')]
+    public function edit(Question $question, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // Créer le formulaire pour modifier la question
+        $form = $this->createForm(QuestionType::class, $question);
+
+        // Traitement du formulaire
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Sauvegarder les changements en base de données
+            $entityManager->flush();
+
+            // Message flash de succès
+            $this->addFlash('success', 'La question a été mise à jour avec succès.');
+
+            // Rediriger vers la liste des questions
+            return $this->redirectToRoute('app_forum_admin');
+        }
+
+        return $this->render('question/edit.html.twig', [
+            'form' => $form->createView(),
+            'question' => $question,
+        ]);
+    }
     #[Route('/question/{id}', name: 'question_show', methods: ['GET', 'POST'])]
     public function showQuestion(Question $question, Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -107,4 +146,21 @@ final class QuestionController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/question/delete/{id}', name: 'app_question_delete')]
+public function delete(Question $question, EntityManagerInterface $entityManager): Response
+{
+    $entityManager->remove($question);
+    $entityManager->flush();
+
+    return $this->redirectToRoute('app_forum');
+}
+#[Route('/question/deletedelete//{id}', name: 'app_question_delete_admin')]
+public function deletee(Question $question, EntityManagerInterface $entityManager): Response
+{
+    $entityManager->remove($question);
+    $entityManager->flush();
+
+    return $this->redirectToRoute('app_forum_admin');
+}
     }

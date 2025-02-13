@@ -1,0 +1,24 @@
+{% extends 'back.html.twig' %}
+
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Modifier la Question</h1>
+
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.titre) }}
+                {{ form_widget(form.titre) }}
+            </div>
+
+            <div class="form-group mt-3">
+                {{ form_label(form.contenu) }}
+                {{ form_widget(form.contenu) }}
+            </div>
+
+            <div class="mt-4">
+            <button type="submit">Valider</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
