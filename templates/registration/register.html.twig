@@ -1,0 +1,65 @@
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <h1>Register</h1>
+
+    {{ form_errors(registrationForm) }}
+
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.password, { label: 'Password' }) }}
+        {{ form_row(registrationForm.nom) }}
+        {{ form_row(registrationForm.prenom) }}
+        {{ form_row(registrationForm.telephone) }}
+        {{ form_row(registrationForm.adresse) }}
+        {{ form_row(registrationForm.dateNaissance) }}
+        {{ form_row(registrationForm.sexe) }}
+        
+        <div id="rolesField">
+            {{ form_row(registrationForm.roles) }}
+        </div>
+        
+        <div id="specialiteField" style="display: none;">
+            {{ form_row(registrationForm.specialite) }}
+        </div>
+        
+        <div id="taillePoidsFields" style="display: none;">
+            {{ form_row(registrationForm.taille) }}
+            {{ form_row(registrationForm.poids) }}
+        </div>
+
+        <button type="submit" class="btn">Register</button>
+    {{ form_end(registrationForm) }}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let roleFields = document.querySelectorAll("input[name='registration_form[roles]'], select[name='registration_form[roles]']");
+            let specialiteField = document.getElementById("specialiteField");
+            let taillePoidsFields = document.getElementById("taillePoidsFields");
+
+            function toggleFields() {
+                let selectedRole = document.querySelector("input[name='registration_form[roles]']:checked") 
+                                   || document.querySelector("select[name='registration_form[roles]']");
+
+                if (!selectedRole) return;
+
+                let roleValue = selectedRole.value;
+
+                if (roleValue === "ROLE_MEDECIN") {
+                    specialiteField.style.display = "block";
+                    taillePoidsFields.style.display = "none";
+                } else if (roleValue === "ROLE_PATIENT") {
+                    specialiteField.style.display = "none";
+                    taillePoidsFields.style.display = "block";
+                } else {
+                    specialiteField.style.display = "none";
+                    taillePoidsFields.style.display = "none";
+                }
+            }
+
+            roleFields.forEach(field => field.addEventListener("change", toggleFields));
+
+            toggleFields(); // Initialiser au chargement de la page
+        });
+    </script>
+{% endblock %}
