@@ -1,56 +1,232 @@
 {% extends 'base.html.twig' %}
 
-
-
 {% block title %}
-	Questions
+    Questions
 {% endblock %}
 
 {% block body %}
-	<div
-		class="container mt-4">
+<br>
 
-		<!-- Barre de recherche -->
-		<div class="input-group mb-4">
-			<input type="text" class="form-control mr-2" placeholder="Rechercher une question..." aria-label="Rechercher">
-			<button class="btn btn-primary mr-2" type="button">🔍</button>
-            <a href="{{path ('app_question_add')}}" class="btn btn-success mr-2">Poser une question</a>
-		</div>
 
-	<div class="list-group">
-    {% for question in questions %}
-        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            <div>
-                <h5 class="mb-1">{{ question.titre }}</h5>
-                <p class="mb-1">{{ question.contenu|slice(0, 100) ~ '...' }}</p>
+<div class="container mt-4" style="max-width: 900px;">
+    <!-- Barre de recherche -->
+    <div class="input-group mb-4">
+        <input type="text" class="form-control" id="search-input" placeholder="Rechercher une question..." aria-label="Rechercher" style="border-radius: 20px;">
+        <a href="{{ path('app_question_add') }}" class="btn btn-success" style="border-radius: 20px;color:white;margin-left:7px">Poser une question</a>
+    </div>
 
-                <!-- Affichage des réponses -->
-                {% if question.reponses is not empty %}
-                    <div class="mt-2 p-2 border-top">
-                        <strong>Réponses :</strong>
-                        {% for reponse in question.reponses %}
-                            <p class="text-muted">{{ reponse.contenu }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+    <!-- Liste des questions -->
+    <div id="questions-list" class="list-group shadow-lg rounded" style="border-radius: 10px; height: 400px; overflow-y: scroll;">
+        {% for question in questions %}
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-start" 
+                style="border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <div>
+                    <h5 class="mb-1" style="font-size: 1.2rem; color: #007bff;">{{ question.titre }}</h5>
+                    <p class="mb-1" style="font-size: 1rem; color: #555;">{{ question.contenu|slice(0, 100) ~ '...' }}</p>
+
+                    <!-- Affichage des réponses -->
+                    {% if question.reponses is not empty %}
+                        <div class="mt-2 p-2 border-top" style="font-size: 0.9rem; color: #555;">
+                            <strong>Réponses :</strong>
+                            {% for reponse in question.reponses %}
+                                <p class="text-muted">{{ reponse.contenu }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Bouton de suppression -->
+                <a href="{{ path('app_question_delete', { 'id': question.id }) }}" 
+                   class="btn-solid btn-danger" 
+                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette question ?');" 
+                   style="border-radius: 10px;padding:4px">
+                    🗑 Supprimer
+                </a>
             </div>
-
-            <!-- Bouton de suppression sans CSRF -->
-            <a href="{{ path('app_question_delete', { 'id': question.id }) }}" 
-               class="btn btn-danger" 
-               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette question ?');">
-                🗑 Supprimer
-            </a>
+        {% else %}
+            <p>Aucune question disponible.</p>
+        {% endfor %}
+    </div><br><br>
+    <div class="homesection howsteps" style="background:#ffffff!important;text-align:center;width:1200px;margin-left:-170px">
+  <div class="pf-container">
+    <div class="pf-row" style="display:flex; justify-content: center;">
+      <div class="wpb_column col-lg-4 col-md-4 col-sm-4 col-xs-12 col-xss-12">
+        <img src="https://cdn.med.tn/img/step1.svg" style="width:210px;height:175px;" alt="Accédez rapidement à votre médecin">
+        <p>Accédez rapidement à votre médecin</p>
+      </div>
+      <div class="wpb_column col-lg-4 col-md-4 col-sm-4 col-xs-12 col-xss-12">
+        <img src="https://cdn.med.tn/img/step2.svg" style="width:210px;height:175px;" alt="Prenez rendez-vous en ligne à tout moment">
+        <p>Prenez rendez-vous en ligne à tout moment</p>
+      </div>
+      <div class="wpb_column col-lg-4 col-md-4 col-sm-4 col-xs-12 col-xss-12">
+        <img src="https://cdn.med.tn/img/step3.svg" style="width:210px;height:175px;" alt="Recevez des sms/mail de rappel personnalisés">
+        <p>Recevez des sms/mail de rappel personnalisés</p>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="row mt-5" >
+        <div class="col-md-4">
+            <h5>Médecine dentaire</h5>
+            <ul id="list1" class="list-group">
+                <li class="list-group-item" onclick="showAdvice('conseil1')"style="justify-content:space-between;display:flex">Douleur dentaire<span style="cursor:pointer">👇</span></li>
+                <li class="list-group-item" onclick="showAdvice('conseil2')"style="justify-content:space-between;display:flex">Soins dentaires<span style="cursor:pointer">👇</span></li>
+                <li class="list-group-item" onclick="showAdvice('conseil3')"style="justify-content:space-between;display:flex">Orthodontie<span style="cursor:pointer">👇</span></li>
+            </ul>
+            <div id="conseil1" class="advice-box" style="display:none;">
+                <p>En cas de douleur dentaire, consultez rapidement un dentiste.</p>
+            </div>
+            <div id="conseil2" class="advice-box" style="display:none;">
+                <p>Des soins dentaires réguliers préviennent les problèmes.</p>
+            </div>
+            <div id="conseil3" class="advice-box" style="display:none;">
+                <p>L'orthodontie peut corriger les malpositions dentaires.</p>
+            </div>
         </div>
-    {% else %}
-        <p>Aucune question disponible.</p>
-    {% endfor %}
+        <div class="col-md-4">
+            <h5>O.R.L</h5>
+            <ul id="list2" class="list-group">
+                <li class="list-group-item" onclick="showAdvice('conseil4')" style="justify-content:space-between;display:flex">Maux de gorge  <span style="cursor:pointer" >👇</span></li>
+                <li class="list-group-item" onclick="showAdvice('conseil5')" style="justify-content:space-between;display:flex">Problèmes auditifs<span style="cursor:pointer">👇</span></li>
+                <li class="list-group-item" onclick="showAdvice('conseil6')"style="justify-content:space-between;display:flex">Sinusite<span style="cursor:pointer">👇</span></li>
+            </ul>
+            <div id="conseil4" class="advice-box" style="display:none;">
+                <p>Les maux de gorge peuvent être causés par des infections.</p>
+            </div>
+            <div id="conseil5" class="advice-box" style="display:none;">
+                <p>Consultez un spécialiste pour les problèmes auditifs.</p>
+            </div>
+            <div id="conseil6" class="advice-box" style="display:none;">
+                <p>La sinusite peut nécessiter un traitement antibiotique.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h5>Urologie</h5>
+            <ul id="list3" class="list-group">
+                <li class="list-group-item" onclick="showAdvice('conseil7')"style="justify-content:space-between;display:flex">Infections urinaires <span style="cursor:pointer">👇</span></li>
+                <li class="list-group-item" onclick="showAdvice('conseil8')"style="justify-content:space-between;display:flex">Problèmes de prostate <span style="cursor:pointer">👇</span></li>
+                <li class="list-group-item" onclick="showAdvice('conseil9')"style="justify-content:space-between;display:flex">Calculs rénaux <span style="cursor:pointer">👇</span></li>
+            </ul>
+            <div id="conseil7" class="advice-box" style="display:none;">
+                <p>Les infections urinaires nécessitent un traitement rapide.</p>
+            </div>
+            <div id="conseil8" class="advice-box" style="display:none;">
+                <p>Les problèmes de prostate doivent être surveillés.</p>
+            </div>
+            <div id="conseil9" class="advice-box" style="display:none;">
+                <p>Les calculs rénaux peuvent causer de fortes douleurs.</p>
+            </div>
+        </div>
+
+        
+    </div>
 </div>
 
+      <script>
+        // Fonction pour effectuer la recherche en AJAX
+            // Fonction pour afficher le conseil en cliquant sur un item
+    function showAdvice(conseilId) {
+        let allAdvices = document.querySelectorAll('.advice-box');
+        allAdvices.forEach(advice => {
+            advice.style.display = 'none';
+        });
 
-		
+        let conseil = document.getElementById(conseilId);
+        if (conseil) {
+            conseil.style.display = 'block';
+        }
+    }
+        document.getElementById('search-input').addEventListener('input', function() {
+            let query = this.value;
 
-		<!-- Bouton pour poser une question -->
+            // Envoie la requête AJAX si la recherche n'est pas vide
+            if (query.length >= 1) {
+                fetch(`/questions/search?query=${query}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Vider la liste actuelle
+                    let questionsList = document.getElementById('questions-list');
+                    questionsList.innerHTML = '';
 
-	</div>
+                    // Afficher les résultats de la recherche
+                    if (data.length > 0) {
+                        data.forEach(question => {
+                            let questionItem = document.createElement('a');
+                            questionItem.href = '/question/' + question.id;
+                            questionItem.className = 'list-group-item list-group-item-action';
+                            questionItem.style = 'border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);';
+                            
+                            let questionTitle = document.createElement('h5');
+                            questionTitle.className = 'mb-1';
+                            questionTitle.style = 'font-size: 1.2rem; color: #007bff;';
+                            questionTitle.textContent = question.titre;
+                            
+                            let questionContent = document.createElement('p');
+                            questionContent.className = 'mb-1';
+                            questionContent.style = 'font-size: 1rem; color: #555;';
+                            questionContent.textContent = question.contenu.slice(0, 100) + '...';
+
+                            let questionPostedBy = document.createElement('p');
+                            questionPostedBy.className = 'text-muted';
+                            questionPostedBy.style = 'font-size: 0.9rem;';
+                            questionPostedBy.textContent = 'Posté par : ' + question.patient.nom;
+
+                            questionItem.appendChild(questionTitle);
+                            questionItem.appendChild(questionContent);
+                            questionItem.appendChild(questionPostedBy);
+
+                            questionsList.appendChild(questionItem);
+                        });
+                    } else {
+                        let noResults = document.createElement('p');
+                        noResults.textContent = 'Aucune question trouvée.';
+                        questionsList.appendChild(noResults);
+                    }
+                })
+                .catch(error => console.log('Erreur:', error));
+            } else {
+                // Si la recherche est vide, afficher toutes les questions
+                fetch('/questions')
+                    .then(response => response.json())
+                    .then(data => {
+                        let questionsList = document.getElementById('questions-list');
+                        questionsList.innerHTML = '';
+                        data.forEach(question => {
+                            let questionItem = document.createElement('a');
+                            questionItem.href = '/question/' + question.id;
+                            questionItem.className = 'list-group-item list-group-item-action';
+                            questionItem.style = 'border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);';
+                            
+                            let questionTitle = document.createElement('h5');
+                            questionTitle.className = 'mb-1';
+                            questionTitle.style = 'font-size: 1.2rem; color: #007bff;';
+                            questionTitle.textContent = question.titre;
+                            
+                            let questionContent = document.createElement('p');
+                            questionContent.className = 'mb-1';
+                            questionContent.style = 'font-size: 1rem; color: #555;';
+                            questionContent.textContent = question.contenu.slice(0, 100) + '...';
+
+                            let questionPostedBy = document.createElement('p');
+                            questionPostedBy.className = 'text-muted';
+                            questionPostedBy.style = 'font-size: 0.9rem;';
+                            questionPostedBy.textContent = 'Posté par : ' + question.patient.nom;
+
+                            questionItem.appendChild(questionTitle);
+                            questionItem.appendChild(questionContent);
+                            questionItem.appendChild(questionPostedBy);
+
+                            questionsList.appendChild(questionItem);
+                        });
+                    })
+                    .catch(error => console.log('Erreur:', error));
+            }
+        });
+    </script>
+
 {% endblock %}

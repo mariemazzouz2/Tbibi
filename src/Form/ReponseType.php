@@ -2,20 +2,24 @@
 
 namespace App\Form;
 
-use App\Entity\question;
 use App\Entity\Reponse;
-use App\Entity\utilisateur;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ReponseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('contenu')  
+            ->add('contenu', null, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Le contenu de la réponse ne peut pas être vide.',
+                    ])
+                ]
+            ])  
         ;
     }
 

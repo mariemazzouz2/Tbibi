@@ -16,6 +16,7 @@ use App\Entity\Utilisateur;
 use App\Enum\Specialite;
 use App\Entity\Reponse;
 use App\Form\ReponseType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 final class QuestionController extends AbstractController
 {
     #[Route('/questions', name: 'app_forum')]
@@ -40,6 +41,37 @@ final class QuestionController extends AbstractController
             'questions' => $questions,
         ]);
     }
+
+    #[Route('/questions/search', name: 'question_search')]
+    public function search(Request $request, QuestionRepository $questionRepository): JsonResponse
+    {
+        try {
+            $query = $request->query->get('query');  // Récupérer le paramètre query
+            if (!$query) {
+                return new JsonResponse(['error' => 'Query parameter is required'], 400);  // Si la query est vide
+            }
+    
+            // Effectuer la recherche
+            $questions = $questionRepository->findBySearchQuery($query);
+            
+            // Format des données pour la réponse
+            $responseData = [];
+            foreach ($questions as $question) {
+                $responseData[] = [
+                    'id' => $question->getId(),
+                    'titre' => $question->getTitre(),
+                    'contenu' => $question->getContenu(),
+                    'patient' => ['nom' => $question->getPatient()->getNom()],
+                ];
+            }
+    
+            return new JsonResponse($responseData);
+        } catch (\Exception $e) {
+            // Si une erreur se produit, retourne l'exception
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
+    }
+    
 
     
     #[Route('/docteur/questions', name: 'app_forum_doc')]

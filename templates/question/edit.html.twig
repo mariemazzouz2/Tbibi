@@ -1,6 +1,5 @@
 {% extends 'back.html.twig' %}
 
-
 {% block content %}
     <div class="container mt-4">
         <h1>Modifier la Question</h1>
@@ -9,15 +8,57 @@
             <div class="form-group">
                 {{ form_label(form.titre) }}
                 {{ form_widget(form.titre) }}
+                {% if form.titre.vars.errors|length > 0 %}
+                    <div class="alert alert-danger mt-2">
+                        {{ form_errors(form.titre) }}
+                    </div>
+                {% endif %}
             </div>
 
             <div class="form-group mt-3">
                 {{ form_label(form.contenu) }}
                 {{ form_widget(form.contenu) }}
+                {% if form.contenu.vars.errors|length > 0 %}
+                    <div class="alert alert-danger mt-2">
+                        {{ form_errors(form.contenu) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group mt-3">
+                {{ form_label(form.specialite) }}
+                {{ form_widget(form.specialite) }}
+                {% if form.specialite.vars.errors|length > 0 %}
+                    <div class="alert alert-danger mt-2">
+                        {{ form_errors(form.specialite) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group mt-3">
+               <div class="d-flex align-items-center" style="margin-left:30px">
+    {{ form_label(form.visible, null, {'label_attr': {'class': 'mr-3', 'style': 'margin-top: 10px;'}}) }}
+        {{ form_widget(form.visible) }}
+    </div>
+                {% if form.visible.vars.errors|length > 0 %}
+                    <div class="alert alert-danger mt-2">
+                        {{ form_errors(form.visible) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group mt-3">
+                {{ form_label(form.image) }}
+                {{ form_widget(form.image) }}
+                {% if form.image.vars.errors|length > 0 %}
+                    <div class="alert alert-danger mt-2">
+                        {{ form_errors(form.image) }}
+                    </div>
+                {% endif %}
             </div>
 
             <div class="mt-4">
-            <button type="submit">Valider</button>
+                <button type="submit" class="btn btn-primary">Valider</button>
             </div>
         {{ form_end(form) }}
     </div>

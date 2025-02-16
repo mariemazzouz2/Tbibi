@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Enum\Specialite;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
 class Question
@@ -46,6 +47,12 @@ class Question
     #[ORM\OneToMany(mappedBy: 'question', targetEntity: Reponse::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $reponses;
 
+    public function __construct()
+    {
+        $this->date_creation = new DateTimeImmutable();
+        $this->reponses = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,7 +66,6 @@ class Question
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
         return $this;
     }
 
@@ -71,7 +77,6 @@ class Question
     public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
-
         return $this;
     }
 
@@ -94,7 +99,6 @@ class Question
     public function setImage(?string $image): static
     {
         $this->image = $image;
-
         return $this;
     }
 
@@ -106,7 +110,6 @@ class Question
     public function setVisible(bool $visible): static
     {
         $this->visible = $visible;
-
         return $this;
     }
 
@@ -114,17 +117,11 @@ class Question
     {
         return $this->date_creation;
     }
+
     public function setDateCreation(DateTimeImmutable $dateCreation): static
-{
-    $this->date_creation = $dateCreation;
-    return $this;
-}
-
-
-    public function __construct()
     {
-        $this->date_creation = new DateTimeImmutable();
-        $this->reponses = new ArrayCollection();
+        $this->date_creation = $dateCreation;
+        return $this;
     }
 
     public function getPatient(): ?Utilisateur
@@ -135,7 +132,6 @@ class Question
     public function setPatient(?Utilisateur $patient): static
     {
         $this->patient = $patient;
-
         return $this;
     }
 
@@ -153,19 +149,16 @@ class Question
             $this->reponses->add($reponse);
             $reponse->setQuestion($this);
         }
-
         return $this;
     }
 
     public function removeReponse(Reponse $reponse): static
     {
         if ($this->reponses->removeElement($reponse)) {
-            // set the owning side to null (unless already changed)
             if ($reponse->getQuestion() === $this) {
                 $reponse->setQuestion(null);
             }
         }
-
         return $this;
     }
 }

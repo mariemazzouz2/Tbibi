@@ -51,4 +51,15 @@ class QuestionRepository extends ServiceEntityRepository
         ->getQuery()
         ->getResult();
 }
+
+public function findBySearchQuery(string $query)
+{
+    return $this->createQueryBuilder('q')
+        ->where('q.titre LIKE :query OR q.contenu LIKE :query')
+        ->setParameter('query', '%' . $query . '%')  // Assure-toi que le paramètre est bien encodé
+        ->getQuery()
+        ->getResult();
+}
+
+
 }
