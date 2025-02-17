@@ -1,36 +1,40 @@
 {% extends 'back.html.twig' %}
 
-{% block title %}Réponses de la question : {{ question.titre }}{% endblock %}
+{% block title %}Réponses à la question : {{ question.titre }}{% endblock %}
 
 {% block content %}
     <div class="container mt-4">
-        <h1>{{ question.titre }}</h1>
-        <p>{{ question.contenu }}</p>
+        <div class="card shadow-sm p-4">
+            <h1 class="text-primary">{{ question.titre }}</h1>
+            <p class="text-muted">{{ question.contenu }}</p>
+        </div>
 
-        <h3>Réponses :</h3>
-        <ul class="list-group">
-            {% for reponse in reponses %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        {{ reponse.contenu }}
-                    </div>
-                    <div>
-                        <!-- Affichage du nombre de votes -->
-                        <span class="badge bg-info text-white">
-                            Votes : {{ reponse.votes|length }}
-                        </span>
-                    </div>
-                    <div>
-                        <a href="{{ path('admin_reponse_deletee', {id: reponse.id}) }}" 
-                           class="btn btn-danger btn-sm" 
-                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">🗑</a>
-                    </div>
-                </li>
-            {% else %}
-                <p>Aucune réponse pour cette question.</p>
-            {% endfor %}
-        </ul>
+        <h3 class="mt-4">Réponses :</h3>
+        
+        {% if reponses is empty %}
+            <div class="alert alert-warning">Aucune réponse pour cette question.</div>
+        {% else %}
+            <ul class="list-group mt-3">
+                {% for reponse in reponses %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1"><strong>Réponse :</strong> {{ reponse.contenu }}</p>
+                        </div>
+                        <div>
+                            <span class="badge bg-info text-white">
+                                Votes : {{ reponse.votes|length }}
+                            </span>
+                        </div>
+                        <div>
+                            <a href="{{ path('admin_reponse_deletee', {id: reponse.id}) }}" 
+                               class="btn btn-danger btn-sm" 
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">🗑 Supprimer</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-        <a href="{{ path('app_forum_admin') }}" class="btn btn-primary mt-4">Retour à la liste des questions</a>
+        <a href="{{ path('app_forum_admin') }}" class="btn btn-primary mt-4">⬅ Retour à la liste des questions</a>
     </div>
 {% endblock %}
