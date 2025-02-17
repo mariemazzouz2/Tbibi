@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Enum\Specialite;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
 class Question
@@ -19,20 +20,52 @@ class Question
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: "Le titre doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[A-ZÀ-ÿ][A-Za-z\s\-.,éèêëàùûûïîôôà?]+$/",
+        message: "Le titre doit commencer par une majuscule et ne contenir que des lettres, des espaces, des tirets, des points, des virgules, des accents et des points d'interrogation."
+    )]
+    
+    
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "Le contenu est obligatoire.")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "Le contenu doit contenir au moins {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[A-Z].*/",
+        message: "Le contenu doit commencer par une majuscule."
+    )]
     private ?string $contenu = null;
 
     #[ORM\Column(type: 'string', enumType: Specialite::class)]
+    #[Assert\NotNull(message: "Veuillez sélectionner une spécialité.")]
     private ?Specialite $specialite = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\File(
+        maxSize: "5M",
+        mimeTypes: ["image/jpeg", "image/png"],
+        mimeTypesMessage: "Veuillez télécharger une image valide (JPEG/PNG)"
+    )]
     private ?string $image = null;
 
     #[ORM\Column]
-    private ?bool $visible = null;
-
+    #[Assert\Type(
+        type: 'bool',
+        message: "La visibilité doit être un booléen (true/false)."
+    )]
+    private bool $visible = false;
+    
     #[ORM\Column]
     private ?DateTimeImmutable $date_creation;
 
@@ -43,8 +76,14 @@ class Question
     /**
      * @var Collection<int, Reponse>
      */
-    #[ORM\OneToMany(targetEntity: Reponse::class, mappedBy: 'question')]
+    #[ORM\OneToMany(mappedBy: 'question', targetEntity: Reponse::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $reponses;
+
+    public function __construct()
+    {
+        $this->date_creation = new DateTimeImmutable();
+        $this->reponses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -59,7 +98,6 @@ class Question
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
         return $this;
     }
 
@@ -71,7 +109,6 @@ class Question
     public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
-
         return $this;
     }
 
@@ -94,7 +131,6 @@ class Question
     public function setImage(?string $image): static
     {
         $this->image = $image;
-
         return $this;
     }
 
@@ -106,7 +142,6 @@ class Question
     public function setVisible(bool $visible): static
     {
         $this->visible = $visible;
-
         return $this;
     }
 
@@ -115,10 +150,10 @@ class Question
         return $this->date_creation;
     }
 
-    public function __construct()
+    public function setDateCreation(DateTimeImmutable $dateCreation): static
     {
-        $this->date_creation = new DateTimeImmutable();
-        $this->reponses = new ArrayCollection();
+        $this->date_creation = $dateCreation;
+        return $this;
     }
 
     public function getPatient(): ?Utilisateur
@@ -129,7 +164,6 @@ class Question
     public function setPatient(?Utilisateur $patient): static
     {
         $this->patient = $patient;
-
         return $this;
     }
 
@@ -147,19 +181,16 @@ class Question
             $this->reponses->add($reponse);
             $reponse->setQuestion($this);
         }
-
         return $this;
     }
 
     public function removeReponse(Reponse $reponse): static
     {
         if ($this->reponses->removeElement($reponse)) {
-            // set the owning side to null (unless already changed)
             if ($reponse->getQuestion() === $this) {
                 $reponse->setQuestion(null);
             }
         }
-
         return $this;
     }
 }
