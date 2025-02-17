@@ -23,6 +23,14 @@ final class UtilisateurController extends AbstractController
         ]);
     }
 
+    #[Route('/medecin', name: 'app_medecin')]
+    public function medecin(): Response
+    {
+        return $this->render('utilisateur/medecin.html.twig', [
+            'controller_name' => 'UtilisateurController',
+        ]);
+    }
+
     #[Route('/back', name: 'back')]
     public function back(): Response
     {
@@ -37,6 +45,21 @@ public function listeMedecin(EntityManagerInterface $entityManager): Response
     $utilisateurs = $entityManager->getRepository(Utilisateur::class)->findByRole('ROLE_MEDECIN');
 
     return $this->render('utilisateur/listeMedecin.html.twig', [
+        'utilisateurs' => $utilisateurs,
+    ]);
+}
+#[Route('/listeDemande', name: 'liste_Demande')]
+public function listeDemande(EntityManagerInterface $entityManager): Response
+{
+    $utilisateurs = $entityManager->getRepository(Utilisateur::class)->createQueryBuilder('u')
+        ->where('u.roles LIKE :role')
+        ->andWhere('u.status = :status')
+        ->setParameter('role', '%ROLE_MEDECIN%')
+        ->setParameter('status', 0)
+        ->getQuery()
+        ->getResult();
+
+    return $this->render('utilisateur/listeDemande.html.twig', [
         'utilisateurs' => $utilisateurs,
     ]);
 }
@@ -173,5 +196,26 @@ public function supprimerUtilisateur(
     } else {
         return $this->redirectToRoute('liste_Patient');
     }
+}
+
+#[Route('/modifierStatut/{id}', name: 'modifier_statut')]
+public function modifierStatut($id, EntityManagerInterface $entityManager): Response
+{
+    // Récupérer l'utilisateur avec l'ID donné
+    $utilisateur = $entityManager->getRepository(Utilisateur::class)->find($id);
+
+    // Vérifier si l'utilisateur existe
+    if (!$utilisateur) {
+        throw $this->createNotFoundException('Utilisateur non trouvé');
+    }
+
+    // Modifier l'attribut status
+    $utilisateur->setStatus(1); // Définir le statut à 1
+
+    // Persister les modifications et les enregistrer dans la base de données
+    $entityManager->flush();
+
+    // Rediriger ou afficher un message de succès
+    return $this->redirectToRoute('liste_Demande');
 }
 }

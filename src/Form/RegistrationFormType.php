@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class RegistrationFormType extends AbstractType
 {
@@ -37,6 +38,18 @@ class RegistrationFormType extends AbstractType
                 'choices' => ['Homme' => 'Homme', 'Femme' => 'Femme'],
                 'constraints' => [new NotBlank()],
             ])
+            ->add('image', FileType::class, [
+                'label' => 'Photo de profil',
+                'mapped' => false, // Ce champ n'est pas directement mappé à l'entité
+                'required' => false,
+                'constraints' => [
+                    new \Symfony\Component\Validator\Constraints\Image([
+                        'maxSize' => '2M', // Limite à 2 Mo
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPEG/PNG).',
+                    ])
+                ],
+            ])
             ->add('roles', ChoiceType::class, [
                 'choices' => [
                     'Médecin' => 'ROLE_MEDECIN',
@@ -52,6 +65,11 @@ class RegistrationFormType extends AbstractType
                 'choice_value' => fn (?Specialite $s) => $s?->value, // Stocke la valeur Enum
                 'required' => false,
                 'placeholder' => 'Sélectionnez une spécialité', // Permet d'avoir une valeur null par défaut
+            ])
+            ->add('diplome', FileType::class, [
+                'label' => 'Diplôme (PDF ou Image)',
+                'mapped' => false, // Pour gérer l'upload manuellement
+                'required' => false,
             ])
             ->add('taille', NumberType::class, [
                 'required' => false,

@@ -27,14 +27,23 @@
     <script src=" {{asset ('vendor/jquery-easing/jquery.easing.min.js')}}"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src=" {{asset ('js/sb-admin-2.min.js')}}"></script>
-
-    <!-- Page level plugins -->
-    <script src=" {{asset ('vendor/datatables/jquery.dataTables.min.js')}}"></script>
-    <script src=" {{asset ('vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+    
 
     <!-- Page level custom scripts -->
-    <script src=" {{asset ('js/demo/datatables-demo.js')}}"></script>
+   
+    <script>
+        function showDiplome(imageUrl) {
+            var popup = document.getElementById("diplomePopup");
+            var image = document.getElementById("diplomeImage");
+            image.src = imageUrl;
+            popup.style.display = "block";
+        }
+
+        function closeDiplome() {
+            var popup = document.getElementById("diplomePopup");
+            popup.style.display = "none";
+        }
+    </script>
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
@@ -84,6 +93,7 @@
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">listes des utilisateurs:</h6>
+                        <a class="collapse-item" href="{{ path('liste_Demande') }}">Demandes</a>
                        <a class="collapse-item" href="{{ path('liste_Medecin') }}">Médecins</a>
                        <a class="collapse-item" href="{{ path('liste_Patient') }}">Patients</a>
                     </div>
@@ -379,11 +389,11 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Liste des médecins</h1>
+                    <h1 class="h3 mb-2 text-gray-800">Liste des demandes</h1>
                     <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
                         For more information about DataTables, please visit the <a target="_blank"
                             href="https://datatables.net">official DataTables documentation</a>.</p>
-                    <a href="{{ path('ajouter_medecin') }}" class="btn btn-primary">Ajouter un Médecin</a>
+                   
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
@@ -416,8 +426,11 @@
                     <td>{{ utilisateur.adresse }}</td>
                     <td>{{ utilisateur.specialite.value }}</td>
                     
-                    <td><a href="#" class="btn btn-warning">Modifier</a> |
-                        <a href="{{ path('supprimer_utilisateur', {'id': utilisateur.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Supprimer</a>
+                    <td>
+                         <button onclick="showDiplome('{{ asset('uploads/diplomes/' ~ utilisateur.diplome) }}')">Voir le diplôme</button>
+                        <a href="{{ path('modifier_statut', {'id': utilisateur.id}) }}" class="btn btn-success">Accepter</a> |
+
+                        <a href="{{ path('supprimer_utilisateur', {'id': utilisateur.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Refuser</a>
                     </td>
                 </tr>
             {% else %}
@@ -440,7 +453,16 @@
 
     </div>
     <!-- End of Page Wrapper -->
-
+<!-- Pop-up pour afficher l'image -->
+    <div id="diplomePopup" style="display:none;">
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.7);">
+            <div style="position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
+                <img id="diplomeImage" src="" alt="Diplôme" style="width: 50%; height: 50%;"/>
+                <br/>
+                <button onclick="closeDiplome()">Fermer</button>
+            </div>
+        </div>
+    </div>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
@@ -485,5 +507,5 @@
 
 </body>
         {% endblock %}
-    </body>
-</html>
+    </body></html>
+    
