@@ -9,30 +9,39 @@
     
         <!-- Barre de recherche -->
         <div class="input-group mb-4">
-            <input type="text" id="search-input" class="form-control" placeholder="Rechercher une question..." aria-label="Rechercher" style="border-radius: 20px;">
+            <input type="text" id="search-input" class="form-control" placeholder="Rechercher une question..." aria-label="Rechercher" style="border-radius: 20px; border: 1px solid #007bff; background-color: #e9f5ff;">
             <button class="btn btn-primary" type="button" style="border-radius: 20px;">🔍</button>
         </div>
 
+        <!-- Message de chargement -->
+        <div id="loading-message" class="text-center" style="display: none; color: #007bff;">Chargement...</div>
+
         <!-- Liste des questions -->
-        <div id="questions-list" class="list-group shadow-lg rounded" style="border-radius: 10px;height:400px;overflow-y:scroll">
+        <div id="questions-list" class="list-group shadow-lg rounded" style="border-radius: 10px; height: 400px; overflow-y: scroll; background-color: #f8f9fa;">
             {% for question in questions %}
-                <a href="{{ path('question_show', {id: question.id}) }}" class="list-group-item list-group-item-action" style="border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <a href="{{ path('question_show', {id: question.id}) }}" class="list-group-item list-group-item-action" style="border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #ffffff;">
                     <h5 class="mb-1" style="font-size: 1.2rem; color: #007bff;">{{ question.titre }}</h5>
-                    <p class="mb-1" style="font-size: 1rem; color: #555;">{{ question.contenu|slice(0, 100) ~ '...' }}</p>
-                    {% if question.visible == true %}
+                    <p class="mb-1" style="font-size: 1rem; color: #333;">{{ question.contenu|slice(0, 100) ~ '...' }}</p>
+                    {% if question.visible %}
                         <p class="text-muted" style="font-size: 0.9rem;">Posté par : {{ question.patient.nom }}</p>
                     {% endif %}
                 </a>    
             {% else %}
-                <p>Aucune question disponible.</p>
+                <p class="text-center" style="font-size: 1rem; color: #888;">Aucune question disponible.</p>
             {% endfor %}
         </div>
+
+        <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
     </div>
 
     <script>
         // Fonction pour effectuer la recherche en AJAX
         document.getElementById('search-input').addEventListener('input', function() {
             let query = this.value;
+
+            // Afficher le message de chargement
+            const loadingMessage = document.getElementById('loading-message');
+            loadingMessage.style.display = query.length >= 1 ? 'block' : 'none';
 
             // Envoie la requête AJAX si la recherche n'est pas vide
             if (query.length >= 1) {
@@ -42,8 +51,16 @@
                         'Content-Type': 'application/json'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la recherche');
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    // Cacher le message de chargement
+                    loadingMessage.style.display = 'none';
+                    
                     // Vider la liste actuelle
                     let questionsList = document.getElementById('questions-list');
                     questionsList.innerHTML = '';
@@ -54,7 +71,7 @@
                             let questionItem = document.createElement('a');
                             questionItem.href = '/question/' + question.id;
                             questionItem.className = 'list-group-item list-group-item-action';
-                            questionItem.style = 'border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);';
+                            questionItem.style = 'border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #ffffff;';
                             
                             let questionTitle = document.createElement('h5');
                             questionTitle.className = 'mb-1';
@@ -63,7 +80,7 @@
                             
                             let questionContent = document.createElement('p');
                             questionContent.className = 'mb-1';
-                            questionContent.style = 'font-size: 1rem; color: #555;';
+                            questionContent.style = 'font-size: 1rem; color: #333;';
                             questionContent.textContent = question.contenu.slice(0, 100) + '...';
 
                             let questionPostedBy = document.createElement('p');
@@ -83,7 +100,12 @@
                         questionsList.appendChild(noResults);
                     }
                 })
-                .catch(error => console.log('Erreur:', error));
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    document.getElementById('error-message').textContent = 'Une erreur est survenue lors de la recherche.';
+                    document.getElementById('error-message').style.display = 'block';
+                    loadingMessage.style.display = 'none';
+                });
             } else {
                 // Si la recherche est vide, afficher toutes les questions
                 fetch('/docteur/questions')
@@ -95,7 +117,7 @@
                             let questionItem = document.createElement('a');
                             questionItem.href = '/question/' + question.id;
                             questionItem.className = 'list-group-item list-group-item-action';
-                            questionItem.style = 'border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);';
+                            questionItem.style = 'border-radius: 10px; margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #ffffff;';
                             
                             let questionTitle = document.createElement('h5');
                             questionTitle.className = 'mb-1';
@@ -104,7 +126,7 @@
                             
                             let questionContent = document.createElement('p');
                             questionContent.className = 'mb-1';
-                            questionContent.style = 'font-size: 1rem; color: #555;';
+                            questionContent.style = 'font-size: 1rem; color: #333;';
                             questionContent.textContent = question.contenu.slice(0, 100) + '...';
 
                             let questionPostedBy = document.createElement('p');
@@ -119,7 +141,11 @@
                             questionsList.appendChild(questionItem);
                         });
                     })
-                    .catch(error => console.log('Erreur:', error));
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        document.getElementById('error-message').textContent = 'Une erreur est survenue lors du chargement des questions.';
+                        document.getElementById('error-message').style.display = 'block';
+                    });
             }
         });
     </script>
