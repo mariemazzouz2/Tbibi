@@ -23,28 +23,24 @@ class DossierMedical
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
-    /**
-     * @var Collection<int, Mesure>
-     */
-    #[ORM\OneToMany(targetEntity: Mesure::class, mappedBy: 'doss')]
-    private Collection $mesures;
-
-    /**
-     * @var Collection<int, Exam>
-     */
-    #[ORM\OneToMany(targetEntity: Exam::class, mappedBy: 'dosss')]
-    private Collection $exams;
-
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
-
     #[ORM\Column(length: 255)]
     private ?string $fichier = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $unite = null;
+
+    #[ORM\Column]
+    private ?float $mesure = null;
+
+    /**
+     * @var Collection<int, Analyse>
+     */
+    #[ORM\OneToMany(targetEntity: Analyse::class, mappedBy: 'dossier')]
+    private Collection $analyses;
+
     public function __construct()
     {
-        $this->suivis = new ArrayCollection();
-        $this->mesures = new ArrayCollection();
-        $this->exams = new ArrayCollection();
+        $this->analyses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -75,78 +71,6 @@ class DossierMedical
         return $this;
     }
 
-    /**
-     * @return Collection<int, Mesure>
-     */
-    public function getMesures(): Collection
-    {
-        return $this->mesures;
-    }
-
-    public function addMesure(Mesure $mesure): static
-    {
-        if (!$this->mesures->contains($mesure)) {
-            $this->mesures->add($mesure);
-            $mesure->setDoss($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMesure(Mesure $mesure): static
-    {
-        if ($this->mesures->removeElement($mesure)) {
-            // set the owning side to null (unless already changed)
-            if ($mesure->getDoss() === $this) {
-                $mesure->setDoss(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Exam>
-     */
-    public function getExams(): Collection
-    {
-        return $this->exams;
-    }
-
-    public function addExam(Exam $exam): static
-    {
-        if (!$this->exams->contains($exam)) {
-            $this->exams->add($exam);
-            $exam->setDosss($this);
-        }
-
-        return $this;
-    }
-
-    public function removeExam(Exam $exam): static
-    {
-        if ($this->exams->removeElement($exam)) {
-            // set the owning side to null (unless already changed)
-            if ($exam->getDosss() === $this) {
-                $exam->setDosss(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
     public function getFichier(): ?string
     {
         return $this->fichier;
@@ -155,6 +79,60 @@ class DossierMedical
     public function setFichier(string $fichier): static
     {
         $this->fichier = $fichier;
+
+        return $this;
+    }
+
+    public function getUnite(): ?string
+    {
+        return $this->unite;
+    }
+
+    public function setUnite(string $unite): static
+    {
+        $this->unite = $unite;
+
+        return $this;
+    }
+
+    public function getMesure(): ?float
+    {
+        return $this->mesure;
+    }
+
+    public function setMesure(float $mesure): static
+    {
+        $this->mesure = $mesure;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Analyse>
+     */
+    public function getAnalyses(): Collection
+    {
+        return $this->analyses;
+    }
+
+    public function addAnalysis(Analyse $analysis): static
+    {
+        if (!$this->analyses->contains($analysis)) {
+            $this->analyses->add($analysis);
+            $analysis->setDossier($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnalysis(Analyse $analysis): static
+    {
+        if ($this->analyses->removeElement($analysis)) {
+            // set the owning side to null (unless already changed)
+            if ($analysis->getDossier() === $this) {
+                $analysis->setDossier(null);
+            }
+        }
 
         return $this;
     }

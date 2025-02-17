@@ -1,0 +1,38 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Analyse{% endblock %}
+
+{% block body %}
+    <h1>Analyse</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ analyse.id }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ analyse.type }}</td>
+            </tr>
+            <tr>
+                <th>Dateanalyse</th>
+                <td>{{ analyse.dateanalyse ? analyse.dateanalyse|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Données_Analyse</th>
+                <td>{{ analyse.donnéesAnalyse ? analyse.donnéesAnalyse|join(', ') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Diagnostic</th>
+                <td>{{ analyse.diagnostic }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_analyse_index') }}">back to list</a>
+
+    <a href="{{ path('app_analyse_edit', {'id': analyse.id}) }}">edit</a>
+
+    {{ include('analyse/_delete_form.html.twig') }}
+{% endblock %}

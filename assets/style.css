@@ -1091,46 +1091,6 @@ body{
 	margin: 30px 0px;
 	font-size: 15px;
 }
-/* Appliquer un fond blanc à toute la page */
-body {
-    background-color: #ffffff !important; /* Fond blanc */
-    color: #333; /* Couleur du texte */
-    font-family: 'Poppins', sans-serif;
-}
-/* Style du formulaire */
-.form-container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    margin: auto;
-}
-
-/* Titre de la page */
-.section-title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #1A76D1; /* Bleu Mediplus */
-    margin-bottom: 20px;
-}
-
-/* Boutons */
-.btn {
-    padding: 10px 15px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 14px;
-    display: inline-block;
-}
-
-.btn-secondary {
-    background: #158bf2;
-    color: white;
-    margin-top: 20px;
-}
-
 .call-action .content .btn{
 	background:#fff;
 	margin-right:20px;

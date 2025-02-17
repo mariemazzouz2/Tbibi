@@ -2,26 +2,26 @@
 
 namespace App\Form;
 
+use App\Entity\Analyse;
 use App\Entity\DossierMedical;
-use App\Entity\Utilisateur;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DossierMedicalType extends AbstractType
+class AnalyseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('date', null, [
+            ->add('type')
+            ->add('dateanalyse', null, [
                 'widget' => 'single_text',
             ])
-            ->add('fichier')
-            ->add('unite')
-            ->add('mesure')
-            ->add('utilisateur', EntityType::class, [
-                'class' => Utilisateur::class,
+            ->add('donnees_Analyse')
+            ->add('diagnostic')
+            ->add('dossier', EntityType::class, [
+                'class' => DossierMedical::class,
                 'choice_label' => 'id',
             ])
         ;
@@ -30,7 +30,7 @@ class DossierMedicalType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => DossierMedical::class,
+            'data_class' => Analyse::class,
         ]);
     }
 }
