@@ -14,13 +14,24 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/analyse')]
 final class AnalyseController extends AbstractController
 {
-    #[Route(name: 'app_analyse_index', methods: ['GET'])]
-    public function index(AnalyseRepository $analyseRepository): Response
-    {
-        return $this->render('analyse/index.html.twig', [
-            'analyses' => $analyseRepository->findAll(),
-        ]);
+#[Route(name: 'app_analyse_index', methods: ['GET'])]
+public function index(AnalyseRepository $analyseRepository): Response
+{
+    // Récupérer l'utilisateur connecté
+    $user = $this->getUser();
+
+    // Vérifier si l'utilisateur est connecté
+    if (!$user) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour voir vos analyses.');
     }
+
+    // Récupérer les analyses de l'utilisateur
+    $analyses = $analyseRepository->findBy(['user' => $user]);
+
+    return $this->render('analyse/index.html.twig', [
+        'analyses' => $analyses,
+    ]);
+}
 
     #[Route('/new', name: 'app_analyse_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -42,7 +53,7 @@ final class AnalyseController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_analyse_show', methods: ['GET'])]
+    #[Route('/show/{id}', name: 'app_analyse_show', methods: ['GET'])]
     public function show(Analyse $analyse): Response
     {
         return $this->render('analyse/show.html.twig', [
@@ -68,7 +79,7 @@ final class AnalyseController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_analyse_delete', methods: ['POST'])]
+    #[Route('/delete/{id}', name: 'app_analyse_delete', methods: ['POST'])]
     public function delete(Request $request, Analyse $analyse, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$analyse->getId(), $request->getPayload()->getString('_token'))) {

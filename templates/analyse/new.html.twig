@@ -11,6 +11,7 @@
                     {{ button_label|default('Enregistrer') }}
                 </button>
             {{ form_end(form) }}
+             <a href="{{ path('app_analyse_index', {'dossierId': analyse.dossier.id }) }}" class="btn btn-primary" style="margin-top: 20px; padding: 12px; margin-left: 200px; ">⬅ Retour à la liste</a>
         </div>
     </div>
 {% endblock %}

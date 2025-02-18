@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\DossierMedicalRepository;
@@ -7,6 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DossierMedicalRepository::class)]
 class DossierMedical
@@ -17,6 +17,8 @@ class DossierMedical
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: "La date est obligatoire.")]
+    #[Assert\Type(type: "\DateTimeInterface", message: "La date doit être un objet valide de type DateTime.")]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\OneToOne(inversedBy: "dossierMedical", targetEntity: Utilisateur::class, cascade: ["persist", "remove"])]
@@ -24,12 +26,23 @@ class DossierMedical
     private ?Utilisateur $utilisateur = null;
 
     #[ORM\Column(length: 255)]
+    /**
+     * @Assert\NotBlank(message="Le fichier est obligatoire.")
+     * @Assert\File(mimeTypes={"application/pdf", "image/jpeg", "image/png"}, message="Le fichier doit être un PDF, JPEG ou PNG.")
+     */
     private ?string $fichier = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $unite = null;
+
+#[ORM\Column(length: 255)]
+#[Assert\NotBlank(message: "L'unité est obligatoire.")]
+#[Assert\Length(min: 2, max: 50, minMessage: "L'unité doit contenir au moins {{ limit }} caractères.", maxMessage: "L'unité ne doit pas dépasser {{ limit }} caractères.")]
+private ?string $unite = null;
+
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La mesure est obligatoire.")]
+    #[Assert\Type(type: "numeric", message: "La mesure doit être un nombre valide.")]
+    #[Assert\GreaterThan(value: 0, message: "La mesure doit être supérieure à 0.")]
     private ?float $mesure = null;
 
     /**

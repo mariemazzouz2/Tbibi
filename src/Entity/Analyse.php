@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\AnalyseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,8 +21,8 @@ class Analyse
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateanalyse = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
-    private array $donnees_Analyse = [];
+    #[ORM\Column(length: 255)]
+    private ?string $donnees_Analyse = null;
 
     #[ORM\Column(length: 255)]
     private ?string $diagnostic = null;
@@ -58,12 +59,12 @@ class Analyse
         return $this;
     }
 
-    public function getDonneesAnalyse(): array
+    public function getDonneesAnalyse(): string
     {
         return $this->donnees_Analyse;
     }
 
-    public function setDonneesAnalyse(array $donnees_Analyse): static
+    public function setDonneesAnalyse(string $donnees_Analyse): static
     {
         $this->donnees_Analyse = $donnees_Analyse;
 

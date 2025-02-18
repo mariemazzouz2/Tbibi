@@ -1,4 +1,4 @@
-{% extends 'back.html.twig' %}
+{% extends 'backdoctor.html.twig' %}
 
 {% block title %} Analyse #{{ analyse.id }} {% endblock %}
 
@@ -56,15 +56,8 @@
 
         <!-- Boutons d'actions -->
         <div class="mt-4 text-center">
-            <a href="{{ path('app_back_analyse_index', {'dossierId': analyse.dossier.id })  }}" class="btn btn-primary">
+            <a href="{{ path('app_backdoctor_analyse_index', {'dossierId': analyse.dossier.id })  }}" class="btn btn-primary">
                  <i class="fas fa-arrow-left"></i> Retour À La Liste
-            </a>
-            <a href="{{ path('app_back_analyse_edit', {id: analyse.id}) }}" class="btn btn-warning text-white btn-custom me-2">
-                <i class="fas fa-edit"></i> Modifier
-            </a>
-            <a href="{{ path('app_back_analyse_delete', {id: analyse.id}) }}" class="btn btn-danger btn-custom"
-               onclick="return confirm('Voulez-vous vraiment supprimer cette analyse ?')">
-                <i class="fas fa-trash"></i> Supprimer
             </a>
         </div>
     </div>

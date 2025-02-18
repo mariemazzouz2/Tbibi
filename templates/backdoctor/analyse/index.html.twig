@@ -1,11 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'backdoctor.html.twig' %}
 
-{% block title %}Dossiers Médicaux{% endblock %}
+{% block title %}Analyse{% endblock %}
 
 {% block body %}
     <style>
         /* Conteneur principal */
-        .dossier-container {
+        .analyse-container {
             max-width: 1000px;
             margin: 40px auto;
             padding: 30px;
@@ -15,7 +15,7 @@
         }
 
         /* Titre */
-        .dossier-header {
+        .analyse-header {
             text-align: center;
             font-size: 26px;
             font-weight: bold;
@@ -44,7 +44,7 @@
             text-align: center;
         }
 
-        /* Boutons */
+        /* Espacement des boutons */
         .btn-container {
             margin-top: 20px;
             text-align: center;
@@ -89,51 +89,47 @@
         }
     </style>
 
-    <div class="dossier-container">
-        <div class="dossier-header">📁 Liste des Dossiers Médicaux</div>
-        
+    <div class="analyse-container">
+        <div class="analyse-header">📊 Liste des Analyses</div>
+
         <table class="table">
             <thead>
                 <tr>
-                    <th> </th>
                     <th>ID</th>
+                    <th>Type</th>
                     <th>Date</th>
-                    <th>Fichier</th>
-                    <th>Unité</th>
-                    <th>Mesure</th>
+                    <th>Données</th>
+                    <th>Diagnostic</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-            {% for dossier_medical in dossier_medicals %}
+            {% for analyse in analyses %}
                 <tr>
-                    <td><img src="{{ asset('img/' ~ dossier_medical.utilisateur.image) }}" alt="Image de l'utilisateur" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px;"></td>
-                    <td>{{ dossier_medical.id }}</td>
-                    <td>{{ dossier_medical.date ? dossier_medical.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    <td>{{ analyse.id }}</td>
+                    <td>{{ analyse.type }}</td>
+                    <td>{{ analyse.dateanalyse ? analyse.dateanalyse|date('d/m/Y') : 'Non spécifiée' }}</td>
                     <td>
-                        {% if dossier_medical.fichier %}
-                            <a href="{{ asset('uploads/' ~ dossier_medical.fichier) }}" target="_blank" class="btn btn-primary">📄 apperçu</a>
+                        {% if analyse.donneesAnalyse %}
+                            <a href="{{ asset('uploads/' ~ analyse.donneesAnalyse) }}" target="_blank" class="btn btn-primary">📄apperçu</a>
                         {% else %}
                             Aucun fichier
                         {% endif %}
-                    </td>
-                    <td>{{ dossier_medical.unite ?? 'Non spécifiée' }}</td>
-                    <td>{{ dossier_medical.mesure ?? 'Non spécifiée' }}</td>
+                    </td>                    <td>{{ analyse.diagnostic }}</td>
                     <td>
-                        <a href="{{ path('app_dossier_medical_show', {'id': dossier_medical.id}) }}" class="btn btn-primary">👀 Afficher</a>
-                        <a href="{{ path('app_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+                        <a href="{{ path('app_backdoctor_analyse_show', {'id': analyse.id}) }}" class="btn btn-primary">👀 Afficher</a>
                     </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="6">Aucun dossier médical trouvé</td>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
 
         <div class="btn-container">
-            <a href="{{ path('app_dossier_medical_new') }}" class="btn btn-primary">➕ Nouveau Dossier</a>
+            <a href="{{ path('app_backdoctor_dossier_medical_index') }}" class="btn btn-primary">⬅ Retour à la liste</a>
         </div>
     </div>
 {% endblock %}

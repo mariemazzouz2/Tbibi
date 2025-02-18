@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'backdoctor.html.twig' %}
 
 {% block title %}Dossiers Médicaux{% endblock %}
 
@@ -120,8 +120,7 @@
                     <td>{{ dossier_medical.unite ?? 'Non spécifiée' }}</td>
                     <td>{{ dossier_medical.mesure ?? 'Non spécifiée' }}</td>
                     <td>
-                        <a href="{{ path('app_dossier_medical_show', {'id': dossier_medical.id}) }}" class="btn btn-primary">👀 Afficher</a>
-                        <a href="{{ path('app_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+                        <a href="{{ path('app_backdoctor_dossier_medical_show', {'id': dossier_medical.id}) }}" class="btn btn-primary">👀 Afficher</a>
                     </td>
                 </tr>
             {% else %}
@@ -133,7 +132,6 @@
         </table>
 
         <div class="btn-container">
-            <a href="{{ path('app_dossier_medical_new') }}" class="btn btn-primary">➕ Nouveau Dossier</a>
         </div>
     </div>
 {% endblock %}

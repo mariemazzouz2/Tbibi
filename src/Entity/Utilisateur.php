@@ -8,11 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Enum\Specialite;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -21,6 +24,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "L'email '{{ value }}' n'est pas valide.")]
+    #[Assert\Regex(
+        pattern: "/@.*\./",
+        message: "L'email doit contenir '@' et un point '.'"
+    )]
     private ?string $email = null;
 
     /**
@@ -33,34 +42,66 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Assert\Length(min: 8, minMessage: "Le mot de passe doit contenir au moins 8 caractères.")]
+    #[Assert\Regex(
+        pattern: "/[!@#$%^&*(),.?\":{}|<>]/",
+        message: "Le mot de passe doit contenir au moins un caractère spécial."
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Regex(
+        pattern: "/^[A-Z][a-z]+$/",
+        message: "Le nom doit commencer par une majuscule et contenir uniquement des lettres."
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le prénom est obligatoire.")]
+    #[Assert\Regex(
+        pattern: "/^[A-Z][a-z]+$/",
+        message: "Le prénom doit commencer par une majuscule et contenir uniquement des lettres."
+    )]
     private ?string $prenom = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le téléphone est obligatoire.")]
+    #[Assert\Regex(
+        pattern: "/^\d{8}$/",
+        message: "Le numéro de téléphone doit contenir exactement 8 chiffres."
+    )]
     private ?int $telephone = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse est obligatoire.")]
+    #[Assert\Length(min: 4, minMessage: "L'adresse doit contenir au moins 4 caractères.")]
     private ?string $adresse = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateNaissance = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $taille = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $poids = null;
 
     #[ORM\Column(length: 255)]
     private ?string $sexe = null;
 
-    #[ORM\Column(type: 'string', enumType: Specialite::class)]
-    private Specialite $specialite;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $status = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $diplome = null;
+
+    #[ORM\Column(type: 'string', enumType: Specialite::class, nullable: true)]
+    private ?Specialite $specialite = null;
 
     #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'participants')]
     private Collection $evenements;
@@ -77,24 +118,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: "utilisateur", targetEntity: DossierMedical::class, cascade: ["persist", "remove"])]
     private ?DossierMedical $dossierMedical = null;
 
-    /**
-     * @var Collection<int, Question>
-     */
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'patient')]
     private Collection $questions;
 
-    /**
-     * @var Collection<int, Reponse>
-     */
     #[ORM\OneToMany(targetEntity: Reponse::class, mappedBy: 'medecin')]
     private Collection $reponses;
 
-    /**
-     * @var Collection<int, Vote>
-     */
     #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'medecin')]
     private Collection $votes;
-
 
     public function __construct()
     {
@@ -124,33 +155,19 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string)$this->email;
     }
 
-    /**
-     * @return list<string>
-     * @see UserInterface
-     *
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -158,9 +175,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -173,13 +187,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
     }
 
     public function getNom(): ?string
@@ -218,6 +228,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
     public function getAdresse(): ?string
     {
         return $this->adresse;
@@ -247,7 +269,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->taille;
     }
 
-    public function setTaille(float $taille): static
+    public function setTaille(?float $taille): static
     {
         $this->taille = $taille;
 
@@ -259,7 +281,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->poids;
     }
 
-    public function setPoids(int $poids): static
+    public function setPoids(?int $poids): static
     {
         $this->poids = $poids;
 
@@ -278,7 +300,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSpecialite(): Specialite
+    public function getSpecialite(): ?Specialite
     {
         return $this->specialite;
     }
@@ -323,7 +345,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->consultationsPatient;
     }
 
-
     public function getCommandes(): Collection
     {
         return $this->commandes;
@@ -340,9 +361,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Question>
-     */
     public function getQuestions(): Collection
     {
         return $this->questions;
@@ -361,7 +379,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeQuestion(Question $question): static
     {
         if ($this->questions->removeElement($question)) {
-            // set the owning side to null (unless already changed)
             if ($question->getPatient() === $this) {
                 $question->setPatient(null);
             }
@@ -370,9 +387,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Reponse>
-     */
     public function getReponses(): Collection
     {
         return $this->reponses;
@@ -391,7 +405,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeReponse(Reponse $reponse): static
     {
         if ($this->reponses->removeElement($reponse)) {
-            // set the owning side to null (unless already changed)
             if ($reponse->getMedecin() === $this) {
                 $reponse->setMedecin(null);
             }
@@ -400,9 +413,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Vote>
-     */
     public function getVotes(): Collection
     {
         return $this->votes;
@@ -412,7 +422,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->votes->contains($vote)) {
             $this->votes->add($vote);
-            $vote->setmedecin($this);
+            $vote->setMedecin($this);
         }
 
         return $this;
@@ -421,11 +431,34 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeVote(Vote $vote): static
     {
         if ($this->votes->removeElement($vote)) {
-            // set the owning side to null (unless already changed)
-            if ($vote->getmedecin() === $this) {
-                $vote->setmedecin(null);
+            if ($vote->getMedecin() === $this) {
+                $vote->setMedecin(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getDiplome(): ?string
+    {
+        return $this->diplome;
+    }
+
+    public function setDiplome(?string $diplome): static
+    {
+        $this->diplome = $diplome;
 
         return $this;
     }

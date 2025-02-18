@@ -1,4 +1,4 @@
-{% extends 'back.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Dossier Médical{% endblock %}
 
@@ -161,8 +161,10 @@
 
         <!-- Boutons d'actions -->
         <div class="btn-container">
-            <a href="{{ path('app_dossier_medical_index') }}" class="btn btn-primary">⬅ Retour à la liste</a>
-            <a href="{{ path('app_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+            <a href="{{ path('app_back_dossier_medical_index') }}" class="btn btn-primary">⬅ Retour à la liste</a>
+            <a href="{{ path('app_back_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+            <a href="{{ path('app_back_analyse_new') }}" class="btn btn-success">➕ Nouvelle Analyse</a>
+            <a href="{{ path('app_back_analyse_index', {'dossierId': dossier_medical.id}) }}" class="btn btn-primary">👀 Afficher Analyses</a>
             <form method="post" action="{{ path('app_dossier_medical_delete', {'id': dossier_medical.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce dossier ?');" style="display:inline;">
                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ dossier_medical.id) }}">
                 <button type="submit" class="btn btn-danger">🗑 Supprimer</button>

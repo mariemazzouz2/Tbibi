@@ -45,6 +45,7 @@ final class DossierMedicalController extends AbstractController
     #[Route('/show/{id}', name: 'app_dossier_medical_show', methods: ['GET'])]
     public function show(DossierMedical $dossierMedical): Response
     {
+        
         return $this->render('dossier_medical/show.html.twig', [
             'dossier_medical' => $dossierMedical,
         ]);
@@ -77,75 +78,5 @@ final class DossierMedicalController extends AbstractController
         }
 
         return $this->redirectToRoute('app_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
-    }
-}
-///////////////////////////////////////b a c k/////////////////////////////////////////////
-
-#[Route('/back/dossier/medical')]
-final class backDossierMedicalController extends AbstractController
-{
-    #[Route(name: 'app_back_dossier_medical_index', methods: ['GET'])]
-    public function backindex(DossierMedicalRepository $dossierMedicalRepository): Response
-    {
-        return $this->render('back/dossier_medical/index.html.twig', [
-            'dossier_medicals' => $dossierMedicalRepository->findAll(),
-        ]);
-    }
-
-    #[Route('/new', name: 'app_back_dossier_medical_new', methods: ['GET', 'POST'])]
-    public function backnew(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $dossierMedical = new DossierMedical();
-        $form = $this->createForm(DossierMedicalType::class, $dossierMedical);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($dossierMedical);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_back_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('back/dossier_medical/new.html.twig', [
-            'dossier_medical' => $dossierMedical,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/show/{id}', name: 'app_back_dossier_medical_show', methods: ['GET'])]
-    public function backshow(DossierMedical $dossierMedical): Response
-    {
-        return $this->render('back/dossier_medical/show.html.twig', [
-            'dossier_medical' => $dossierMedical,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_back_dossier_medical_edit', methods: ['GET', 'POST'])]
-    public function backedit(Request $request, DossierMedical $dossierMedical, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(DossierMedicalType::class, $dossierMedical);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_back_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('back/dossier_medical/edit.html.twig', [
-            'dossier_medical' => $dossierMedical,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_back_dossier_medical_delete', methods: ['POST'])]
-    public function backdelete(Request $request, DossierMedical $dossierMedical, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$dossierMedical->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($dossierMedical);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_back_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
     }
 }
