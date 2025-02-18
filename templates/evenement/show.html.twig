@@ -1,46 +1,193 @@
-{% extends 'base.html.twig' %}
+{% extends 'back.html.twig' %}
 
-{% block title %}Evenement{% endblock %}
+{% block title %}Détails de l'Événement{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Conteneur principal */
+        .container-fluid {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Carte principale */
+        .card {
+            max-width: 700px;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 25px;
+        }
+
+        /* Titre */
+        h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Image de l'événement */
+        .event-image-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .event-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .event-image:hover {
+            transform: scale(1.05);
+        }
+
+        /* Tableau des détails */
+        .table {
+            width: 100%;
+            color: #2c3e50;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 10px;
+            vertical-align: middle;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        .table th {
+            background-color: #f8f9fc;
+            color: #4e73df;
+            font-weight: bold;
+            text-align: left;
+            width: 40%;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fc;
+        }
+
+        /* Boutons */
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border: none;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #224abe;
+        }
+
+        .btn-danger {
+            background-color: #e74a3b;
+            border: none;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Evenement</h1>
+    <div class="container-fluid">
+        <div class="card">
+            <h1><i class="fas fa-calendar-alt"></i> Détails de l'Événement</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ evenement.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ evenement.titre }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ evenement.description }}</td>
-            </tr>
-            <tr>
-                <th>DateDebut</th>
-                <td>{{ evenement.dateDebut ? evenement.dateDebut|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DateFin</th>
-                <td>{{ evenement.dateFin ? evenement.dateFin|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Lieu</th>
-                <td>{{ evenement.lieu }}</td>
-            </tr>
-            <tr>
-                <th>Statut</th>
-                <td>{{ evenement.statut }}</td>
-            </tr>
-        </tbody>
-    </table>
+            {# Affichage de l'image de l'événement #}
+           <div class="event-image">
+                            {% if evenement.image %}
+                                <img src="{{ asset('uploads/' ~ evenement.image) }}" alt="{{ evenement.titre }}">
+                            {% else %}
+                                <img src="{{ asset('uploads/67b38b8547e7b2.58499614.png') }}" alt="Image par défaut">
+                            {% endif %}
+                        </div>
+            {# Tableau des détails de l'événement #}
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <td>{{ evenement.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Titre</th>
+                        <td>{{ evenement.titre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ evenement.description }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de début</th>
+                        <td>{{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de fin</th>
+                        <td>{{ evenement.dateFin ? evenement.dateFin|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Lieu</th>
+                        <td>{{ evenement.lieu }}</td>
+                    </tr>
+                    <tr>
+                        <th>Statut</th>
+                        <td>{{ evenement.statut.value }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <a href="{{ path('app_evenement_index') }}">back to list</a>
-
-    <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}">edit</a>
-
-    {{ include('evenement/_delete_form.html.twig') }}
+            {# Boutons d'action #}
+            <div class="btn-container">
+                <a href="{{ path('app_evenement_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>🔙 Retour
+                </a>
+              
+            </div>
+        </div>
+    </div>
 {% endblock %}

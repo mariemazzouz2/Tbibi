@@ -1,8 +1,10 @@
 {% extends 'base.html.twig' %}
-
+{% block body %}
 <li class="nav-item">
-    <a class="nav-link" href="index.html.twig">
+    <a class="nav-link" href="{{ path('app_evenement_index') }}">
         <i class="fas fa-calendar-alt"></i>
-        <span>Événement</span>
+        <span></span>
     </a>
 </li>
+
+{% endblock %}

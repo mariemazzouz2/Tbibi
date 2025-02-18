@@ -6,6 +6,118 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
+    <style>
+        .container-fluid {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .table {
+            width: 100%;
+            color: #2c3e50;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: center;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        .table th {
+            background-color: #f8f9fc;
+            color: #4e73df;
+            font-weight: 600;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fc;
+        }
+
+        /* Conteneur des boutons d'action */
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Espacement uniforme entre les boutons */
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 120px;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #224abe;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+
+        .btn-danger {
+            background-color: #e74a3b;
+            border-color: #e74a3b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Ajout d'espace sous le tableau */
+        .table-container {
+            margin-bottom: 30px;
+        }
+
+    </style>
          <!-- Custom fonts for this template -->
     <link href="{{asset ('vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
     <link
@@ -39,9 +151,9 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+   <body id="page-top">
         {% block body %}
-        <body id="page-top">
+        
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -377,80 +489,65 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+   <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-15">
+                <div class="card">
+                    <div class="card-body">
+                        <h1>
+                            <i class="fas fa-list"></i> Liste des Evenement
+                        </h1>
 
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
-                        For more information about DataTables, please visit the <a target="_blank"
-                            href="https://datatables.net">official DataTables documentation</a>.</p>
-                    <a href="{{ path('app_evenement_new') }}" class="btn btn-primary">Ajouter un evenement</a>
-
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">DataTables Evenement</h6>
-                        </div>
-                        <div class="card-body">
+                        <div class="table-container">
+                      
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                   <thead>
-          
-        </thead>
-        <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>DateDebut</th>
-                <th>DateFin</th>
-                <th>Lieu</th>
-                <th>Statut</th>
-				  <th>image</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for evenement in evenements %}
-            <tr>
-                <td>{{ evenement.id }}</td>
-                <td>{{ evenement.titre }}</td>
-                <td>{{ evenement.description }}</td>
-                <td>{{ evenement.dateDebut ? evenement.dateDebut|date('Y-m-d') : '' }}</td>
-                <td>{{ evenement.dateFin ? evenement.dateFin|date('Y-m-d') : '' }}</td>
-                <td>{{ evenement.lieu }}</td>
-                <td>{{ evenement.statut.getLabel()}}</td>
-				 <td>{{ evenement.image }}</td>
-                <td>
-                    <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}">show</a>
-                    <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="8">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_evenement_new') }}">Create new</a>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-
+    <table class="table table-bordered table-hover">
+                  <div class="btn-container">
+                       <a href="{{ path('app_evenement_new') }}" class="btn btn-primary btn-sm">
+                      Ajouter</a>
+                  <thead>
+    <tr>
+        <th style="width: 5%;">Id</th>
+        <th style="width: 15%;">Titre</th>
+        <th style="width: 20%;">Description</th>
+        <th style="width: 10%;">DateDebut</th>
+        <th style="width: 10%;">DateFin</th>
+        <th style="width: 15%;">Lieu</th>
+        <th style="width: 10%;">Statut</th>
+        <th style="width: 5%;">Image</th>
+        <th style="width: 15%;">Actions</th>
+    </tr>
+</thead>
+                <tbody>
+                    {% for evenement in evenements %}
+                        <tr>
+                            <td>{{ evenement.id }}</td>
+                            <td>{{ evenement.titre }}</td>
+                            <td>{{ evenement.description }}</td>
+                            <td>{{ evenement.dateDebut ? evenement.dateDebut|date('Y-m-d') : '' }}</td>
+                            <td>{{ evenement.dateFin ? evenement.dateFin|date('Y-m-d') : '' }}</td>
+                            <td>{{ evenement.lieu }}</td>
+                            <td>{{ evenement.statut.value }}</td>
+                            <td>{{ evenement.image }}</td>
+                            <td>
+                                <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn btn-info btn-sm">
+                                    <i class="fa-solid fa-eye">Voir</i>
+                                </a>
+                                <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit">Modifier</i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center">No records found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        <!-- End of Content Wrapper -->
-
     </div>
-    <!-- End of Page Wrapper -->
-
+</div>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
@@ -495,5 +592,6 @@
 
 </body>
         {% endblock %}
-    </body>
+   
 </html>
+

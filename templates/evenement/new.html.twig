@@ -1,15 +1,127 @@
-
 {% extends 'back.html.twig' %}
-{% block title %}New Evenement{% endblock %}
 
-{% block body %}
-    <h1>Create new Evenement</h1>
+{% block title %}Nouveau Evenement{% endblock %}
 
-    {{ include('evenement/_form.html.twig') }}
+{% block stylesheets %}
+    {# Lien Bootstrap #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <a href="{{ path('app_evenement_index') }}">back to list</a>
+    <style>
+        /* Arrière-plan avec un dégradé léger */
+        body {
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Dégradé bleu et violet */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Carte du formulaire */
+        .form-container {
+            max-width: 550px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        /* Titre */
+        .form-title {
+            color: #2575fc; /* Bleu vif */
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Formulaire et labels */
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #2575fc; /* Accentuation au focus */
+            box-shadow: 0 0 5px rgba(37, 117, 252, 0.5); /* Ombre bleue */
+        }
+
+        .form-label {
+            color: #6c757d; /* Couleur douce pour le label */
+        }
+
+        /* Zone de description */
+        .description-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Boutons */
+        .btn-primary {
+            background: #2575fc; /* Bleu vif */
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3; /* Teinte plus foncée pour le survol */
+        }
+
+        .btn-outline-secondary {
+            color: #6c757d;
+            border-color: #6c757d;
+            border-radius: 8px;
+            padding: 10px 20px;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+    </style>
 {% endblock %}
 
+{% block body %}
+    <div class="container">
+        <div class="card shadow p-4 bg-white rounded form-container">
+            <div class="card-body">
+                <h1 class="h4 mb-4 text-center form-title">
+                    <i class="fas fa-calendar-plus"></i> Ajouter un Evenement
+                </h1>
 
+                {# Formulaire #}
+                
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                    {{ form_errors(form) }}
 
+                    {% for field in form %}
+                        <div class="mb-3">
+                            {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(field, {
+                                'attr': {
+                                    'class': field.vars.name == 'description' ? 'form-control description-textarea' : 'form-control'
+                                }
+                            }) }}
+                            {{ form_errors(field) }}
+                        </div>
+                    {% endfor %}
 
+                    <button class="btn btn-primary w-100"><i class="fas fa-save"></i> Sauvegarder</button>
+                {{ form_end(form) }}
+
+                {# Bouton Retour #}
+                <div class="text-center mt-3">
+                    <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

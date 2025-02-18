@@ -16,15 +16,25 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 #[Route('/evenement')]
 final class EvenementController extends AbstractController
 {
-    #[Route('/evenements',name: 'app_evenement_index', methods: ['GET'])]
-    public function index(EvenementRepository $evenementRepository): Response
+    #[Route('/evenements', name: 'app_evenement_index', methods: ['GET'])]
+    public function indexBackend(EvenementRepository $evenementRepository): Response
     {
         return $this->render('evenement/evenement.html.twig', [
             'evenements' => $evenementRepository->findAll(),
         ]);
     }
+    
+    #[Route('/eventfront', name: 'app1_evenementfront_index', methods: ['GET'])]
+    public function index1(EvenementRepository $evenementRepository): Response
+    {
+        $evenements = $evenementRepository->findAll();
+        return $this->render('evenement/index.html.twig', [
+            'evenements' => $evenements,
+        ]);
+    }
 
     #[Route('/new', name: 'app_evenement_new', methods: ['GET', 'POST'])]
+    
     public function new(Request $request, EntityManagerInterface $entityManager, #[Autowire('%uploads_directory%')] string $uploadDirectory): Response
     {
         $evenement = new Evenement();
@@ -63,30 +73,31 @@ final class EvenementController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_evenement_show', methods: ['GET'])]
+    #[Route('/evenement/{id}', name: 'app_evenement_show', methods: ['GET'])]
     public function show(Evenement $evenement): Response
     {
         return $this->render('evenement/show.html.twig', [
             'evenement' => $evenement,
         ]);
     }
-    
 
-    #[Route('/{id}/edit', name: 'app_evenement_edit', methods: ['GET', 'POST'])]
+    #[Route('/evenement/{id}/edit', name: 'app_evenement_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Evenement $evenement, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(Evenement1Type::class, $evenement);
         $form->handleRequest($request);
-
+    
+        dump($evenement, $form); // Ajoutez cette ligne pour déboguer
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('evenement/edit.html.twig', [
             'evenement' => $evenement,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
