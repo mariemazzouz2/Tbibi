@@ -1,0 +1,39 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Liste des Commandes{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Liste des Commandes</h1>
+
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{{ path('app_commande_new') }}" class="btn btn-primary custom-btn">Créer Une Nouvelle Commande</a>
+        </div>
+
+        <div class="row">
+            {% for commande in commandes %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <h5 class="card-title">Commande #{{ commande.id }}</h5>
+                            <p class="card-text"><strong>Montant Total :</strong> {{ commande.montantTotal }} TND</p>
+                            <p class="card-text"><strong>Date :</strong> {{ commande.dateCommande ? commande.dateCommande|date('Y-m-d') : 'Non spécifiée' }}</p>
+                            <p class="card-text"><strong>Statut :</strong> {{ commande.statut }}</p>
+                            <div class="d-flex justify-content-between mt-3">
+                                <a href="{{ path('app_commande_show', {'id': commande.id}) }}" class="btn btn-primary btn-sm custom-btn">Détails</a>
+                                <a href="{{ path('app_commande_edit', {'id': commande.id}) }}" class="btn btn-warning btn-sm custom-btn">Modifier</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12 text-center">
+                    <p class="alert alert-info">Aucune commande trouvée.</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+    
+    </div>
+{% endblock %}

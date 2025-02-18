@@ -71,8 +71,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'patient', targetEntity: Consultation::class)]
     private Collection $consultationsPatient;
 
-    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'utilisateur', orphanRemoval: true)]
-    private Collection $commandes;
+
 
     #[ORM\OneToOne(mappedBy: "utilisateur", targetEntity: DossierMedical::class, cascade: ["persist", "remove"])]
     private ?DossierMedical $dossierMedical = null;
@@ -95,16 +94,22 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'medecin')]
     private Collection $votes;
 
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'user')]
+    private Collection $commandes;
+
 
     public function __construct()
     {
         $this->evenements = new ArrayCollection();
         $this->consultationsMedecin = new ArrayCollection();
         $this->consultationsPatient = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
         $this->questions = new ArrayCollection();
         $this->reponses = new ArrayCollection();
         $this->votes = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -324,11 +329,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-    public function getCommandes(): Collection
-    {
-        return $this->commandes;
-    }
-
     public function getDossierMedical(): ?DossierMedical
     {
         return $this->dossierMedical;
@@ -429,4 +429,39 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getUser() === $this) {
+                $commande->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+    public function __toString(): string
+{
+    return $this->nom ?? 'Utilisateur'; // Remplace "nom" par un champ significatif (ex: email)
+}
+
 }

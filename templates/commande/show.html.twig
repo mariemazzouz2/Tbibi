@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Commande{% endblock %}
+
+{% block body %}
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card shadow-lg" style="width: 30rem;">
+            <div class="card-body">
+                <h5 class="card-title text-center">Détails de la Commande</h5>
+                <hr>
+                <p class="card-text"><strong>ID :</strong> {{ commande.id }}</p>
+                <p class="card-text"><strong>Montant Total :</strong> {{ commande.montantTotal }} TND</p>
+                <p class="card-text"><strong>Date de Commande :</strong> {{ commande.dateCommande ? commande.dateCommande|date('Y-m-d') : 'Non spécifiée' }}</p>
+                <p class="card-text"><strong>Statut :</strong> {{ commande.statut }}</p>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ path('app_commande_index') }}" class="btn btn-secondary">Retour</a>
+                    <a href="{{ path('app_commande_edit', {'id': commande.id}) }}" class="btn btn-primary">Modifier</a>
+                    {{ include('commande/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
