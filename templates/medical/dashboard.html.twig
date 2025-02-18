@@ -1,0 +1,587 @@
+{% extends 'backdoctor.html.twig' %}
+
+{% block title %}Medical Dashboard{% endblock %}
+
+{% block sidebar %}
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ path('app_medical_dashboard') }}">
+        <div class="sidebar-brand-icon">
+            <i class="fas fa-hospital"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">TBIBI</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_medical_dashboard') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Medical Services
+    </div>
+
+    <!-- Consultations Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseConsultations"
+            aria-expanded="true" aria-controls="collapseConsultations">
+            <i class="fas fa-fw fa-stethoscope"></i>
+            <span>Consultations</span>
+        </a>
+        <div id="collapseConsultations" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Consultation Options:</h6>
+                <a class="collapse-item" href="{{ path('app_medical_dashboard') }}">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    All Consultations
+                </a>
+                <a class="collapse-item" href="{{ path('app_medical_dashboard', {'filter': 'pending'}) }}">
+                    <i class="fas fa-clock fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Pending Requests
+                </a>
+                <a class="collapse-item" href="{{ path('app_medical_dashboard', {'filter': 'today'}) }}">
+                    <i class="fas fa-calendar-day fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Today's Schedule
+                </a>
+                <a class="collapse-item" href="{{ path('app_medical_dashboard', {'filter': 'week'}) }}">
+                    <i class="fas fa-calendar-week fa-sm fa-fw mr-2 text-gray-400"></i>
+                    This Week
+                </a>
+                <a class="collapse-item" href="{{ path('app_medical_dashboard', {'filter': 'month'}) }}">
+                    <i class="fas fa-calendar-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    This Month
+                </a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Prescriptions Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePrescriptions"
+            aria-expanded="true" aria-controls="collapsePrescriptions">
+            <i class="fas fa-fw fa-prescription"></i>
+            <span>Prescriptions</span>
+        </a>
+        <div id="collapsePrescriptions" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Prescription Options:</h6>
+                <a class="collapse-item" href="{{ path('app_prescriptions_dashboard') }}">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    All Prescriptions
+                </a>
+                <a class="collapse-item" href="{{ path('app_prescriptions_dashboard', {'filter': 'today'}) }}">
+                    <i class="fas fa-calendar-day fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Today's Prescriptions
+                </a>
+                <a class="collapse-item" href="{{ path('app_prescriptions_dashboard', {'filter': 'week'}) }}">
+                    <i class="fas fa-calendar-week fa-sm fa-fw mr-2 text-gray-400"></i>
+                    This Week
+                </a>
+                <a class="collapse-item" href="{{ path('app_prescriptions_dashboard', {'filter': 'month'}) }}">
+                    <i class="fas fa-calendar-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    This Month
+                </a>
+                <a class="collapse-item" href="{{ path('app_prescriptions_dashboard', {'filter': 'with_prescription'}) }}">
+                    <i class="fas fa-check fa-sm fa-fw mr-2 text-gray-400"></i>
+                    With Prescription
+                </a>
+                <a class="collapse-item" href="{{ path('app_prescriptions_dashboard', {'filter': 'without_prescription'}) }}">
+                    <i class="fas fa-plus fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Needs Prescription
+                </a>
+            </div>
+        </div>
+    </li>
+
+    <!-- Divider -->
+
+
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+<!-- End of Sidebar -->
+{% endblock %}
+
+{% block body %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Medical Dashboard</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Pending Consultations Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Pending Consultations</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ consultations|filter(c => c.status == 'pending')|length }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmed Consultations Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Confirmed Consultations</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ consultations|filter(c => c.status == 'confirmed')|length }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                </div>
+
+        <!-- Online Consultations Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Online Consultations
+                                </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ consultations|filter(c => c.type == 'online')|length }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-video fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescriptions Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Prescriptions</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ prescriptions|length }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-prescription fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Upcoming Consultations -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Upcoming Consultations</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Patient</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consultation in consultations %}
+                                    <tr>
+                                        <td>{{ consultation.dateC|date('Y-m-d H:i') }}</td>
+                                        <td>
+                                            {% if consultation.type.value == 'en ligne' %}
+                                                <span class="badge badge-info">Online</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">In-person</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if consultation.status == 'pending' %}
+                                                <span class="badge badge-warning">Pending</span>
+                                            {% elseif consultation.status == 'confirmed' %}
+                                                <span class="badge badge-success">Confirmed</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">{{ consultation.status|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ consultation.patient.nom }} {{ consultation.patient.prenom }}
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <div class="btn-group">
+                                                <button type="button" 
+                                                        class="btn btn-primary btn-sm manage-btn" 
+                                                        data-toggle="modal" 
+                                                        data-target="#manageModal{{ consultation.id }}">
+                                                    <i class="fas fa-edit fa-sm"></i> Manage
+                                                </button>
+
+                                                {% if consultation.status == 'confirmed' %}
+                                                    {% if consultation.ordonnance %}
+                                                        <button type="button" 
+                                                                class="btn btn-warning btn-sm" 
+                                                                data-toggle="modal" 
+                                                                data-target="#editPrescriptionModal{{ consultation.id }}">
+                                                            <i class="fas fa-edit fa-sm"></i> Edit Prescription
+                                                        </button>
+
+                                                        <!-- Edit Prescription Modal -->
+                                                        <div class="modal fade" id="editPrescriptionModal{{ consultation.id }}" tabindex="-1" role="dialog">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">Edit Prescription - {{ consultation.patient.nom }} {{ consultation.patient.prenom }}</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <form action="{{ path('app_ordonnance_edit', {'id': consultation.ordonnance.id}) }}" method="POST" class="needs-validation" novalidate>
+                                                                        <div class="modal-body">
+                                                                            <div class="row">
+                                                                                <div class="col-md-8">
+                                                                                    <div class="form-group">
+                                                                                        <label for="editDescription{{ consultation.ordonnance.id }}">Prescription Details</label>
+                                                                                        <textarea class="form-control" 
+                                                                                                  id="editDescription{{ consultation.ordonnance.id }}" 
+                                                                                                  name="description" 
+                                                                                                  rows="10"
+                                                                                                  required
+                                                                                                  minlength="10"
+                                                                                                  maxlength="1000">{{ consultation.ordonnance.description }}</textarea>
+                                                                                    </div>
+                                                                                    <div class="form-group">
+                                                                                        <label for="editSignature{{ consultation.ordonnance.id }}">Digital Signature</label>
+                                                                                        <input type="text" 
+                                                                                               class="form-control" 
+                                                                                               id="editSignature{{ consultation.ordonnance.id }}" 
+                                                                                               name="signature"
+                                                                                               value="{{ consultation.ordonnance.signature }}"
+                                                                                               required
+                                                                                               minlength="3"
+                                                                                               maxlength="50">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                            <button type="submit" class="btn btn-primary">Update Prescription</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <button type="button" 
+                                                                class="btn btn-info btn-sm prescribe-btn" 
+                                                                data-toggle="modal" 
+                                                                data-target="#prescriptionModal{{ consultation.id }}">
+                                                            <i class="fas fa-prescription fa-sm"></i> Prescribe
+                                                        </button>
+
+                                                        <!-- Create Prescription Modal -->
+                                                        <div class="modal fade" id="prescriptionModal{{ consultation.id }}" tabindex="-1" role="dialog">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">Create Prescription - {{ consultation.patient.nom }} {{ consultation.patient.prenom }}</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <form action="{{ path('app_ordonnance_create') }}" method="POST" class="needs-validation" novalidate>
+                                                                        <div class="modal-body">
+                                                                            <div class="row">
+                                                                                <div class="col-md-8">
+                                                                                    <div class="form-group">
+                                                                                        <label for="description{{ consultation.id }}">Prescription Details</label>
+                                                                                        <textarea class="form-control" 
+                                                                                                  id="description{{ consultation.id }}" 
+                                                                                                  name="description" 
+                                                                                                  rows="10"
+                                                                                                  required
+                                                                                                  minlength="10"
+                                                                                                  maxlength="1000"></textarea>
+                                                                                    </div>
+                                                                                    <div class="form-group">
+                                                                                        <label for="signature{{ consultation.id }}">Digital Signature</label>
+                                                                                        <input type="text" 
+                                                                                               class="form-control" 
+                                                                                               id="signature{{ consultation.id }}" 
+                                                                                               name="signature"
+                                                                                               required
+                                                                                               minlength="3"
+                                                                                               maxlength="50">
+                                                                                    </div>
+                                                                                    <input type="hidden" name="consultation_id" value="{{ consultation.id }}">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                            <button type="submit" class="btn btn-primary">Create Prescription</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                <!-- Management Modal -->
+                                                <div class="modal fade" id="manageModal{{ consultation.id }}" tabindex="-1" role="dialog">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Manage Consultation - {{ consultation.patient.nom }} {{ consultation.patient.prenom }}</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <form action="{{ path('app_consultation_manage', {'id': consultation.id}) }}" method="POST" class="needs-validation" novalidate>
+                                                                <input type="hidden" name="_token" value="{{ csrf_token('manage_consultation_' ~ consultation.id) }}">
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group">
+                                                                                <label for="dateC{{ consultation.id }}">Date and Time</label>
+                                                                                <input type="datetime-local" 
+                                                                                       class="form-control" 
+                                                                                       id="dateC{{ consultation.id }}" 
+                                                                                       name="dateC" 
+                                                                                       value="{{ consultation.dateC|date('Y-m-d\\TH:i') }}"
+                                                                                       required>
+                                                                                <div class="invalid-feedback">
+                                                                                    Please select a valid future date and time.
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group">
+                                                                                <label for="type{{ consultation.id }}">Consultation Type</label>
+                                                                                <select class="form-control" 
+                                                                                        id="type{{ consultation.id }}" 
+                                                                                        name="type"
+                                                                                        required>
+                                                                                    <option value="">Select type</option>
+                                                                                    <option value="online" {{ consultation.type.value == 'online' ? 'selected' : '' }}>Online</option>
+                                                                                    <option value="in_person" {{ consultation.type.value == 'in_person' ? 'selected' : '' }}>In-person</option>
+                                                                                </select>
+                                                                                <div class="invalid-feedback">
+                                                                                    Please select a consultation type.
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="commentaire{{ consultation.id }}">Reason</label>
+                                                                        <textarea class="form-control" 
+                                                                                  id="commentaire{{ consultation.id }}" 
+                                                                                  name="commentaire" 
+                                                                                  rows="4"
+                                                                                  required
+                                                                                  minlength="10"
+                                                                                  maxlength="500">{{ consultation.commentaire }}</textarea>
+                                                                        <div class="invalid-feedback">
+                                                                            Please provide a reason (minimum 10 characters).
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="status{{ consultation.id }}">Status</label>
+                                                                        <select class="form-control" 
+                                                                                id="status{{ consultation.id }}" 
+                                                                                name="status"
+                                                                                required>
+                                                                            <option value="">Select status</option>
+                                                                            <option value="pending" {{ consultation.status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                                                            <option value="confirmed" {{ consultation.status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                                                            <option value="cancelled" {{ consultation.status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                                        </select>
+                                                                        <div class="invalid-feedback">
+                                                                            Please select a status.
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-primary">Update Consultation</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No upcoming consultations</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Prescriptions -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Prescriptions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for prescription in prescriptions|slice(0, 5) %}
+                            <a href="{{ path('app_ordonnance_download', {'id': prescription.id}) }}" 
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Prescription #{{ prescription.id }}</h6>
+                                    <small>{{ prescription.consultation.dateC|date('Y-m-d') }}</small>
+                                </div>
+                                <p class="mb-1">{{ prescription.description|slice(0, 50) }}...</p>
+                                <small>
+                                    <i class="fas fa-download"></i> Click to download
+                                </small>
+                            </a>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-prescription fa-3x text-gray-300 mb-3"></i>
+                                <p class="mb-0">No prescriptions available</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Form validation for all forms with needs-validation class
+            const forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    // Reset previous validation state
+                    form.classList.remove('was-validated');
+
+                    // Validate date if it exists in the form
+                    const dateInput = form.querySelector('input[type="datetime-local"]');
+                    if (dateInput) {
+                        if (!dateInput.value) {
+                            dateInput.setCustomValidity('Please select a date and time');
+                        } else {
+                            const selectedDate = new Date(dateInput.value);
+                            const now = new Date();
+                            if (selectedDate <= now) {
+                                dateInput.setCustomValidity('The date must be in the future');
+                            } else {
+                                dateInput.setCustomValidity('');
+                            }
+                        }
+                    }
+
+                    // Show validation feedback
+                    form.classList.add('was-validated');
+
+                    // Submit form if valid
+                    if (form.checkValidity()) {
+                        form.submit();
+                    }
+                });
+            });
+
+            // Handle modal buttons
+            $('button[data-target^="#prescriptionModal"]').on('click', function(e) {
+                e.preventDefault();
+                var targetModal = $(this).data('target');
+                $(targetModal).modal('show');
+            });
+
+            $('button[data-target^="#editPrescriptionModal"]').on('click', function(e) {
+                e.preventDefault();
+                var targetModal = $(this).data('target');
+                $(targetModal).modal('show');
+            });
+
+            $('button[data-target^="#manageModal"]').on('click', function(e) {
+                e.preventDefault();
+                var targetModal = $(this).data('target');
+                $(targetModal).modal('show');
+            });
+
+            // Handle active state for sidebar items based on current filter
+            const urlParams = new URLSearchParams(window.location.search);
+            const filter = urlParams.get('filter');
+            const currentPath = window.location.pathname;
+
+            if (filter) {
+                // Find the correct menu based on the current path
+                const menu = currentPath.includes('prescriptions') ? '#collapsePrescriptions' : '#collapseConsultations';
+                
+                // Show the correct menu
+                $(menu).addClass('show');
+                
+                // Find and activate the correct link
+                $(`a[href$="filter=${filter}"]`).addClass('active');
+            }
+        });
+    </script>
+{% endblock %} 

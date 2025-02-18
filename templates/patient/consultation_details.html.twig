@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Consultation Details{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Consultation Details Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Consultation Details</h6>
+                    <a href="{{ path('app_patient_consultations') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Date & Time:</div>
+                        <div class="col-md-8">{{ consultation.dateC|date('Y-m-d H:i') }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Doctor:</div>
+                        <div class="col-md-8">Dr. {{ consultation.medecin.nom }} {{ consultation.medecin.prenom }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Type:</div>
+                        <div class="col-md-8">
+                            {% if consultation.type.value == 'en ligne' %}
+                                <span class="badge badge-info">Online</span>
+                            {% else %}
+                                <span class="badge badge-secondary">In-person</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Status:</div>
+                        <div class="col-md-8">
+                            {% if consultation.status == 'pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elseif consultation.status == 'confirmed' %}
+                                <span class="badge badge-success">Confirmed</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ consultation.status|title }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Reason:</div>
+                        <div class="col-md-8">{{ consultation.commentaire }}</div>
+                    </div>
+                    {% if consultation.type.value == 'en ligne' and consultation.status == 'confirmed' and consultation.meetLink %}
+                        <div class="row mb-3">
+                            <div class="col-md-4 font-weight-bold">Meeting Link:</div>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="{{ consultation.meetLink }}" readonly>
+                                    <div class="input-group-append">
+                                        <a href="{{ consultation.meetLink }}" 
+                                           class="btn btn-success" 
+                                           target="_blank" 
+                                           title="Join Online Consultation">
+                                            <i class="fas fa-video"></i> Join Meeting
+                                        </a>
+                                        <button class="btn btn-info copy-link" 
+                                                type="button" 
+                                                data-link="{{ consultation.meetLink }}"
+                                                title="Copy Link">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Prescription Card -->
+            {% if consultation.ordonnance %}
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Prescription</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">{{ consultation.ordonnance.description|nl2br }}</p>
+                        <a href="{{ path('app_ordonnance_download', {'id': consultation.ordonnance.id}) }}" 
+                           class="btn btn-primary btn-block">
+                            <i class="fas fa-download"></i> Download Prescription
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Handle copy meet link
+            $('.copy-link').on('click', function() {
+                var link = $(this).data('link');
+                var tempInput = $('<input>');
+                $('body').append(tempInput);
+                tempInput.val(link).select();
+                document.execCommand('copy');
+                tempInput.remove();
+
+                // Show copied feedback
+                var button = $(this);
+                var originalHtml = button.html();
+                button.html('<i class="fas fa-check"></i>');
+                setTimeout(function() {
+                    button.html(originalHtml);
+                }, 2000);
+            });
+        });
+    </script>
+{% endblock %} 

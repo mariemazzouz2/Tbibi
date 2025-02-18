@@ -40,4 +40,26 @@ class AnalyseRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findQuestionsWithResponsesByUser(int $userId)
+{
+    return $this->createQueryBuilder('q')
+        ->leftJoin('q.reponses', 'r') // Jointure avec la table des réponses
+        ->addSelect('r') // Sélectionne également les réponses pour éviter les requêtes supplémentaires
+        ->where('q.patient = :userId') // Filtrer les questions par patient
+        ->setParameter('userId', $userId)
+        ->getQuery()
+        ->getResult();
+}
+
+public function findBySearchQuery(string $query)
+{
+    return $this->createQueryBuilder('q')
+        ->where('q.titre LIKE :query OR q.contenu LIKE :query')
+        ->setParameter('query', '%' . $query . '%')  // Assure-toi que le paramètre est bien encodé
+        ->getQuery()
+        ->getResult();
+}
+
+
 }

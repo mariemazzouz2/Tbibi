@@ -53,6 +53,7 @@ body{
 	font-weight: 400;
 	font-size:14px;
 	color:#888;
+	
 }
 .pro-features {
 	position: fixed;
@@ -4167,6 +4168,13 @@ body{
 	display:inline-block;
 	margin-left:4px;
 }
+.logo2 {
+	margin-top: 5px;
+	width: 260px; /* Ajustez la taille selon vos besoins */
+	height: auto; /* Garde les proportions */
+	display: block; /* Évite les espaces indésirables */
+	transition: transform 0.3s ease-in-out; /* Animation au survol */
+  }
 /*=========================
 	End Footer CSS
 ===========================*/

@@ -36,20 +36,103 @@
             <div class="sidebar-heading">
                 Interface
             </div>
+<<<<<<< HEAD
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+=======
+
+           <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+>>>>>>> 83033f5eff2c35489efbe75f4296f29caeee28fc
                     <i class="fas fa-fw fa-cog"></i>
-                    <span>Components</span>
+                    <span>Utilisateurs</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="buttons.html">Buttons</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
+                        <h6 class="collapse-header">listes des utilisateurs:</h6>
+                        <a class="collapse-item" href="{{ path('liste_Demande') }}">Demandes</a>
+                       <a class="collapse-item" href="{{ path('liste_Medecin') }}">Médecins</a>
+                       <a class="collapse-item" href="{{ path('liste_Patient') }}">Patients</a>
                     </div>
                 </div>
             </li>
+<<<<<<< HEAD
+=======
+
+            <!-- Nav Item - Utilities Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Utilities</span>
+                </a>
+                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Custom Utilities:</h6>
+                        <a class="collapse-item" href="utilities-color.html">Colors</a>
+                        <a class="collapse-item" href="utilities-border.html">Borders</a>
+                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
+                        <a class="collapse-item" href="utilities-other.html">Other</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Addons
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+               <li class="nav-item">
+    <a class="nav-link" href="{{ path('app_evenement_index') }}">
+    <i class="fas fa-fw fa-calendar-alt"></i>
+    <span>Événement</span>
+</a>
+</li>
+                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Login Screens:</h6>
+                        <a class="collapse-item" href="login.html">Login</a>
+                        <a class="collapse-item" href="register.html">Register</a>
+                        <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">Other Pages:</h6>
+                        <a class="collapse-item" href="404.html">404 Page</a>
+                        <a class="collapse-item" href="blank.html">Blank Page</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Nav Item - Charts -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_forum_admin') }}">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Questions</span></a>
+                    
+            </li>
+          <li class="nav-item">
+           <a class="nav-link" href="{{ path('app_categorie_ev_index') }}">
+
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Categorie_evenement</span></a>
+
+</li>
+
+            <!-- Nav Item - Tables -->
+            <li class="nav-item">
+                <a class="nav-link" href="tables.html">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Tables</span></a>
+            </li>
+
+>>>>>>> 83033f5eff2c35489efbe75f4296f29caeee28fc
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
             <!-- Sidebar Toggler (Sidebar) -->
@@ -107,7 +190,20 @@
 
                 <!-- Main Body Content -->
                 <div class="container-fluid">
+<<<<<<< HEAD
                     {% block body %}{% endblock %}
+=======
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                    </div>
+        {% block content %}
+        {% endblock %}
+
+>>>>>>> 83033f5eff2c35489efbe75f4296f29caeee28fc
                 </div>
             </div>
             <!-- End of Main Content -->
