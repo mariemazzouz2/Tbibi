@@ -10,30 +10,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/analyse')]
 final class AnalyseController extends AbstractController
 {
-#[Route(name: 'app_analyse_index', methods: ['GET'])]
-public function index(AnalyseRepository $analyseRepository): Response
-{
-    // Récupérer l'utilisateur connecté
-    $user = $this->getUser();
-
-    // Vérifier si l'utilisateur est connecté
-    if (!$user) {
-        throw $this->createAccessDeniedException('Vous devez être connecté pour voir vos analyses.');
+    #[Route('/{dossierId}', name: 'app_analyse_index', methods: ['GET'], requirements: ['dossierId' => '\d+'])]
+    public function index(int $dossierId, AnalyseRepository $analyseRepository): Response
+    {
+        // Récupérer les analyses en filtrant par dossier_id
+        $analyses = $analyseRepository->findBy(['dossier' => $dossierId]);
+    
+        return $this->render('/analyse/index.html.twig', [
+            'analyses' => $analyses,
+        ]);
     }
 
-    // Récupérer les analyses de l'utilisateur
-    $analyses = $analyseRepository->findBy(['user' => $user]);
-
-    return $this->render('analyse/index.html.twig', [
-        'analyses' => $analyses,
-    ]);
-}
-
-    #[Route('/new', name: 'app_analyse_new', methods: ['GET', 'POST'])]
+    /*#[Route('/new', name: 'app_analyse_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $analyse = new Analyse();
@@ -50,6 +43,41 @@ public function index(AnalyseRepository $analyseRepository): Response
         return $this->render('analyse/new.html.twig', [
             'analyse' => $analyse,
             'form' => $form,
+        ]);
+    }*/
+    #[Route('/new', name: 'app_analyse_new')]
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+    {
+        $analyse = new Analyse();
+        $form = $this->createForm(AnalyseType::class, $analyse);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer le fichier uploadé
+            $file = $form->get('donneesAnalyse')->getData();
+            
+            if ($file) {
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+                try {
+                    $file->move($this->getParameter('uploads_directory'), $newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload du fichier.');
+                }
+
+                // Enregistrer le nom du fichier dans la variable donneesAnalyse
+                $analyse->setDonneesAnalyse($newFilename);
+            }
+
+            $entityManager->persist($analyse);
+            $entityManager->flush();
+
+        }
+
+        return $this->render('analyse/new.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 

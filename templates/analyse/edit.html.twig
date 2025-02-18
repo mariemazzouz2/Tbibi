@@ -17,7 +17,7 @@
 
             <!-- Boutons d'actions -->
             <div class="action-buttons" style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <a href="{{ path('app_analyse_index') }}" class="btn" style="width: 48%; padding: 12px; font-size: 18px; background-color: #28A745; color: white; border: none; border-radius: 6px; text-align: center; text-decoration: none;">⬅️  Retour à la liste</a>
+                <a href="{{ path('app_analyse_index',{'dossierId': analyse.dossier.id }) }}" class="btn" style="width: 48%; padding: 12px; font-size: 18px; background-color: #28A745; color: white; border: none; border-radius: 6px; text-align: center; text-decoration: none;">🔙Retour à la liste</a>
                 {{ include('analyse/_delete_form.html.twig', { 'class': 'd-inline' }) }}
             </div>
         </div>

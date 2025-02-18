@@ -1,0 +1,38 @@
+insert into models values ('RC','Clio','Renault','5CH');
+insert into models values ('PCC','206cc','Peugeot','5CH');
+insert into models values ('FPE','Punto Evo','Fiat','4CH');
+insert into models values ('FF','Fiesta','Ford','3CH');
+
+insert into personnes values('03645148','Masmoudi','Ahmed','Ahmed.masmoudi@gmail.com',70983123);
+insert into personnes (nom,cin,prenom,email) values('Ayadi','07498662','Omar','Omar.ayadi@gmail.com');
+insert into personnes (cin,nom,prenom,email) values('07895624','Ben Chaabane','Mariem','Mariem.benchaabane@yahoo.fr');
+insert into personnes values('06784512','Bali','Imen','Imen.bali@gmail.com',72145870);
+insert into personnes values('04456641','Salhi','Ali','AAli.salhi@outlook.fr',70983145);
+
+insert into vehicule (immatriculation, ref_modele, date_mise_circulation, kilometrage , prix_demande,num_chassis) values ('1245Tunis99','RC',to_date('14/03/2001','DD/MM/YYYY'),155000,10200,'11'); 
+insert into vehicule (immatriculation, ref_modele, date_mise_circulation, kilometrage , prix_demande,num_chassis) values ('264Tunis142','FF',to_date('11/02/2010','DD/MM/YYYY'),75000,19500,'656');
+insert into vehicule (immatriculation, ref_modele, date_mise_circulation, kilometrage , prix_demande,num_chassis) values ('569Tunis122','PCC',to_date('02/10/2005','DD/MM/YYYY'),85250,15200,'88'); 
+insert into vehicule (immatriculation, ref_modele, date_mise_circulation, kilometrage , prix_demande,num_chassis) values ('1713Tunis154','FPE',to_date('10/10/2012','DD/MM/YYYY'),106000,21000,'98');
+
+insert into acquisitions values ('1245Tunis99','03645148',to_date('20/06/2007','DD/MM/YYYY'),to_date('17/09/2007','DD/MM/YYYY'));
+insert into acquisitions values ('264Tunis142','07895624',to_date('11/01/2012','DD/MM/YYYY'),to_date('23/10/2020','DD/MM/YYYY'));
+insert into acquisitions values ('1713Tunis154','04456641',to_date('03/01/2014','DD/MM/YYYY'),to_date('02/01/2015','DD/MM/YYYY'));
+insert into acquisitions values ('1245Tunis99','07498662',to_date('18/09/2010','DD/MM/YYYY'),to_date('15/06/2016','DD/MM/YYYY'));
+
+insert into contrat_vente values ('C'||seq_contrat.nextval,'03645148','1245Tunis99',to_date('20/06/2010','DD/MM/YYYY'),9600);
+insert into contrat_vente values ('C'||seq_contrat.nextval,'07895624','264Tunis142',to_date('02/08/2015','DD/MM/YYYY'),19000);
+insert into contrat_vente values ('C'||seq_contrat.nextval,'04456641','1713Tunis154',to_date('06/07/2016','DD/MM/YYYY'),20800);
+insert into contrat_vente values ('C'||seq_contrat.nextval,'07498662','1245Tunis99',to_date('18/09/2010','DD/MM/YYYY'),8500);
+
+
+alter table vehicule add couleur varchar(30);
+
+update vehicule set couleur='BLEU' where immatriculation = '1713Tunis154';
+
+
+update contrat_vente set prix_vente= prix_vente-300 
+where immatriculation='1245Tunis99' 
+and cin = (select cin from personnes where nom='Masmoudi');
+
+delete from contrat_vente 
+where extract(year from date_vente)<2008; 

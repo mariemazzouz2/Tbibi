@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/back/analyse')]
 final class backAnalyseController extends AbstractController
 {
-    #[Route('/{dossierId}', name: 'app_back_analyse_index', methods: ['GET'])]
+    #[Route('/{dossierId}', name: 'app_back_analyse_index', methods: ['GET'], requirements: ['dossierId' => '\d+'])]
     public function index(int $dossierId, AnalyseRepository $analyseRepository): Response
     {
         // Récupérer les analyses en filtrant par dossier_id
