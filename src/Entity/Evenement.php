@@ -74,7 +74,10 @@ class Evenement
         maxMessage: "Le chemin de l'image ne peut pas dépasser 255 caractères."
     )]
     private ?string $image = null;
-
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'evenements')]
+    #[ORM\JoinTable(name: 'evenement_utilisateur')]
+    private Collection $participants;
+    
     public function getId(): ?int
     {
         return $this->id;

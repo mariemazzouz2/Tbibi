@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -58,12 +59,11 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
-            </a>
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <div class="sidebar-brand-icon">
+        <img src="{{asset('img/logo5.png')}}" alt="Logo" class="img-fluid">
+    </div>
+</a>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
@@ -150,16 +150,29 @@
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="charts.html">
+                <a class="nav-link" href="{{ path('app_forum_admin') }}">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
+                    <span>Questions</span></a>
+                    
             </li>
+          <li class="nav-item">
+           <a class="nav-link" href="{{ path('app_categorie_ev_index') }}">
+
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Categorie_evenement</span></a>
+
+</li>
 
             <!-- Nav Item - Tables -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="tables.html">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Tables</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/{{ app.user ? 'logout' : 'Login'}}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>{{ app.user ? 'logout' : 'Login'}}</span></a>
             </li>
 
             <!-- Divider -->
@@ -353,9 +366,14 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
-                                <img class="img-profile rounded-circle"
-                                    src="img/undraw_profile.svg">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                        {% if app.user %}
+                                            {{ app.user.nom }} {{ app.user.prenom }}
+                                        {% else %}
+                                            User
+                                        {% endif %}
+                                    </span>
+                                    <img class="img-profile rounded-circle" src="{{ asset('img/undraw_profile.svg') }}">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
