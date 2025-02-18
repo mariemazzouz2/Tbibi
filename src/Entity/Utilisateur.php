@@ -316,24 +316,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->evenements;
     }
 
-    public function addEvenement(Evenement $evenement): static
-    {
-        if (!$this->evenements->contains($evenement)) {
-            $this->evenements->add($evenement);
-            $evenement->addParticipant($this);
-        }
+    
 
-        return $this;
-    }
-
-    public function removeEvenement(Evenement $evenement): static
-    {
-        if ($this->evenements->removeElement($evenement)) {
-            $evenement->removeParticipant($this);
-        }
-
-        return $this;
-    }
+    
 
     public function getConsultationsMedecin(): Collection
     {
@@ -418,26 +403,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->votes;
     }
 
-    public function addVote(Vote $vote): static
-    {
-        if (!$this->votes->contains($vote)) {
-            $this->votes->add($vote);
-            $vote->setMedecin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVote(Vote $vote): static
-    {
-        if ($this->votes->removeElement($vote)) {
-            if ($vote->getMedecin() === $this) {
-                $vote->setMedecin(null);
-            }
-        }
-
-        return $this;
-    }
+   
 
     public function getImage(): ?string
     {
