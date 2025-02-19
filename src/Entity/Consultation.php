@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ConsultationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Enum\TypeConsultation;
+use Doctrine\DBAL\Types\Type;
 
 #[ORM\Entity(repositoryClass: ConsultationRepository::class)]
 class Consultation
@@ -14,20 +16,20 @@ class Consultation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    #[ORM\Column(enumType: TypeConsultation::class)]
+    private ?TypeConsultation $type = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    private ?string $status = self::STATUS_PENDING;
 
     #[ORM\Column(length: 255)]
     private ?string $commentaire = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateC = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $lien = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $meetLink = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'consultationsMedecin')]
     #[ORM\JoinColumn(nullable: false)]
@@ -38,25 +40,28 @@ class Consultation
     private ?Utilisateur $patient = null;
 
     #[ORM\OneToOne(mappedBy: 'consultation', targetEntity: Ordonnance::class, cascade: ['persist', 'remove'])]
-private ?Ordonnance $ordonnance = null;
+    private ?Ordonnance $ordonnance = null;
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_CONFIRMED = 'confirmed';
+    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_CANCELLED = 'cancelled';
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getType(): ?TypeConsultation
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(TypeConsultation $type): self
     {
         $this->type = $type;
-
         return $this;
     }
-
     public function getStatus(): ?string
     {
         return $this->status;
@@ -93,17 +98,17 @@ private ?Ordonnance $ordonnance = null;
         return $this;
     }
 
-    public function getLien(): ?string
+    public function getMeetLink(): ?string
     {
-        return $this->lien;
+        return $this->meetLink;
     }
 
-    public function setLien(string $lien): static
+    public function setMeetLink(?string $meetLink): self
     {
-        $this->lien = $lien;
-
+        $this->meetLink = $meetLink;
         return $this;
     }
+
     public function getMedecin(): ?Utilisateur
     {
         return $this->medecin;
@@ -127,13 +132,13 @@ private ?Ordonnance $ordonnance = null;
     }
 
     public function getOrdonnance(): ?Ordonnance
-{
-    return $this->ordonnance;
-}
+    {
+        return $this->ordonnance;
+    }
 
-public function setOrdonnance(Ordonnance $ordonnance): static
-{
-    $this->ordonnance = $ordonnance;
-    return $this;
-}
+    public function setOrdonnance(Ordonnance $ordonnance): static
+    {
+        $this->ordonnance = $ordonnance;
+        return $this;
+    }
 }

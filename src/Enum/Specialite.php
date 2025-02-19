@@ -33,6 +33,7 @@ enum Specialite: string
     case MEDECIN_SPORT = 'Médecine du Sport';
     case MEDECIN_TRAVAIL = 'Médecine du Travail';
     case MEDECINE_LEGALE = 'Médecine Légale';
+    case NONE = 'NONE';
 
     public static function getValues(): array
     {

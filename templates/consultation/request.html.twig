@@ -1,0 +1,199 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Request Appointment{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css" />
+{% endblock %}
+
+{% block body %}
+<!-- Breadcrumbs -->
+<div class="breadcrumbs overlay">
+    <div class="container">
+        <div class="bread-inner">
+            <div class="row">
+                <div class="col-12">
+                    <h2>Request Appointment</h2>
+                    <ul class="bread-list">
+                        <li><a href="{{ path('app_patient_consultations') }}">Home</a></li>
+                        <li><i class="icofont-simple-right"></i></li>
+                        <li class="active">Request Appointment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Start Appointment Form -->
+<section class="appointment single-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-12 col-12">
+                <div class="appointment-inner">
+                    <div class="title">
+                        <h3>Book your Appointment</h3>
+                        <p>Fill out the form below to request an appointment with one of our doctors.</p>
+                    </div>
+                    {{ form_start(form, {'attr': {'class': 'form needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="form-group">
+                                    {{ form_label(form.medecin, 'Select Doctor') }}
+                                    {{ form_widget(form.medecin, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.medecin.vars.valid ? '' : ' is-invalid'),
+                                            'required': 'required'
+                                        }
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.medecin) }}
+                                        Please select a doctor.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="form-group">
+                                    {{ form_label(form.dateC, 'Preferred Date and Time') }}
+                                    <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                                        {{ form_widget(form.dateC, {
+                                            'attr': {
+                                                'class': 'form-control datetimepicker-input' ~ (form.dateC.vars.valid ? '' : ' is-invalid'),
+                                                'data-target': '#datetimepicker',
+                                                'required': 'required',
+                                                'data-toggle': 'datetimepicker',
+                                                'autocomplete': 'off',
+                                                'oninvalid': 'this.setCustomValidity("Please select a date and time for your appointment")',
+                                                'oninput': 'this.setCustomValidity("")'
+                                            }
+                                        }) }}
+                                        <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fas fa-calendar"></i></div>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            {% if not form.dateC.vars.valid and form.dateC.vars.errors|length > 0 %}
+                                                {{ form_errors(form.dateC) }}
+                                            {% else %}
+                                                Please select a valid future date and time.
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12">
+                                <div class="form-group">
+                                    {{ form_label(form.type, 'Consultation Type') }}
+                                    {{ form_widget(form.type, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.type.vars.valid ? '' : ' is-invalid'),
+                                            'required': 'required'
+                                        }
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.type) }}
+                                        Please select a consultation type.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-12">
+                                <div class="form-group">
+                                    {{ form_label(form.commentaire, 'Reason for Visit') }}
+                                    {{ form_widget(form.commentaire, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.commentaire.vars.valid ? '' : ' is-invalid'),
+                                            'placeholder': 'Please describe your symptoms or reason for the visit',
+                                            'rows': 4,
+                                            'required': 'required',
+                                            'minlength': 10,
+                                            'maxlength': 500
+                                        }
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.commentaire) }}
+                                        Please provide a reason for your visit (minimum 10 characters).
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Request Appointment</button>
+                                </div>
+                            </div>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--/ End Appointment Form -->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize datetime picker
+            $('#datetimepicker').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm',
+                minDate: moment(),
+                stepping: 15,
+                sideBySide: true,
+                useCurrent: false,
+                icons: {
+                    time: 'fas fa-clock',
+                    date: 'fas fa-calendar',
+                    up: 'fas fa-chevron-up',
+                    down: 'fas fa-chevron-down',
+                    previous: 'fas fa-chevron-left',
+                    next: 'fas fa-chevron-right',
+                    today: 'fas fa-calendar-check',
+                    clear: 'fas fa-trash',
+                    close: 'fas fa-times'
+                }
+            });
+
+            // Form validation
+            const forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    const dateInput = form.querySelector('[name$="[dateC]"]');
+                    let isValid = true;
+
+                    // Reset previous validation state
+                    form.classList.remove('was-validated');
+                    dateInput.setCustomValidity('');
+
+                    // Validate empty field
+                    if (!dateInput.value) {
+                        dateInput.setCustomValidity('Please select a date and time for your appointment');
+                        isValid = false;
+                    } else {
+                        // Validate future date
+                        const selectedDate = new Date(dateInput.value);
+                        const now = new Date();
+                        if (selectedDate <= now) {
+                            dateInput.setCustomValidity('The appointment date must be in the future');
+                            isValid = false;
+                        }
+                    }
+
+                    // Show validation feedback
+                    form.classList.add('was-validated');
+
+                    // Submit form if valid
+                    if (form.checkValidity() && isValid) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ question.titre }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5" style="max-width: 800px;">
+
+        <!-- Titre de la question -->
+        <div class="mb-4">
+            <h1 class="display-4 text-center mb-3" style="font-size: 24px; color: #0056b3;">{{ question.titre }}</h1>
+            <p class="lead text-center text-muted" style="font-size: 18px;">{{ question.contenu }}</p>
+        </div>
+
+        <h3 class="mt-5" style="color: #0056b3;">Ajouter une réponse :</h3>
+        
+        <div class="card p-4 shadow-lg mb-4" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'class': 'needs-validation', 'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
+                <div class="form-group mb-3">
+                    {{ form_label(form.contenu, 'Votre réponse', {'label_attr': {'class': 'fw-bold'}}) }}
+                    {{ form_widget(form.contenu, { 'attr': {'class': 'form-control', 'rows': 4, 'style': 'border-radius: 10px; border: 1px solid #aaa;'} }) }}
+                    {{ form_errors(form.contenu) }}
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary mt-3" style="border-radius: 5px; padding: 10px 20px;">Répondre</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <h3 class="mt-4" style="color: #0056b3;">Réponses :</h3>
+
+        {% if reponses is not empty %}
+            <ul class="list-group" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                {% for reponse in reponses %}
+                    <li class="list-group-item mb-3 shadow-sm rounded" style="background-color: #f8f9fa;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-2" style="font-size: 1.1rem;">{{ reponse.contenu }}</p>
+                            </div>
+                            <div>
+                                <!-- Bouton de suppression -->
+                                <a href="{{ path('app_reponse_delete', {id: reponse.id}) }}" 
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">
+                                    🗑 Supprimer
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Section des votes -->
+                        <div class="mt-2 d-flex gap-2 justify-content-start">
+                            <a href="{{ path('vote', {id: reponse.id, type: 'like'}) }}" 
+                               class="btn btn-outline-success btn-sm d-flex align-items-center"
+                               style="border-radius: 20px; padding: 5px 10px; margin-right: 5px;">
+                                👍 <span class="ms-1">{{ reponse.votes|filter(v => v.valeur.value == 'like')|length }}</span>
+                            </a>
+                            <a href="{{ path('vote', {id: reponse.id, type: 'dislike'}) }}" 
+                               class="btn btn-outline-danger btn-sm d-flex align-items-center"
+                               style="border-radius: 20px; padding: 5px 10px;">
+                                👎 <span class="ms-1">{{ reponse.votes|filter(v => v.valeur.value == 'dislike')|length }}</span>
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted text-center">Aucune réponse pour le moment.</p>
+        {% endif %}
+    
+    </div>
+{% endblock %}

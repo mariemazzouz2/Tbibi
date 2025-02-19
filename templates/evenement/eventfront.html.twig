@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Upcoming Events{% endblock %}
+
+{% block body %}
+   
+
+    <div class="events-container">
+
+        <div class="event-list" id="event-list">
+            {% for event in evenements %}
+                <div class="event-card">
+                    <div class="event-date">
+                        <span class="event-month">{{ event.dateDebut|date('M')|upper }}</span>
+                        <span class="event-day">{{ event.dateDebut|date('d') }}</span>
+                        <span class="event-weekday">{{ event.dateDebut|date('D')|lower }}</span>
+                    </div>
+                    <div class="event-info">
+                        <a href="{{ path('app_evenement_show', {'id': event.id}) }}" class="event-title">{{ event.titre }}</a>
+                        <span class="event-category">{{ event.categorie.nom }}</span>
+                        <p class="event-location">{{ event.lieu }}</p>
+                        <span class="event-time">{{ event.dateDebut|date('H:i A') }}</span>
+                        <div class="event-actions">
+                            <a href="{{ path('app_evenement_show', {'id': event.id}) }}" class="btn btn-show">
+                                <i class="fa-solid fa-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                            <img src="{{ asset('uploads/' ~ event.image) }}" alt="{{ event.titre }}" loading="lazy">
+                            
+                        
+                    </div>
+                </div>
+            {% else %}
+                <p class="no-events">No events found.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

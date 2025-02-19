@@ -16,11 +16,11 @@ class Vote
 
     #[ORM\ManyToOne(inversedBy: 'votes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?utilisateur $medecin = null;
+    private ?Utilisateur $medecin = null;
 
     #[ORM\ManyToOne(inversedBy: 'votes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?reponse $reponse = null;
+    private ?Reponse $reponse = null;
 
     #[ORM\Column(enumType: TypeVote::class)]
     private ?TypeVote $valeur = null;

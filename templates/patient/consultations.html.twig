@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Consultations{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">My Consultations</h1>
+
+    <!-- Consultations Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Consultations</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Doctor</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consultation in consultations %}
+                            <tr>
+                                <td>{{ consultation.dateC|date('Y-m-d H:i') }}</td>
+                                <td>
+                                    {% if consultation.type.value == 'en ligne' %}
+                                        <span class="badge badge-info">Online</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">In-person</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if consultation.status == 'pending' %}
+                                        <span class="badge badge-warning">Pending</span>
+                                    {% elseif consultation.status == 'confirmed' %}
+                                        <span class="badge badge-success">Confirmed</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">{{ consultation.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    Dr. {{ consultation.medecin.nom }} {{ consultation.medecin.prenom }}
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="btn-group">
+                                        <a href="{{ path('app_consultation_view', {'id': consultation.id}) }}" 
+                                           class="btn btn-primary btn-sm" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if consultation.ordonnance %}
+                                            <a href="{{ path('app_ordonnance_download', {'id': consultation.ordonnance.id}) }}" 
+                                               class="btn btn-info btn-sm" title="Download Prescription">
+                                                <i class="fas fa-prescription"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if consultation.type.value == 'en ligne' and consultation.status == 'confirmed' and consultation.meetLink %}
+                                            <a href="{{ consultation.meetLink }}" 
+                                               class="btn btn-success btn-sm" 
+                                               target="_blank" 
+                                               title="Join Online Consultation">
+                                                <i class="fas fa-video"></i> Join Meeting
+                                            </a>
+                                        {% endif %}
+                                        {% if consultation.status == 'pending' %}
+                                            <a href="{{ path('app_consultation_edit', {'id': consultation.id}) }}" 
+                                               class="btn btn-warning btn-sm" 
+                                               title="Edit Appointment">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form method="post" action="{{ path('app_consultation_delete', {'id': consultation.id}) }}" 
+                                                  style="display: inline-block;"
+                                                  onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ consultation.id) }}">
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Cancel Appointment">
+                                                    <i class="fas fa-times"></i> Cancel
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No consultations found</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prescriptions Section -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">My Prescriptions</h6>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for consultation in consultations %}
+                    {% if consultation.ordonnance %}
+                        <a href="{{ path('app_ordonnance_download', {'id': consultation.ordonnance.id}) }}" 
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Prescription from {{ consultation.dateC|date('Y-m-d') }}</h6>
+                                <small>Dr. {{ consultation.medecin.nom }} {{ consultation.medecin.prenom }}</small>
+                            </div>
+                            <p class="mb-1">{{ consultation.ordonnance.description|slice(0, 100) }}...</p>
+                            <small>
+                                <i class="fas fa-download"></i> Click to download
+                            </small>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-prescription fa-3x text-gray-300 mb-3"></i>
+                        <p class="mb-0">No prescriptions available</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %} 

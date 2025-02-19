@@ -53,6 +53,10 @@ body{
 	font-weight: 400;
 	font-size:14px;
 	color:#888;
+<<<<<<< HEAD
+=======
+	
+>>>>>>> 84ebfc413298da7ab367b77789a4b186b7a84173
 }
 .pro-features {
 	position: fixed;
@@ -4167,6 +4171,16 @@ body{
 	display:inline-block;
 	margin-left:4px;
 }
+<<<<<<< HEAD
+=======
+.logo2 {
+	margin-top: 5px;
+	width: 260px; /* Ajustez la taille selon vos besoins */
+	height: auto; /* Garde les proportions */
+	display: block; /* Évite les espaces indésirables */
+	transition: transform 0.3s ease-in-out; /* Animation au survol */
+  }
+>>>>>>> 84ebfc413298da7ab367b77789a4b186b7a84173
 /*=========================
 	End Footer CSS
 ===========================*/

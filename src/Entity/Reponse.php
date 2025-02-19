@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReponseRepository::class)]
 class Reponse
@@ -18,13 +19,23 @@ class Reponse
 
     #[ORM\ManyToOne(inversedBy: 'reponses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?question $question = null;
+    private ?Question $question = null;
 
     #[ORM\ManyToOne(inversedBy: 'reponses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?utilisateur $medecin = null;
+    private ?Utilisateur $medecin = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le contenu de la réponse ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 5,
+        minMessage: "Le contenu de la réponse doit comporter au moins {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[A-ZÀ-ÿ][A-Za-z\s\-.,éèêëàùûûïîôôà?]+$/",
+        message: "Le contenu  doit commencer par une majuscule et ne contenir que des lettres, des espaces, des tirets, des points, des virgules, des accents et des points d'interrogation."
+    )]
+    
     private ?string $contenu = null;
 
     #[ORM\Column]
@@ -33,35 +44,39 @@ class Reponse
     /**
      * @var Collection<int, Vote>
      */
-    #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'reponse')]
+    #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'reponse', cascade: ['remove'], orphanRemoval: true)]
     private Collection $votes;
+
+    public function __construct()
+    {
+        $this->date_reponse = new DateTimeImmutable();
+        $this->votes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getQuestion(): ?question
+    public function getQuestion(): ?Question
     {
         return $this->question;
     }
 
-    public function setQuestion(?question $question): static
+    public function setQuestion(?Question $question): static
     {
         $this->question = $question;
-
         return $this;
     }
 
-    public function getMedecin(): ?utilisateur
+    public function getMedecin(): ?Utilisateur
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?utilisateur $medecin): static
+    public function setMedecin(?Utilisateur $medecin): static
     {
         $this->medecin = $medecin;
-
         return $this;
     }
 
@@ -73,7 +88,6 @@ class Reponse
     public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
-
         return $this;
     }
 
@@ -82,10 +96,10 @@ class Reponse
         return $this->date_reponse;
     }
 
-    public function __construct()
+    public function setDateReponse(?DateTimeImmutable $date_reponse): static
     {
-        $this->date_reponse = new DateTimeImmutable();
-        $this->votes = new ArrayCollection();
+        $this->date_reponse = $date_reponse;
+        return $this;
     }
 
     /**
@@ -96,25 +110,5 @@ class Reponse
         return $this->votes;
     }
 
-    public function addVote(Vote $vote): static
-    {
-        if (!$this->votes->contains($vote)) {
-            $this->votes->add($vote);
-            $vote->setReponse($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVote(Vote $vote): static
-    {
-        if ($this->votes->removeElement($vote)) {
-            // set the owning side to null (unless already changed)
-            if ($vote->getReponse() === $this) {
-                $vote->setReponse(null);
-            }
-        }
-
-        return $this;
-    }
+    
 }

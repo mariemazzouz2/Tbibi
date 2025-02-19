@@ -1,0 +1,7 @@
+{{ form_start{{ form_widget(form.nom, {'attr': {'class': form.nom.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'}}) }}
+ }}
+    {{ form_widget(form) }}
+    {{ form_errors(form) }}
+    <button class="btn">{{ button_label|default('Sauvegarder') }}</button>
+{{ form_end(form) }}
+

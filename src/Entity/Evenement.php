@@ -6,8 +6,9 @@ use App\Repository\EvenementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Enum\Statut;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\CategorieEv;
+
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
 {
@@ -17,31 +18,66 @@ class Evenement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le titre ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le titre doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull(message: "La date de début est obligatoire.")]
+    #[Assert\Type(type: \DateTimeInterface::class, message: "Veuillez entrer une date valide.")]
     private ?\DateTimeInterface $dateDebut = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull(message: "La date de fin est obligatoire.")]
+    #[Assert\Type(type: \DateTimeInterface::class, message: "Veuillez entrer une date valide.")]
+    #[Assert\GreaterThan(propertyPath: "dateDebut", message: "La date de fin doit être postérieure à la date de début.")]
     private ?\DateTimeInterface $dateFin = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le lieu ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le lieu doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le lieu ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $lieu = null;
+
     #[ORM\Column(type: 'string', enumType: Statut::class)]
+    #[Assert\NotNull(message: "Le statut est obligatoire.")]
+    #[Assert\Choice(choices: [Statut::EN_ATTENTE, Statut::CONFIRME, Statut::ANNULE, Statut::TERMINE], message: "Le statut doit être valide.")]
     private Statut $statut;
 
     #[ORM\ManyToOne(targetEntity: CategorieEv::class, inversedBy: 'evenements')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "La catégorie est obligatoire.")]
     private ?CategorieEv $categorie = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le chemin de l'image ne peut pas dépasser 255 caractères."
+    )]
+    private ?string $image = null;
     #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'evenements')]
     #[ORM\JoinTable(name: 'evenement_utilisateur')]
     private Collection $participants;
-
-
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -55,7 +91,6 @@ class Evenement
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
         return $this;
     }
 
@@ -67,7 +102,6 @@ class Evenement
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -79,7 +113,6 @@ class Evenement
     public function setDateDebut(\DateTimeInterface $dateDebut): static
     {
         $this->dateDebut = $dateDebut;
-
         return $this;
     }
 
@@ -91,7 +124,6 @@ class Evenement
     public function setDateFin(\DateTimeInterface $dateFin): static
     {
         $this->dateFin = $dateFin;
-
         return $this;
     }
 
@@ -103,15 +135,15 @@ class Evenement
     public function setLieu(string $lieu): static
     {
         $this->lieu = $lieu;
-
         return $this;
     }
+
     public function getStatut(): Statut
     {
         return $this->statut;
     }
 
-    public function setStatut(Statut $statut): self
+    public function setStatut(Statut $statut): static
     {
         $this->statut = $statut;
         return $this;
@@ -126,27 +158,15 @@ class Evenement
         $this->categorie = $categorie;
         return $this;
     }
-    public function getParticipants(): Collection
+
+    public function getImage(): ?string
     {
-        return $this->participants;
+        return $this->image;
     }
 
-    public function addParticipant(Utilisateur $utilisateur): static
+    public function setImage(?string $image): static
     {
-        if (!$this->participants->contains($utilisateur)) {
-            $this->participants->add($utilisateur);
-            $utilisateur->addEvenement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeParticipant(Utilisateur $utilisateur): static
-    {
-        if ($this->participants->removeElement($utilisateur)) {
-            $utilisateur->removeEvenement($this);
-        }
-
+        $this->image = $image;
         return $this;
     }
 }
