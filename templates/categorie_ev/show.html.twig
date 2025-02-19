@@ -1,0 +1,154 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Détails de la Catégorie{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Styles pour le conteneur principal */
+        .container-fluid {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Styles pour la carte */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+        }
+
+        /* Styles pour le titre */
+        .card-body h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #34495e; /* Couleur de texte plus douce */
+            margin-bottom: 1.5rem;
+        }
+
+        /* Styles pour le tableau */
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        .table th {
+            background-color: #f8f9fc; /* Fond clair pour les en-têtes */
+            color: #4e73df; /* Couleur bleue pour les en-têtes */
+            font-weight: 600;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fc; /* Effet de survol */
+        }
+
+        /* Styles pour les boutons */
+        .btn-secondary {
+            background-color: #6c757d; /* Gris bleuté */
+            border-color: #6c757d;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268; /* Gris bleuté plus foncé au survol */
+            border-color: #545b62;
+        }
+
+        .btn-primary {
+            background-color: #4e73df; /* Bleu vif */
+            border-color: #4e73df;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #224abe; /* Bleu plus foncé au survol */
+            border-color: #224abe;
+        }
+
+        .btn-danger {
+            background-color: #e74a3b; /* Rouge vif */
+            border-color: #e74a3b;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333; /* Rouge plus foncé au survol */
+            border-color: #bd2130;
+        }
+
+        /* Styles pour les icônes */
+        .fas {
+            margin-right: 0.5rem;
+            color: #4e73df; /* Bleu vif pour les icônes */
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg p-4">
+                    <div class="card-body">
+                        <h1 class="text-center">
+                            <i class="fas fa-tags"></i> Détails de la Catégorie
+                        </h1>
+
+                        {# Tableau des détails de la catégorie #}
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light">ID</th>
+                                    <td>{{ categorie_ev.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Nom</th>
+                                    <td>{{ categorie_ev.nom }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Description</th>
+                                    <td>{{ categorie_ev.description }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        {# Boutons d'action avec icônes #}
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_categorie_ev_index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour à la liste
+                            </a>
+                            <a href="{{ path('app_categorie_ev_edit', {'id': categorie_ev.id}) }}" class="btn btn-primary">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <form method="post" action="{{ path('app_categorie_ev_delete', {'id': categorie_ev.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ categorie_ev.id) }}">
+                                <button class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

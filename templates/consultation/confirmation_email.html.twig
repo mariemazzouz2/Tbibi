@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation de Consultation{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="alert alert-success">
+        <h4 class="alert-heading"><i class="bi bi-check-circle"></i> Consultation Confirmée!</h4>
+        <p>Un email de confirmation a été envoyé avec les détails suivants:</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5>Détails de la consultation</h5>
+            <ul class="list-unstyled">
+                <li><strong>Date:</strong> {{ consultation.dateC|date('d/m/Y') }}</li>
+                <li><strong>Heure:</strong> {{ consultation.dateC|date('H:i') }}</li>
+                <li><strong>Type:</strong> {{ consultation.type.value }}</li>
+                {% if consultation.meetLink %}
+                    <li>
+                        <strong>Lien de consultation:</strong>
+                        <a href="{{ consultation.meetLink }}" target="_blank">{{ consultation.meetLink }}</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_consultation_show', {'id': consultation.id}) }}" class="btn btn-primary">
+            <i class="bi bi-eye"></i> Voir les détails de la consultation
+        </a>
+    </div>
+</div>
+{% endblock %}

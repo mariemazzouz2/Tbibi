@@ -1,0 +1,88 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Create Prescription{% endblock %}
+
+{% block body %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Create Prescription</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Prescription Details</h6>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'user'}}) }}
+                        <div class="form-group">
+                            {{ form_label(form.description, 'Prescription Details') }}
+                            {{ form_widget(form.description, {
+                                'attr': {
+                                    'class': 'form-control form-control-user',
+                                    'rows': 10,
+                                    'placeholder': 'Enter detailed prescription information...'
+                                }
+                            }) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.signature, 'Digital Signature') }}
+                            {{ form_widget(form.signature, {
+                                'attr': {
+                                    'class': 'form-control form-control-user',
+                                    'placeholder': 'Enter your digital signature'
+                                }
+                            }) }}
+                            {{ form_errors(form.signature) }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                            Create Prescription
+                        </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Consultation Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="font-weight-bold">Patient</h5>
+                        <p class="mb-2">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                            {{ consultation.patient.nom }} {{ consultation.patient.prenom }}
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-envelope fa-sm fa-fw mr-2 text-gray-400"></i>
+                            {{ consultation.patient.email }}
+                        </p>
+                    </div>
+                    <div class="mb-4">
+                        <h5 class="font-weight-bold">Consultation Details</h5>
+                        <p class="mb-2">
+                            <i class="fas fa-calendar fa-sm fa-fw mr-2 text-gray-400"></i>
+                            {{ consultation.dateC|date('Y-m-d H:i') }}
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-info-circle fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Type: {{ consultation.type.value|title }}
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-comment fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Reason: {{ consultation.commentaire }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
+{% endblock %}
