@@ -164,13 +164,10 @@
 											<li><a href="#">Forum </a></li>
 											<li><a href="#">Suivie <i class="icofont-rounded-down"></i></a>
 												<ul class="dropdown">
-													<li><a href="{{ path('app_dossier_medical_show', {'id': app.user.getDossierMedical().id}) }}" class="btn btn-primary">Dossier Medical</a></li>
+														<li><a href="{{ path('app_dossier_medical_show', {'id': app.user.getDossierMedical().id}) }}" class="btn btn-primary">Dossier Medical</a></li>
 												</ul>
 											</li>
-											<li><a href="#">Produits <i class="icofont-rounded-down"></i></a>
-												<ul class="dropdown">
-													<li><a href="blog-single.html">Blog Details</a></li>
-												</ul>
+											<li><a href="{{path('app_produit_index')}}">Produits</a>
 											</li>
 											<li><a href="contact.html">Evenement</a></li>
 										</ul>
