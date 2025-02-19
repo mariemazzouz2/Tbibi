@@ -23,24 +23,42 @@ final class backdoctorDossierMedicalController extends AbstractController
     }
 
     #[Route('/new', name: 'app_backdoctor_dossier_medical_new', methods: ['GET', 'POST'])]
-    public function backdoctornew(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $dossierMedical = new DossierMedical();
-        $form = $this->createForm(DossierMedicalType::class, $dossierMedical);
-        $form->handleRequest($request);
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $dossierMedical = new DossierMedical();
+    $form = $this->createForm(DossierMedicalType::class, $dossierMedical);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($dossierMedical);
-            $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Récupérer le fichier téléchargé
+        $fichier = $form->get('fichier')->getData();
 
-            return $this->redirectToRoute('app_backdoctor_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
+        // Vérifier si un fichier a été téléchargé
+        if ($fichier) {
+            // Générer un nom unique pour le fichier
+            $filename = uniqid() . '.' . $fichier->guessExtension();
+
+            // Déplacer le fichier dans un répertoire spécifique (vous pouvez configurer ce répertoire dans les paramètres)
+            $fichier->move($this->getParameter('upload_directory'), $filename);
+
+            // Assigner le nom du fichier à l'entité DossierMedical
+            $dossierMedical->setFichier($filename);
         }
 
-        return $this->render('backdoctor/dossier_medical/new.html.twig', [
-            'dossier_medical' => $dossierMedical,
-            'form' => $form,
-        ]);
+        // Persister l'entité DossierMedical
+        $entityManager->persist($dossierMedical);
+        $entityManager->flush();
+
+        // Rediriger vers la page index après l'ajout du dossier médical
+        return $this->redirectToRoute('app_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    // Rendu du formulaire
+    return $this->render('backdoctor/dossier_medical/new.html.twig', [
+        'dossier_medical' => $dossierMedical,
+        'form' => $form,
+    ]);
+}
 
     #[Route('/show/{id}', name: 'app_backdoctor_dossier_medical_show', methods: ['GET'])]
     public function backdoctorshow(DossierMedical $dossierMedical): Response

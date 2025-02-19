@@ -7,6 +7,16 @@
 
             <!-- Formulaire d'édition -->
             {{ form_start(form) }}
+            {{ form_start(form) }}
+                  {% if form_errors(form) %}
+                        <div class="alert alert-danger">
+                            <ul>
+                                {% for error in form_errors(form) %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 <div class="form-group" style="margin-bottom: 20px;">
                     {{ form_widget(form) }}
                 </div>

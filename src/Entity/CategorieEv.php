@@ -93,5 +93,3 @@ class CategorieEv
         return $this;
     }
 }
-
-

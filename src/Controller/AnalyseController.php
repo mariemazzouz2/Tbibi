@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Core\Security;
 
 #[Route('/analyse')]
 final class AnalyseController extends AbstractController
@@ -45,41 +46,68 @@ final class AnalyseController extends AbstractController
             'form' => $form,
         ]);
     }*/
-    #[Route('/new', name: 'app_analyse_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger)
+
+    #[Route('/new', name: 'app_analyse_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, Security $security)
     {
         $analyse = new Analyse();
         $form = $this->createForm(AnalyseType::class, $analyse);
         $form->handleRequest($request);
-
+    
+        // Récupérer l'utilisateur connecté
+        $user = $security->getUser();
+    
+        // Initialiser la variable dossierId
+        $dossierId = null;
+    
+        // Vérifier si l'utilisateur est connecté et s'il a un dossier médical
+        if ($user && $user->getDossierMedical()) {
+            $dossierMedical = $user->getDossierMedical();
+            // Assigner le dossier médical à l'analyse
+            $analyse->setDossier($dossierMedical);
+            $dossierId = $dossierMedical->getId(); // Assuming you have a getId() method for dossier
+        } else {
+            // Si l'utilisateur n'a pas de dossier médical, afficher un message d'erreur et rediriger
+            $this->addFlash('error', 'Aucun dossier médical trouvé pour cet utilisateur.');
+            return $this->redirectToRoute('app_dossier_medical_new');
+        }
+    
+        // Vérifier si le formulaire a été soumis et est valide
         if ($form->isSubmitted() && $form->isValid()) {
             // Récupérer le fichier uploadé
             $file = $form->get('donneesAnalyse')->getData();
             
             if ($file) {
+                // Gérer le nom du fichier
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
-
+    
                 try {
+                    // Déplacer le fichier dans le répertoire d'uploads
                     $file->move($this->getParameter('uploads_directory'), $newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors de l\'upload du fichier.');
                 }
-
-                // Enregistrer le nom du fichier dans la variable donneesAnalyse
+    
+                // Enregistrer le nom du fichier dans l'entité Analyse
                 $analyse->setDonneesAnalyse($newFilename);
             }
-
+    
+            // Persist et flush l'analyse dans la base de données
             $entityManager->persist($analyse);
             $entityManager->flush();
-
+    
+            // Rediriger après la création de l'analyse avec le dossierId
+            return $this->redirectToRoute('app_analyse_index', ['dossierId' => $dossierId], Response::HTTP_SEE_OTHER);
         }
-
+    
+        // Rendre le formulaire
         return $this->render('analyse/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+    
 
     #[Route('/show/{id}', name: 'app_analyse_show', methods: ['GET'])]
     public function show(Analyse $analyse): Response

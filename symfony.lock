@@ -283,7 +283,6 @@
             "./config/routes/web_profiler.yaml"
         ]
     },
-<<<<<<< HEAD
     "symfonycasts/reset-password-bundle": {
         "version": "1.23",
         "recipe": {
@@ -296,8 +295,6 @@
             "./config/packages/reset_password.yaml"
         ]
     },
-=======
->>>>>>> gestion_event
     "twig/extra-bundle": {
         "version": "v3.19.0"
     }
