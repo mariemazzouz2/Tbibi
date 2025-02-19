@@ -37,10 +37,12 @@ final class backdoctorAnalyseController extends AbstractController
 
             return $this->redirectToRoute('app_backdoctor_analyse_index', [], Response::HTTP_SEE_OTHER);
         }
-
+        // Vérification des erreurs
+        $errors = $validator->validate($analyse);
         return $this->render('backdoctor/analyse/new.html.twig', [
             'analyse' => $analyse,
             'form' => $form,
+            'errors' => $errors,
         ]);
     }
 

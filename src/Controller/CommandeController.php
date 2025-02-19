@@ -61,7 +61,7 @@ public function new(Request $request, EntityManagerInterface $entityManager, ?in
     ]);
 }
 
-    #[Route('/commande/{id}', name: 'app_commande_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_commande_show', methods: ['GET'])]
 public function show(CommandeRepository $commandeRepository, string $id): Response
 {
     $commande = $commandeRepository->find((int) $id); // Conversion en int ici

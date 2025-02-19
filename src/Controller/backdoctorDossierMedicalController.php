@@ -52,11 +52,13 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         // Rediriger vers la page index après l'ajout du dossier médical
         return $this->redirectToRoute('app_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
     }
-
+// Vérification des erreurs
+$errors = $validator->validate($analyse);
     // Rendu du formulaire
     return $this->render('backdoctor/dossier_medical/new.html.twig', [
         'dossier_medical' => $dossierMedical,
         'form' => $form,
+        'errors' => $errors,
     ]);
 }
 
