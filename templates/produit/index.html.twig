@@ -51,8 +51,15 @@
 
     {% for produit in produits %}
         <div class="card">
+        
             <div class="card-header">{{ produit.nom }}</div>
-
+            <div class="image-preview">
+                {% if produit.image %}
+                    <img src="{{ asset('uploads/' ~ produit.image) }}" alt="Image du produit">
+                {% else %}
+                    <p>Aucune image disponible</p>
+                {% endif %}
+            </div>
             <div class="product-info">
                 <strong>Prix :</strong> {{ produit.prix }} TND
             </div>
@@ -65,13 +72,7 @@
                 <strong>Description :</strong> {{ produit.description }}
             </div>
 
-            <div class="image-preview">
-                {% if produit.image %}
-                    <img src="{{ asset('images/' ~ produit.image) }}" alt="Image du produit">
-                {% else %}
-                    <p>Aucune image disponible</p>
-                {% endif %}
-            </div>
+           
             <a href="{{ path('app_commande_new', { 'idProduit': produit.id }) }}" class="btn">Commander</a>
         </div>
     {% endfor %}

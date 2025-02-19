@@ -56,7 +56,7 @@ public function new(Request $request, EntityManagerInterface $entityManager, ?in
         return $this->redirectToRoute('app_commande_index');
     }
 
-    return $this->render('commande/form.html.twig', [
+    return $this->render('commande/new.html.twig', [
         'form' => $form->createView(),
     ]);
 }
@@ -90,7 +90,7 @@ public function show(CommandeRepository $commandeRepository, string $id): Respon
             return $this->redirectToRoute('commande_index');
         }
 
-        return $this->render('commande/form.html.twig', [
+        return $this->render('commande/edit.html.twig', [
             'form' => $form->createView(),
         ]);
     }
