@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/commande')]
 class CommandeController extends AbstractController
 {
-    #[Route('/commande', name: 'app_commande_index', methods: ['GET'])]
+    #[Route( name: 'app_commande_index', methods: ['GET'])]
 public function index(CommandeRepository $commandeRepository): Response
 {
     return $this->render('commande/index.html.twig', [
