@@ -1,0 +1,136 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Analyse{% endblock %}
+
+{% block body %}
+    <style>
+        /* Conteneur principal */
+        .analyse-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Titre */
+        .analyse-header {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #1A76D1;
+            margin-bottom: 30px;
+        }
+
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table th {
+            background: #1A76D1;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        /* Espacement des boutons */
+        .btn-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: blue;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: darkblue;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-warning:hover {
+            background-color: #d39e00;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+
+    <div class="analyse-container">
+        <div class="analyse-header">📊 Liste des Analyses</div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Données</th>
+                    <th>Diagnostic</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for analyse in analyses %}
+                <tr>
+                    <td>{{ analyse.id }}</td>
+                    <td>{{ analyse.type }}</td>
+                    <td>{{ analyse.dateanalyse ? analyse.dateanalyse|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    <td>
+                        {% if analyse.donneesAnalyse %}
+                            <a href="{{ asset('uploads/' ~ analyse.donneesAnalyse) }}" target="_blank" class="btn btn-primary">📄apperçu</a>
+                        {% else %}
+                            Aucun fichier
+                        {% endif %}
+                    </td>                    <td>{{ analyse.diagnostic }}</td>
+                    <td>
+                        <a href="{{ path('app_back_analyse_show', {'id': analyse.id}) }}" class="btn btn-primary">👀 Afficher</a>
+                        <a href="{{ path('app_back_analyse_edit', {'id': analyse.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="btn-container">
+            <a href="{{ path('app_back_analyse_new') }}" class="btn btn-success">➕ Nouvelle Analyse</a>
+        </div>
+    </div>
+{% endblock %}

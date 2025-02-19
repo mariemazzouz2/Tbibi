@@ -1,0 +1,26 @@
+{% extends 'back.html.twig' %}
+
+{% block body %}
+    <div class="container" style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px;">
+        <div class="form-container" style="width: 600px; padding: 30px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+            <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 30px; color: #007BFF;">Modifier le Dossier Medical #{{ dossier_medical.id }}</h2>
+
+            <!-- Formulaire d'édition -->
+            {{ form_start(form) }}
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_widget(form) }}
+                </div>
+                <button class="btn" style="width: 100%; padding: 12px; font-size: 18px; background-color: #007BFF; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; margin-top: 20px;">
+                    {{ button_label|default('Mettre à jour') }}
+                </button>
+            {{ form_end(form) }}
+
+            <!-- Boutons d'actions -->
+            <div class="action-buttons" style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <a href="{{ path('app_back_dossier_medical_index') }}" class="btn" style="width: 48%; padding: 12px; font-size: 18px; background-color: #28A745; color: white; border: none; border-radius: 6px; text-align: center; text-decoration: none;"> 🔙Retour à la liste</a>
+                {{ include('dossier_medical/_delete_form.html.twig', { 'class': 'd-inline' }) }}
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

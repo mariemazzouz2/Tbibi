@@ -1,0 +1,137 @@
+{% extends 'backdoctor.html.twig' %}
+
+{% block title %}Dossiers Médicaux{% endblock %}
+
+{% block body %}
+    <style>
+        /* Conteneur principal */
+        .dossier-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Titre */
+        .dossier-header {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #1A76D1;
+            margin-bottom: 30px;
+        }
+
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table th {
+            background: #1A76D1;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        /* Boutons */
+        .btn-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: blue;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: darkblue;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-warning:hover {
+            background-color: #d39e00;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+
+    <div class="dossier-container">
+        <div class="dossier-header">📁 Liste des Dossiers Médicaux</div>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th> </th>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Fichier</th>
+                    <th>Unité</th>
+                    <th>Mesure</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for dossier_medical in dossier_medicals %}
+                <tr>
+                    <td><img src="{{ asset('img/' ~ dossier_medical.utilisateur.image) }}" alt="Image de l'utilisateur" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px;"></td>
+                    <td>{{ dossier_medical.id }}</td>
+                    <td>{{ dossier_medical.date ? dossier_medical.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    <td>
+                        {% if dossier_medical.fichier %}
+                            <a href="{{ asset('uploads/' ~ dossier_medical.fichier) }}" target="_blank" class="btn btn-primary">📄 apperçu</a>
+                        {% else %}
+                            Aucun fichier
+                        {% endif %}
+                    </td>
+                    <td>{{ dossier_medical.unite ?? 'Non spécifiée' }}</td>
+                    <td>{{ dossier_medical.mesure ?? 'Non spécifiée' }}</td>
+                    <td>
+                        <a href="{{ path('app_backdoctor_dossier_medical_show', {'id': dossier_medical.id}) }}" class="btn btn-primary">👀 Afficher</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">Aucun dossier médical trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="btn-container">
+        </div>
+    </div>
+{% endblock %}

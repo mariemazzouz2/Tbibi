@@ -4,9 +4,14 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+<<<<<<< HEAD
+parameters:
+    uploads_directory: '%kernel.project_dir%/assets/uploads'
+=======
     images_directory: '%kernel.project_dir%/public/uploads/images'
     diplomes_directory: '%kernel.project_dir%/public/uploads/diplomes'
     uploads_directory: '%kernel.project_dir%/public/uploads'
+>>>>>>> 83033f5eff2c35489efbe75f4296f29caeee28fc
 
 services:
     # default configuration for services in *this* file
