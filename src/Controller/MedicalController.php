@@ -176,7 +176,7 @@ class MedicalController extends AbstractController
         ]);
     }
 
-    #[Route('/dashboard/consultations', name: 'app_medical_dashboard')]
+    #[Route('/doctor/consultations', name: 'app_medical_dashboard')]
     public function dashboard(Request $request, ConsultationRepository $consultationRepository, OrdonnanceRepository $ordonnanceRepository): Response
     {
         $filter = $request->query->get('filter', 'all');
@@ -256,12 +256,12 @@ class MedicalController extends AbstractController
         $this->entityManager->persist($ordonnance);
         $this->entityManager->flush();
 
-        // Return to the dashboard with a success message
+        // Return to the portal with a success message
         $this->addFlash('success', 'Prescription created successfully');
         return $this->redirectToRoute('app_medical_dashboard');
     }
 
-    #[Route('/dashboard/prescriptions', name: 'app_prescriptions_dashboard')]
+    #[Route('/doctor/prescriptions', name: 'app_prescriptions_dashboard')]
     public function prescriptionsDashboard(Request $request): Response
     {
         $filter = $request->query->get('filter', 'all');

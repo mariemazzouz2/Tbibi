@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use App\Enum\TypeProduit;
 use App\Repository\ProduitRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 class Produit
@@ -14,37 +14,82 @@ class Produit
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column]
+    #[Assert\NotNull(message: "Le prix ne peut pas être nul.")]
+    #[Assert\Positive(message: "Le prix doit être un nombre positif.")]
+    private ?float $prix = null;
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le type est obligatoire.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le type ne peut pas dépasser {{ limit }} caractères."
+    )]
+    private ?string $type = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'image est obligatoire.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le chemin de l'image ne peut pas dépasser {{ limit }} caractères."
+    )]
+    private ?string $image = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom du produit est obligatoire.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $descriptionP = null;
+    #[Assert\NotBlank(message: "La description est obligatoire.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères."
+    )]
+    private ?string $description = null;
 
-    #[ORM\Column]
-    private ?int $prixP = null;
-
-    #[ORM\Column]
-    private ?int $stock = null;
-
-    #[ORM\Column(type: 'string', enumType: TypeProduit::class)]
-    private TypeProduit $type;
-
-    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'produits')]
-private Collection $commandes;
-
-public function __construct()
-{
-    $this->commandes = new ArrayCollection();
-}
-
-public function getCommandes(): Collection
-{
-    return $this->commandes;
-}
+    #[ORM\ManyToOne(inversedBy: 'produit')]
+    private ?Commande $commande = null;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPrix(): ?float
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(float $prix): static
+    {
+        $this->prix = $prix;
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
+        return $this;
     }
 
     public function getNom(): ?string
@@ -55,53 +100,28 @@ public function getCommandes(): Collection
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
-    public function getDescriptionP(): ?string
+    public function getDescription(): ?string
     {
-        return $this->descriptionP;
+        return $this->description;
     }
 
-    public function setDescriptionP(string $descriptionP): static
+    public function setDescription(string $description): static
     {
-        $this->descriptionP = $descriptionP;
-
+        $this->description = $description;
         return $this;
     }
 
-    public function getPrixP(): ?int
+    public function getCommande(): ?Commande
     {
-        return $this->prixP;
+        return $this->commande;
     }
 
-    public function setPrixP(int $prixP): static
+    public function setCommande(?Commande $commande): static
     {
-        $this->prixP = $prixP;
-
-        return $this;
-    }
-
-    public function getStock(): ?int
-    {
-        return $this->stock;
-    }
-
-    public function setStock(int $stock): static
-    {
-        $this->stock = $stock;
-
-        return $this;
-    }
-    public function getType(): TypeProduit
-    {
-        return $this->type;
-    }
-
-    public function setType(TypeProduit $type): static
-    {
-        $this->type = $type;
+        $this->commande = $commande;
         return $this;
     }
 }

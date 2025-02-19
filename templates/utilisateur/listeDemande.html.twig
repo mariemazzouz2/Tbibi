@@ -14,11 +14,7 @@
 
     <!-- Custom styles for this template -->
     <link href="{{asset ('css/sb-admin-2.min.css')}}" rel="stylesheet">
-
-    <!-- Custom styles for this page -->
-    <link href="{{asset ('vendor/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet">
         {% endblock %}
-
         {% block javascripts %}
         <!-- Bootstrap core JavaScript-->
     <script src=" {{asset ('vendor/jquery/jquery.min.js')}}"></script>
@@ -420,51 +416,49 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                   <thead>
+                                <table class="table table-bordered table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Prénom</th>
+            <th scope="col">Email</th>
+            <th scope="col">Téléphone</th>
+            <th scope="col">Adresse</th>
+            <th scope="col">Spécialité</th> 
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for utilisateur in utilisateurs %}
             <tr>
-                <th>ID</th>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Email</th>
-                <th>Téléphone</th>
-                <th>Adresse</th>
-                <th>Specialité</th> 
-                <th>Actions</th>
+                <td>{{ utilisateur.id }}</td>
+                <td>{{ utilisateur.nom }}</td>
+                <td>{{ utilisateur.prenom }}</td>
+                <td>{{ utilisateur.email }}</td>
+                <td>{{ utilisateur.telephone }}</td>
+                <td>{{ utilisateur.adresse }}</td>
+                <td>{{ utilisateur.specialite.value }}</td>
+                <td>
+                    <button class="btn btn-info btn-sm" onclick="showDiplome('{{ asset('uploads/diplomes/' ~ utilisateur.diplome) }}')">
+                        Voir le diplôme
+                    </button>
+                    <a href="{{ path('modifier_statut', {'id': utilisateur.id}) }}" class="btn btn-success btn-sm">
+                        Accepter
+                    </a>
+                    <a href="{{ path('supprimer_utilisateur', {'id': utilisateur.id}) }}" class="btn btn-danger btn-sm" 
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                        Refuser
+                    </a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            {% for utilisateur in utilisateurs %}
-                <tr>
-                    <td>{{ utilisateur.id }}</td>
-                    <td>{{ utilisateur.nom }}</td>
-                    <td>{{ utilisateur.prenom }}</td>
-                    <td>{{ utilisateur.email }}</td>
-                    <td>{{ utilisateur.telephone }}</td>
-                    <td>{{ utilisateur.adresse }}</td>
-                    <td>{{ utilisateur.specialite.value }}</td>
-                    
-                    <td>
-                         <button onclick="showDiplome('{{ asset('uploads/diplomes/' ~ utilisateur.diplome) }}')">Voir le diplôme</button>
-                        <a href="{{ path('modifier_statut', {'id': utilisateur.id}) }}" class="btn btn-success">Accepter</a> |
-
-                        <a href="{{ path('supprimer_utilisateur', {'id': utilisateur.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Refuser</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="8">Aucun utilisateur trouvé.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
+        {% else %}
+            <tr>
+                <td colspan="8" class="text-center">Aucun utilisateur trouvé.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
         </div>
         <!-- End of Content Wrapper -->

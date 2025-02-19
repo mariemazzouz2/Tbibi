@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Commande{% endblock %}
+
+{% block body %}
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    
+    
+
+    <div class="mb-3">
+        {{ form_label(form.dateCommande, 'Date de Commande', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.dateCommande, {'attr': {'class': 'form-control'}}) }}
+        <div class="text-danger">{{ form_errors(form.dateCommande) }}</div>
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.statut, {'attr': {'class': 'form-control'}}) }}
+        <div class="text-danger">{{ form_errors(form.statut) }}</div>
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.user, 'Utilisateur', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+        <div class="text-danger">{{ form_errors(form.user) }}</div>
+    </div>
+    {% if form.produit.vars.value is not empty %}
+    <div class="mb-3">
+        <strong>Produit sélectionné :</strong>
+        {% for produit in form.produit.vars.value %}
+            <p>{{ produit.nom }} - {{ produit.prix }} TND</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+    <button type="submit" class="btn btn-success">Enregistrer</button>
+
+{{ form_end(form) }}
+
+{% endblock %}
