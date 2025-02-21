@@ -12,6 +12,7 @@
                     <th scope="col">Titre</th>
                     <th scope="col">Contenu</th>
                     <th scope="col">Date</th>
+                    <th scope="col">image</th>
                     <th scope="col">Réponses</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -23,6 +24,13 @@
                         <td>{{ question.titre }}</td>
                         <td>{{ question.contenu|slice(0, 50) ~ '...' }}</td>
                         <td>{{ question.getDateCreation() | date('D/M/Y') }}</td>
+                        <td>
+    {% if question.image %}
+        <img src="{{ asset('uploads/images/' ~ question.image) }}" alt="Image de la question" width="50">
+    {% else %}
+        <span>Aucune image</span>
+    {% endif %}
+</td>
                         <td>
                             <a href="{{ path('view_reponses', {id: question.id}) }}" class="btn btn-info btn-sm">Voir les réponses</a>
                         </td>

@@ -17,10 +17,10 @@ class VoteController extends AbstractController
     #[Route('/vote/{id}/{type}', name: 'vote', methods: ['GET'])]
     public function vote(Reponse $reponse, string $type, EntityManagerInterface $entityManager): Response
     {
-        // Récupérer l'utilisateur avec l'ID 1
-        $user = $entityManager->getRepository(Utilisateur::class)->find(1);
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
         if (!$user) {
-            $this->addFlash('danger', "L'utilisateur avec l'ID 1 n'existe pas.");
+            $this->addFlash('danger', "Vous devez être connecté pour voter.");
             return $this->redirectToRoute('question_show', ['id' => $reponse->getQuestion()->getId()]);
         }
 
@@ -52,3 +52,4 @@ class VoteController extends AbstractController
         return $this->redirectToRoute('question_show', ['id' => $reponse->getQuestion()->getId()]);
     }
 }
+

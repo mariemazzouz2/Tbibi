@@ -5,6 +5,8 @@
 {% block body %}
     <div class="container mt-5" style="max-width: 800px;">
 
+        <!-- Bouton de retour -->
+       
         <!-- Titre de la question -->
         <div class="mb-4">
             <h1 class="display-4 text-center mb-3" style="font-size: 24px; color: #0056b3;">{{ question.titre }}</h1>
@@ -64,6 +66,10 @@
             </ul>
         {% else %}
             <p class="text-muted text-center">Aucune réponse pour le moment.</p>
+            <a href="{{ path('app_forum_doc') }}" class="btn btn-secondary mt-3  color:blanc">Retour</a>
+
+            ⬅ Retour à la liste des questions
+
         {% endif %}
     
     </div>

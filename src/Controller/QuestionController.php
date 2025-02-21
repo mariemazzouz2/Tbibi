@@ -111,7 +111,6 @@ final class QuestionController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
     #[Route('/edit/{id}', name: 'app_question_edit')]
 public function edit(Question $question, Request $request, EntityManagerInterface $entityManager): Response
 {
