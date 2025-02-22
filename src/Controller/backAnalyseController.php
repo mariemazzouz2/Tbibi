@@ -38,11 +38,12 @@ final class backAnalyseController extends AbstractController
             return $this->redirectToRoute('app_back_analyse_index', [], Response::HTTP_SEE_OTHER);
         }
         // Vérification des erreurs
-        $errors = $validator->validate($analyse);
+//        //$errors = $validator->validate($analyse);
         return $this->render('back/analyse/new.html.twig', [
             'analyse' => $analyse,
             'form' => $form,
-            'errors' => $errors,
+//    //        'errors' => $errors,
+
         ]);
     }
 

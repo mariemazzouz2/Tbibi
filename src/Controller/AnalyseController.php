@@ -102,11 +102,12 @@ final class AnalyseController extends AbstractController
             return $this->redirectToRoute('app_analyse_index', ['dossierId' => $dossierId], Response::HTTP_SEE_OTHER);
         }
             // Vérification des erreurs
-        $errors = $validator->validate($analyse);
+//        //$errors = $validator->validate($analyse);
         // Rendre le formulaire
         return $this->render('analyse/new.html.twig', [
             'form' => $form->createView(),
-            'errors' => $errors,
+//    //        'errors' => $errors,
+
         ]);
     }
     

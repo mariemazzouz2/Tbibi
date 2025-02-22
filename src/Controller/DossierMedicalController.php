@@ -53,12 +53,13 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         return $this->redirectToRoute('app_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
     }
     // Vérification des erreurs
-    $errors = $validator->validate($analyse);
+    //$errors = $validator->validate($analyse);
     // Rendu du formulaire
     return $this->render('dossier_medical/new.html.twig', [
         'dossier_medical' => $dossierMedical,
         'form' => $form,
-        'errors' => $errors,
+//        'errors' => $errors,
+
     ]);
 }
 
