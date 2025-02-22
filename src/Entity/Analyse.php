@@ -1,5 +1,10 @@
 <?php
+
+namespace App\Entity;
+
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\AnalyseRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AnalyseRepository::class)]
@@ -17,11 +22,9 @@ class Analyse
         max: 255,
         minMessage: "Le type d'analyse doit contenir au moins {{ limit }} caractères.",
         maxMessage: "Le type d'analyse ne doit pas dépasser {{ limit }} caractères."
-    )]
-    #[Assert\Choice(choices: ["Sanguin", "Urinaire", "Radiologie"], message: "Choisissez un type d'analyse valide.")]
-    private ?string $type = null;
+    )]    private ?string $type = null;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(message: "La date de l'analyse est obligatoire.")]
     #[Assert\Type(type: "\DateTimeInterface", message: "La date doit être une date valide.")]
     #[Assert\LessThanOrEqual("today", message: "La date d'analyse ne peut pas être dans le futur.")]
@@ -35,7 +38,7 @@ class Analyse
         minMessage: "Les données de l'analyse doivent contenir au moins {{ limit }} caractères.",
         maxMessage: "Les données de l'analyse ne doivent pas dépasser {{ limit }} caractères."
     )]
-    private ?string $donneesAnalyse = null;
+    private ?string $donnees_Analyse = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le diagnostic est obligatoire.")]
@@ -51,5 +54,68 @@ class Analyse
     #[Assert\NotNull(message: "Le dossier médical est obligatoire.")]
     private ?DossierMedical $dossier = null;
 
-    // Getters & Setters...
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getDateanalyse(): ?\DateTimeInterface
+    {
+        return $this->dateanalyse;
+    }
+
+    public function setDateanalyse(\DateTimeInterface $dateanalyse): static
+    {
+        $this->dateanalyse = $dateanalyse;
+
+        return $this;
+    }
+
+    public function getDonneesAnalyse(): string
+    {
+        return $this->donnees_Analyse;
+    }
+
+    public function setDonneesAnalyse(string $donnees_Analyse): static
+    {
+        $this->donnees_Analyse = $donnees_Analyse;
+
+        return $this;
+    }
+
+    public function getDiagnostic(): ?string
+    {
+        return $this->diagnostic;
+    }
+
+    public function setDiagnostic(string $diagnostic): static
+    {
+        $this->diagnostic = $diagnostic;
+
+        return $this;
+    }
+
+    public function getDossier(): ?DossierMedical
+    {
+        return $this->dossier;
+    }
+
+    public function setDossier(?DossierMedical $dossier): static
+    {
+        $this->dossier = $dossier;
+
+        return $this;
+    }
 }
