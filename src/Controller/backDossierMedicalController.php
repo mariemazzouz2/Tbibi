@@ -50,7 +50,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         $entityManager->flush();
 
         // Rediriger vers la page index après l'ajout du dossier médical
-        return $this->redirectToRoute('app_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_back_dossier_medical_index', [], Response::HTTP_SEE_OTHER);
     }
 // Vérification des erreurs
 //$errors = $validator->validate($analyse);

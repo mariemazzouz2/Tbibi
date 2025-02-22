@@ -97,7 +97,7 @@ final class AnalyseController extends AbstractController
             // Persist et flush l'analyse dans la base de données
             $entityManager->persist($analyse);
             $entityManager->flush();
-    
+            
             // Rediriger après la création de l'analyse avec le dossierId
             return $this->redirectToRoute('app_analyse_index', ['dossierId' => $dossierId], Response::HTTP_SEE_OTHER);
         }

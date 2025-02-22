@@ -38,7 +38,7 @@ class Analyse
         minMessage: "Les données de l'analyse doivent contenir au moins {{ limit }} caractères.",
         maxMessage: "Les données de l'analyse ne doivent pas dépasser {{ limit }} caractères."
     )]
-    private ?string $donnees_Analyse = null;
+    private ?string $donneesAnalyse = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le diagnostic est obligatoire.")]

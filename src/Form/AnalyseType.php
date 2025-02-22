@@ -26,6 +26,10 @@ class AnalyseType extends AbstractType
                 'required' => false, // Le fichier n'est pas obligatoire
             ])
             ->add('diagnostic')
+            ->add('dossier', EntityType::class, [  // Ajout du champ dossier
+                'class' => DossierMedical::class,
+                'choice_label' => 'id', 
+            ])
         ;
     }
 
