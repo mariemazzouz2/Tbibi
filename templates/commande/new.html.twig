@@ -173,11 +173,19 @@
 
 											<li><a href="{{ path('app1_evenementfront_index')}}">evenement</a></li>
 											<li><a href={{path('app_forum')}}>Forum </a></li>
-											<li><a href="#">Suivie <i class="icofont-rounded-down"></i></a>
-												<ul class="dropdown">
-													<li><a href="{{ path('app_dossier_medical_show', {'id': app.user.getDossierMedical().getid() }) }}">📁 Dossier Medical</a></li>
-												</ul>
-											</li>
+											<li>
+                          <a href="#">Suivie <i class="icofont-rounded-down"></i></a>
+                          
+                          {% if app.user is defined and app.user.getDossierMedical() is not null %}
+                              <ul class="dropdown">
+                                  <li>
+                                      <a href="{{ path('app_dossier_medical_show', {'id': app.user.getDossierMedical().id}) }}" class="btn btn-primary">
+                                          Dossier Médical
+                                      </a>
+                                  </li>
+                              </ul>
+                          {% endif %}
+                      </li>
 											<li><a href="#">Produits <i class="icofont-rounded-down"></i></a>
 												<ul class="dropdown">
 													<li><a href="blog-single.html">Blog Details</a></li>
@@ -201,8 +209,31 @@
 		</header>
 		<!-- End Header Area -->
 		
+<body>
+    <div class="container" style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px;">
+        <div class="form-container" style="width: 600px; padding: 30px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+            {{ form_start(form) }}
+                  {% if form_errors(form) %}
+                        <div class="alert alert-danger">
+                            <ul>
+                                {% for error in form_errors(form) %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
 
 
 
 
 													<li><a href="{{ path('app_commande_show', {'id': commande.id }) }}">afficher commande</a></li>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_widget(form) }}
+                </div>
+                <button class="btn" style="width: 100%; padding: 12px; font-size: 18px; background-color: #007BFF; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; margin-top: 20px;">
+                    {{ button_label|default('Enregistrer') }}
+                </button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</body>

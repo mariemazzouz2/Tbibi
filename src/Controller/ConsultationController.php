@@ -18,6 +18,7 @@ class ConsultationController extends AbstractController
     ) {}
 
     #[Route('/patient/consultations', name: 'app_patient_consultations')]
+    
     public function patientConsultations(ConsultationRepository $consultationRepository): Response
     {
         // Hardcoded patient_id = 1 as requested
@@ -95,7 +96,10 @@ class ConsultationController extends AbstractController
             $this->entityManager->remove($consultation);
             $this->entityManager->flush();
             
-            $this->addFlash('success', 'Consultation cancelled successfully.');
+            $this->addFlash('success', 'Consultation 
+            
+            
+            lled successfully.');
         }
 
         return $this->redirectToRoute('app_patient_consultations');

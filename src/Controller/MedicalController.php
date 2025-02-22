@@ -131,7 +131,8 @@ class MedicalController extends AbstractController
     #[Route('/ordonnance/{id}/download', name: 'app_ordonnance_download')]
     public function downloadPrescription(Ordonnance $ordonnance): Response
     {
-        // Configure Dompdf according to your needs
+        // Configure Dom
+        //according to your needs
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
         $pdfOptions->setIsRemoteEnabled(true);
@@ -159,7 +160,7 @@ class MedicalController extends AbstractController
     }
 
     #[Route('/consultation/{id}/confirm', name: 'app_consultation_confirm')]
-    //  #[IsGranted('ROLE_MEDECIN')]
+      #[IsGranted('ROLE_MEDECIN')]
     public function confirmConsultation(Consultation $consultation): Response
     {
         $consultation->setStatus(Consultation::STATUS_CONFIRMED);
@@ -176,7 +177,8 @@ class MedicalController extends AbstractController
         ]);
     }
 
-    #[Route('/doctor/consultations', name: 'app_medical_dashboard')]
+    #[Route(path: '/doctor/consultations', name: 'app_medical_dashboard')]
+    #[IsGranted('ROLE_MEDECIN')]
     public function dashboard(Request $request, ConsultationRepository $consultationRepository, OrdonnanceRepository $ordonnanceRepository): Response
     {
         $filter = $request->query->get('filter', 'all');
@@ -267,7 +269,8 @@ class MedicalController extends AbstractController
         $filter = $request->query->get('filter', 'all');
         
         // Get all consultations for the current doctor (using hardcoded ID 1 for now)
-        $doctor = $this->utilisateurRepository->find(1);
+        $doctor = $this->getUser();
+       // $doctor = $this->utilisateurRepository->find(1);
         if (!$doctor) {
             throw $this->createNotFoundException('Doctor with ID 1 not found');
         }
