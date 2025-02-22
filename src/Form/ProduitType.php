@@ -15,6 +15,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints\Image;
+
 
 class ProduitType extends AbstractType
 {
@@ -64,16 +66,18 @@ class ProduitType extends AbstractType
             ])
             ->add('imageFile', FileType::class, [
                 'label' => 'Image du produit',
-                'mapped' => false,
+                'required' => false, // Si le champ n'est pas obligatoire
+            ]) 
+            ->add('imageFile', FileType::class, [
+                'label' => 'Image du produit',
                 'required' => false,
+                'mapped' => false, // Important : Symfony ne doit pas essayer de setter cette valeur directement
                 'constraints' => [
                     new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/jpg'],
-                        'mimeTypesMessage' => 'Veuillez uploader une image valide (JPEG, PNG)',
+                        'maxSize' => '5M',
+                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
                     ])
                 ],
-                'attr' => ['class' => 'form-control']
             ])
             ->add('commande', EntityType::class, [
                 'class' => Commande::class,

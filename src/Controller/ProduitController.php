@@ -29,6 +29,22 @@ final class ProduitController extends AbstractController{
             'montantTotal' => $montantTotal,
         ]);
     }
+    #[Route('/produitAdmin',name: 'app_produitAdmin', methods: ['GET'])]
+    public function produitAdmin(ProduitRepository $produitRepository): Response
+    {
+        return $this->render('produit/produitAdmin.html.twig', [
+            'produits' => $produitRepository->findAll(),
+        ]);
+         // Calcul du montant total des produits
+         $montantTotal = array_reduce($produits, function ($total, $produit) {
+            return $total + $produit->getPrix();
+        }, 0);
+
+        return $this->render('produit/produitAdmin.html.twig', [
+            'produits' => $produits,
+            'montantTotal' => $montantTotal,
+        ]);
+    }
 
     #[Route('/new', name: 'app_produit_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -41,7 +57,7 @@ final class ProduitController extends AbstractController{
             $entityManager->persist($produit);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_produitAdmin', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('produit/new.html.twig', [

@@ -1,5 +1,5 @@
 <html>
-    <head>
+<head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
@@ -465,21 +465,90 @@
 
             </div>
             <!-- End of Main Content -->
-    <div class="container mt-5">
-        <div class="card shadow-lg">
-            <div class="card-header bg-warning text-white">
-                <h3 class="mb-0">Modifier le Produit</h3>
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eafaf1;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: #ffcc00;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .product-info {
+            margin-bottom: 10px;
+        }
+
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .image-preview img {
+            max-width: 100px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            padding: 5px;
+        }
+    </style>
+
+    {% for produit in produits %}
+        <div class="card">
+        
+            <div class="card-header">{{ produit.nom }}</div>
+            <div class="image-preview">
+                {% if produit.image %}
+                    <img src="{{ asset('uploads/' ~ produit.image) }}" alt="Image du produit">
+                {% else %}
+                    <p>Aucune image disponible</p>
+                {% endif %}
             </div>
-            <div class="card-body">
-                {{ include('produit/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+            <div class="product-info">
+                <strong>Prix :</strong> {{ produit.prix }} TND
             </div>
-            <div class="card-footer d-flex justify-content-between">
-                <a href="{{ path('app_produitAdmin') }}" class="btn btn-secondary">Retour à la liste</a>
-                {{ include('produit/_delete_form.html.twig') }}
+
+            <div class="product-info">
+                <strong>Type :</strong> {{ produit.type }}
             </div>
+
+            <div class="product-info">
+                <strong>Description :</strong> {{ produit.description }}
+            </div>
+
+            <!-- Boutons Ajouter, Modifier, Supprimer -->
+        <div class="btn-group">
+            <a href="{{ path('app_produit_new') }}" class="btn btn-success">Ajouter</a>
+            <a href="{{ path('app_produit_edit', { 'id': produit.id }) }}" class="btn btn-warning">Modifier</a>
+            <a href="{{ path('app_produit_delete', { 'id': produit.id }) }}" class="btn btn-danger" 
+               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">
+                Supprimer
+            </a>
         </div>
-    </div>
-<!-- Footer -->
+        </div>
+    {% endfor %}
+    
+            <!-- Footer -->
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
@@ -524,7 +593,6 @@
 </body>
 {% endblock %}
     </body>
+
+
 </html>
-
-
-

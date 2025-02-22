@@ -16,12 +16,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommandeController extends AbstractController
 {
     #[Route( name: 'app_commande_index', methods: ['GET'])]
-public function index(CommandeRepository $commandeRepository): Response
-{
-    return $this->render('commande/index.html.twig', [
-        'commandes' => $commandeRepository->findAll(),
-    ]);
-}
+    public function index(CommandeRepository $commandeRepository): Response
+    {
+        $user = $this->getUser(); // Récupérer l'utilisateur connecté
+        if (!$user) {
+            throw $this->createNotFoundException("Aucun utilisateur connecté.");
+        }
+    
+        // Récupérer uniquement les commandes de cet utilisateur
+        $commandes = $commandeRepository->findBy(['user' => $user]);
+    
+        return $this->render('commande/index.html.twig', [
+            'commandes' => $commandes,
+        ]);
+    }
+    
+
 #[Route('/listeAdmin', name: 'app_listeAdmin', methods: ['GET'])]
 public function listeAdmin(CommandeRepository $commandeRepository): Response
 {
@@ -33,7 +43,13 @@ public function listeAdmin(CommandeRepository $commandeRepository): Response
 #[Route('/new/{idProduit}', name: 'app_commande_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager, ?int $idProduit = null): Response
 {
+    $user = $this->getUser(); // Récupérer l'utilisateur connecté
+    if (!$user) {
+        throw $this->createAccessDeniedException("Vous devez être connecté pour passer une commande.");
+    }
+
     $commande = new Commande();
+    $commande->setUser($user); // Correction ici
 
     // Vérifier si un ID de produit est passé et récupérer le produit
     if ($idProduit) {
@@ -61,6 +77,8 @@ public function new(Request $request, EntityManagerInterface $entityManager, ?in
     ]);
 }
 
+
+
     #[Route('/{id}', name: 'app_commande_show', methods: ['GET'])]
 public function show(CommandeRepository $commandeRepository, string $id): Response
 {
@@ -87,7 +105,7 @@ public function show(CommandeRepository $commandeRepository, string $id): Respon
             $entityManager->flush();
             $this->addFlash('success', 'Commande mise à jour avec succès.');
 
-            return $this->redirectToRoute('commande_index');
+            return $this->redirectToRoute('app_commande_index');
         }
 
         return $this->render('commande/edit.html.twig', [
@@ -104,6 +122,6 @@ public function show(CommandeRepository $commandeRepository, string $id): Respon
             $this->addFlash('success', 'Commande supprimée avec succès.');
         }
 
-        return $this->redirectToRoute('commande_index');
+        return $this->redirectToRoute('app_commande_index');
     }
 }

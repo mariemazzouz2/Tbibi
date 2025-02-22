@@ -117,7 +117,7 @@ public function setMontantTotal(float $montantTotal): self
         return $this->user;
     }
 
-    public function setUser(?Utilisateur $user): static
+    public function setUser(?Utilisateur $user): self
     {
         $this->user = $user;
         return $this;
