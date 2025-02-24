@@ -127,6 +127,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'medecin')]
     private Collection $votes;
 
+    /**
+     * @var Collection<int, Notii>
+     */
+    #[ORM\OneToMany(targetEntity: Notii::class, mappedBy: 'touser')]
+    private Collection $notiis;
+
+
+
+
     public function __construct()
     {
         $this->evenements = new ArrayCollection();
@@ -136,6 +145,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->questions = new ArrayCollection();
         $this->reponses = new ArrayCollection();
         $this->votes = new ArrayCollection();
+        $this->notiis = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -462,4 +472,35 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Notii>
+     */
+    public function getNotiis(): Collection
+    {
+        return $this->notiis;
+    }
+
+    public function addNotii(Notii $notii): static
+    {
+        if (!$this->notiis->contains($notii)) {
+            $this->notiis->add($notii);
+            $notii->setTouser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotii(Notii $notii): static
+    {
+        if ($this->notiis->removeElement($notii)) {
+            // set the owning side to null (unless already changed)
+            if ($notii->getTouser() === $this) {
+                $notii->setTouser(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

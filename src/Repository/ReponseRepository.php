@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Reponse;
+use App\Entity\Question;
+
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +42,17 @@ class ReponseRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByMostVoted(Question $question): array
+{
+    return $this->createQueryBuilder('r')
+        ->leftJoin('r.votes', 'v')
+        ->select('r', 'COUNT(v.id) AS HIDDEN vote_count')
+        ->where('r.question = :question')
+        ->groupBy('r.id')
+        ->orderBy('vote_count', 'DESC') // Trier par votes décroissants
+        ->setParameter('question', $question)
+        ->getQuery()
+        ->getResult();
+}
 }

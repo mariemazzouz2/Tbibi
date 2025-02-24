@@ -6,6 +6,7 @@
 
 {% block body %}
 <br>
+  
 
 <div class="container mt-4" style="max-width: 900px;">
     <!-- Barre de recherche -->
@@ -14,6 +15,9 @@
         <a href="{{ path('app_question_add') }}" class="btn" style="border-radius: 25px; color: white; margin-left: 10px; background-color: #007bff; border: none;">Poser une question</a>
     </div>
 
+<script>
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="MG8cdIfs9DYU4go-olbLl";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+</script>
     <!-- Liste des questions -->
     <div id="questions-list" class="list-group shadow-lg rounded" style="border-radius: 10px; height: 400px; overflow-y: scroll; background-color: #f8f9fa;">
         {% for question in questions %}
@@ -28,7 +32,7 @@
                         <div class="mt-2 p-2 border-top" style="font-size: 0.9rem; color: #495057;">
                             <strong style="color: #007bff;">Réponses :</strong>
                             <ul class="list-unstyled">
-                                {% for reponse in question.reponses %}
+                                {% for reponse in sortedReponses[question.id] %}
                                     <li class="text-muted" style="margin: 5px 0;">{{ reponse.contenu }}</li>
                                 {% endfor %}
                             </ul>
@@ -247,6 +251,9 @@
                 .catch(error => console.log('Erreur:', error));
         }
     });
+
+
+    
 </script>
 
 {% endblock %}

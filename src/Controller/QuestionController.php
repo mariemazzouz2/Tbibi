@@ -9,6 +9,11 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Repository\QuestionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Question;
+use App\Entity\Notii;
+use App\Repository\NotiiRepository;
+use App\Service\MailService;
+use App\Repository\ReponseRepository;
+
 use App\Form\QuestionType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -20,15 +25,30 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 final class QuestionController extends AbstractController
 {
     #[Route('/questions', name: 'app_forum')]
-    public function list(QuestionRepository $questionRepository): Response
-    {
-        $user = $this->getUser();  // Utilisateur connecté
+    public function list(
+        QuestionRepository $questionRepository, 
+        ReponseRepository $reponseRepository, 
+        NotiiRepository $notiiRepository, 
+        MailService $mailService
+    ): Response {
+        $user = $this->getUser();
         $questions = $questionRepository->findBy(['patient' => $user->getId()]);
-
+        $notifications = $notiiRepository->findBy(['touser' => $user]);
+    
+        // Créer un tableau pour stocker les réponses triées
+        $sortedReponses = [];
+        foreach ($questions as $question) {
+            $sortedReponses[$question->getId()] = $reponseRepository->findByMostVoted($question);
+        }
+    
         return $this->render('question/list.html.twig', [
             'questions' => $questions,
+            'notifications' => $notifications,
+            'sortedReponses' => $sortedReponses // Passer les réponses triées au template
         ]);
     }
+    
+    
 
     #[Route('/admin/questions', name: 'app_forum_admin')]
     public function listadmin(QuestionRepository $questionRepository): Response
@@ -143,35 +163,63 @@ public function edit(Question $question, Request $request, EntityManagerInterfac
     ]);
 }
 
+#[Route('/question/{id}', name: 'question_show', methods: ['GET', 'POST'])]
+public function showQuestion(
+    Question $question, 
+    Request $request, 
+    EntityManagerInterface $entityManager, 
+    MailService $mailService // Injection du service MailService
+): Response 
+{
+    $reponse = new Reponse();
+    $form = $this->createForm(ReponseType::class, $reponse);
+    $form->handleRequest($request);
 
-    #[Route('/question/{id}', name: 'question_show', methods: ['GET', 'POST'])]
-    public function showQuestion(Question $question, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $reponse = new Reponse();
-        $form = $this->createForm(ReponseType::class, $reponse);
-        $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+        $reponse->setDateReponse(new \DateTimeImmutable());
+        $reponse->setQuestion($question);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $reponse->setDateReponse(new \DateTimeImmutable());
-            $reponse->setQuestion($question);
-
-            $user = $this->getUser();  // Utilisateur connecté (médecin)
-            if ($user) {
-                $reponse->setMedecin($user);
-            }
-
-            $entityManager->persist($reponse);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('question_show', ['id' => $question->getId()]);
+        $user = $this->getUser(); // Médecin connecté
+        if ($user) {
+            $reponse->setMedecin($user);
         }
 
-        return $this->render('reponse/reponse.html.twig', [
-            'question' => $question,
-            'reponses' => $question->getReponses(),
-            'form' => $form->createView(),
-        ]);
+        $entityManager->persist($reponse);
+        $entityManager->flush();
+
+        // 📧 Envoi d'email au patient
+        $patient = $question->getPatient();
+        if ($patient) {
+            try {
+                $mailService->sendNotificationEmail(
+                    $patient->getEmail(),
+                    "Nouvelle réponse à votre question",
+                    'emails/notification.html.twig',
+                    [
+                        'patient' => $patient,
+                        'question' => $question,
+                        'reponse' => $reponse
+                    ]
+                );
+
+                $this->addFlash('success', 'Votre réponse a été ajoutée et un email de notification a été envoyé au patient.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'La réponse a été ajoutée, mais l\'email n\'a pas pu être envoyé.');
+            }
+        }
+
+        return $this->redirectToRoute('question_show', ['id' => $question->getId()]);
     }
+
+    return $this->render('reponse/reponse.html.twig', [
+        'question' => $question,
+        'reponses' => $question->getReponses(),
+        'form' => $form->createView(),
+    ]);
+}
+
+
+
 
     #[Route('/question/delete/{id}', name: 'app_question_delete')]
     public function delete(Question $question, EntityManagerInterface $entityManager): Response
