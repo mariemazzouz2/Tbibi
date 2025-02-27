@@ -21,52 +21,44 @@ class DashboardController extends AbstractController
     #[Route('/api/dashboard/stats', name: 'app_dashboard_stats')]
     public function getStats(EntityManagerInterface $entityManager): JsonResponse
     {
-        // Statistiques des événements
-        $totalEvenements = $entityManager->getRepository(Evenement::class)->count([]);
-        
-        // Total des participations (participations directes + demandes acceptées)
         $conn = $entityManager->getConnection();
         
-        // Compter les participations directes (table participe)
-        $sqlParticipations = '
-            SELECT COUNT(*) as total 
-            FROM participe
-        ';
-        $participationsDirectes = (int)$conn->fetchOne($sqlParticipations);
+        // Total des événements
+        $totalEvenements = $entityManager->getRepository(Evenement::class)->count([]);
         
-        // Compter les demandes acceptées
-        $demandesAcceptees = $entityManager->getRepository(DemandeParticipation::class)
-            ->count(['statut' => 'acceptee']);
-            
-        $totalParticipations = $participationsDirectes + $demandesAcceptees;
+        // Total des participations acceptées
+        $sql = '
+            SELECT COUNT(*) as total 
+            FROM demande_participation 
+            WHERE statut = :statut
+        ';
+        $totalParticipations = (int)$conn->executeQuery($sql, ['statut' => 'acceptee'])->fetchOne();
         
         // Moyenne de participants par événement
         $moyenneParticipants = $totalEvenements > 0 ? round($totalParticipations / $totalEvenements, 1) : 0;
         
         // Top 5 des événements les plus populaires
         $sql = '
-            SELECT e.titre, 
-                   (SELECT COUNT(*) FROM participe p WHERE p.evenement_id = e.id) +
-                   COALESCE((SELECT COUNT(*) FROM demande_participation dp WHERE dp.evenement_id = e.id AND dp.statut = \'acceptee\'), 0)
-                   as total_participants
+            SELECT e.titre, COUNT(dp.id) as total_participants
             FROM evenement e
+            LEFT JOIN demande_participation dp ON e.id = dp.evenement_id
+            WHERE dp.statut = :statut
             GROUP BY e.id, e.titre
             ORDER BY total_participants DESC
             LIMIT 5
         ';
-        $topEvenements = $conn->fetchAllAssociative($sql);
+        $topEvenements = $conn->executeQuery($sql, ['statut' => 'acceptee'])->fetchAllAssociative();
 
         // Données pour le graphique d'évolution des participations
         $sql = '
-            SELECT MONTH(e.date_debut) as mois,
-                   (SELECT COUNT(*) FROM participe p WHERE p.evenement_id = e.id) +
-                   COALESCE((SELECT COUNT(*) FROM demande_participation dp WHERE dp.evenement_id = e.id AND dp.statut = \'acceptee\'), 0)
-                   as participations
+            SELECT MONTH(e.date_debut) as mois, COUNT(dp.id) as participations
             FROM evenement e
+            LEFT JOIN demande_participation dp ON e.id = dp.evenement_id
+            WHERE dp.statut = :statut
             GROUP BY MONTH(e.date_debut)
             ORDER BY mois ASC
         ';
-        $evolutionParticipations = $conn->fetchAllAssociative($sql);
+        $evolutionParticipations = $conn->executeQuery($sql, ['statut' => 'acceptee'])->fetchAllAssociative();
 
         // Formater les données pour le graphique
         $labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -79,10 +71,10 @@ class DashboardController extends AbstractController
 
         // Debug des données
         $debug = [
-            'participationsDirectes' => $participationsDirectes,
-            'demandesAcceptees' => $demandesAcceptees,
+            'totalParticipations' => $totalParticipations,
             'evolutionParticipations' => $evolutionParticipations,
-            'topEvenements' => $topEvenements
+            'topEvenements' => $topEvenements,
+            'sql' => $sql
         ];
         
         return new JsonResponse([
@@ -97,7 +89,7 @@ class DashboardController extends AbstractController
             }, $topEvenements),
             'chartLabels' => $labels,
             'chartData' => array_values($data),
-            'debug' => $debug // Ajout des données de debug
+            'debug' => $debug
         ]);
     }
 }
