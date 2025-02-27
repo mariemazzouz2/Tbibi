@@ -1,0 +1,227 @@
+{% extends 'back.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .chart-area {
+            height: 400px;
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Total Événements Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Événements</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalEvenements">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Participations Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Participations</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalParticipations">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Moyenne Participants Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Moyenne Participants/Événement</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="moyenneParticipants">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Graphique d'évolution -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Évolution des Participations</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="participationsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 5 Événements -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top 5 des Événements les Plus Populaires</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Événement</th>
+                                    <th>Participants</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topEvenements">
+                                <tr>
+                                    <td colspan="2" class="text-center">Chargement...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+    let myLineChart = null;
+
+    function updateStats() {
+        fetch('/api/dashboard/stats')
+            .then(response => response.json())
+            .then(data => {
+                // Mettre à jour les cartes
+                document.getElementById('totalEvenements').textContent = data.totalEvenements;
+                document.getElementById('totalParticipations').textContent = data.totalParticipations;
+                document.getElementById('moyenneParticipants').textContent = data.moyenneParticipants;
+
+                // Mettre à jour le tableau Top 5
+                const tbody = document.getElementById('topEvenements');
+                tbody.innerHTML = '';
+                if (data.topEvenements.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="2" class="text-center">Aucun événement trouvé</td></tr>';
+                } else {
+                    data.topEvenements.forEach(event => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${event.titre}</td>
+                                <td>${event.participations}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                // Mettre à jour le graphique
+                if (myLineChart) {
+                    myLineChart.destroy();
+                }
+                const ctx = document.getElementById('participationsChart').getContext('2d');
+                myLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.chartLabels,
+                        datasets: [{
+                            label: 'Nombre de participants',
+                            data: data.chartData,
+                            fill: true,
+                            borderColor: 'rgb(78, 115, 223)',
+                            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointBackgroundColor: 'rgb(78, 115, 223)',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: 'rgb(78, 115, 223)',
+                            pointHoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgb(255, 255, 255)',
+                                titleColor: '#6e707e',
+                                titleFont: {
+                                    size: 14
+                                },
+                                bodyColor: '#858796',
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                padding: 15,
+                                displayColors: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    maxTicksLimit: 7
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgb(234, 236, 244)',
+                                    borderDash: [2],
+                                    drawBorder: false,
+                                    zeroLineColor: 'rgb(234, 236, 244)'
+                                },
+                                ticks: {
+                                    maxTicksLimit: 5,
+                                    padding: 10
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+
+    // Mettre à jour les stats toutes les 5 secondes
+    document.addEventListener('DOMContentLoaded', function() {
+        updateStats(); // Première mise à jour
+        setInterval(updateStats, 5000); // Mise à jour toutes les 5 secondes
+    });
+    </script>
+{% endblock %}

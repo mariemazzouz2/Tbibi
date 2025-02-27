@@ -3,11 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\EvenementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Enum\Statut;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\CategorieEv;
+use App\Entity\DemandeParticipation;
+use App\Entity\Utilisateur;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
@@ -58,6 +62,12 @@ class Evenement
     )]
     private ?string $lieu = null;
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $latitude = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $longitude = null;
+
     #[ORM\Column(type: 'string', enumType: Statut::class)]
     #[Assert\NotNull(message: "Le statut est obligatoire.")]
     #[Assert\Choice(choices: [Statut::EN_ATTENTE, Statut::CONFIRME, Statut::ANNULE, Statut::TERMINE], message: "Le statut doit être valide.")]
@@ -74,6 +84,22 @@ class Evenement
         maxMessage: "Le chemin de l'image ne peut pas dépasser 255 caractères."
     )]
     private ?string $image = null;
+
+    /**
+     * @var Collection<int, Utilisateur>
+     */
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'evenements')]
+    #[ORM\JoinTable(name: 'participe')]
+    private Collection $participation;
+
+    #[ORM\OneToMany(mappedBy: 'evenement', targetEntity: DemandeParticipation::class)]
+    private Collection $demandesParticipation;
+
+    public function __construct()
+    {
+        $this->participation = new ArrayCollection();
+        $this->demandesParticipation = new ArrayCollection();
+    }
     
     public function getId(): ?int
     {
@@ -135,6 +161,28 @@ class Evenement
         return $this;
     }
 
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
     public function getStatut(): Statut
     {
         return $this->statut;
@@ -165,6 +213,60 @@ class Evenement
     public function setImage(?string $image): static
     {
         $this->image = $image;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Utilisateur>
+     */
+    public function getParticipation(): Collection
+    {
+        return $this->participation;
+    }
+
+    public function addParticipation(Utilisateur $user): self
+    {
+        if (!$this->participation->contains($user)) {
+            $this->participation->add($user);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipation(Utilisateur $user): self
+    {
+        $this->participation->removeElement($user);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DemandeParticipation>
+     */
+    public function getDemandesParticipation(): Collection
+    {
+        return $this->demandesParticipation;
+    }
+
+    public function addDemandesParticipation(DemandeParticipation $demandesParticipation): self
+    {
+        if (!$this->demandesParticipation->contains($demandesParticipation)) {
+            $this->demandesParticipation->add($demandesParticipation);
+            $demandesParticipation->setEvenement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDemandesParticipation(DemandeParticipation $demandesParticipation): self
+    {
+        if ($this->demandesParticipation->removeElement($demandesParticipation)) {
+            // set the owning side to null (unless already changed)
+            if ($demandesParticipation->getEvenement() === $this) {
+                $demandesParticipation->setEvenement(null);
+            }
+        }
+
         return $this;
     }
 }

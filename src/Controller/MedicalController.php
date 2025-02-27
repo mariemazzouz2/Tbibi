@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Consultation;
 use App\Entity\Ordonnance;
+use App\Entity\Evenement;
 use App\Form\ConsultationType;
 use App\Form\OrdonnanceType;
 //use App\Service\EmailService;
@@ -19,13 +20,15 @@ use App\Repository\UtilisateurRepository;
 use App\Enum\TypeConsultation;
 use App\Repository\ConsultationRepository;
 use App\Repository\OrdonnanceRepository;
+use App\Repository\EvenementRepository;
 
 class MedicalController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
       //  private EmailService $emailService,
-        private UtilisateurRepository $utilisateurRepository
+        private UtilisateurRepository $utilisateurRepository,
+        private EvenementRepository $evenementRepository
     ) {}
 
     #[Route('/appointment/request', name: 'app_appointment_request')]
@@ -179,64 +182,54 @@ class MedicalController extends AbstractController
 
     #[Route(path: '/doctor/consultations', name: 'app_medical_dashboard')]
     #[IsGranted('ROLE_MEDECIN')]
-    public function dashboard(Request $request, ConsultationRepository $consultationRepository, OrdonnanceRepository $ordonnanceRepository): Response
+    public function dashboard(Request $request, ConsultationRepository $consultationRepository, EntityManagerInterface $entityManager): Response
     {
-        $filter = $request->query->get('filter', 'all');
+        // Get event statistics
+        $evenements = $this->evenementRepository->findAll();
         
-        // TODO: Replace with authenticated user after integration
-         $doctor = $this->getUser();
-        //$doctor = $this->utilisateurRepository->find(2);
-        if (!$doctor) {
-            throw $this->createNotFoundException('Doctor  not found');
+        // Calculate event statistics
+        $totalEvenements = count($evenements);
+        $statsParticipation = [];
+        $totalParticipations = 0;
+        
+        foreach ($evenements as $evenement) {
+            $nbParticipants = $evenement->getParticipation()->count();
+            $totalParticipations += $nbParticipants;
+            $statsParticipation[] = [
+                'evenement' => $evenement->getTitre(),
+                'participants' => $nbParticipants
+            ];
         }
+        
+        // Sort events by number of participants (highest to lowest)
+        usort($statsParticipation, function($a, $b) {
+            return $b['participants'] - $a['participants'];
+        });
+        
+        // Calculate average participants per event
+        $moyenneParticipations = $totalEvenements > 0 ? round($totalParticipations / $totalEvenements, 2) : 0;
+        
+        // Get top 5 most popular events
+        $topEvenements = array_slice($statsParticipation, 0, 5);
 
-        $queryBuilder = $consultationRepository->createQueryBuilder('c')
-            ->where('c.medecin = :doctor')
-            ->setParameter('doctor', $doctor);
-
-        // Apply filters
-        switch ($filter) {
-            case 'pending':
-                $queryBuilder->andWhere('c.status = :status')
-                    ->setParameter('status', 'pending');
-                break;
-            case 'today':
-                $today = new \DateTime('today');
-                $tomorrow = new \DateTime('tomorrow');
-                $queryBuilder->andWhere('c.dateC >= :today AND c.dateC < :tomorrow')
-                    ->setParameter('today', $today)
-                    ->setParameter('tomorrow', $tomorrow);
-                break;
-            case 'week':
-                $startOfWeek = new \DateTime('monday this week');
-                $endOfWeek = new \DateTime('sunday this week 23:59:59');
-                $queryBuilder->andWhere('c.dateC BETWEEN :start AND :end')
-                    ->setParameter('start', $startOfWeek)
-                    ->setParameter('end', $endOfWeek);
-                break;
-            case 'month':
-                $startOfMonth = new \DateTime('first day of this month midnight');
-                $endOfMonth = new \DateTime('last day of this month 23:59:59');
-                $queryBuilder->andWhere('c.dateC BETWEEN :start AND :end')
-                    ->setParameter('start', $startOfMonth)
-                    ->setParameter('end', $endOfMonth);
-                break;
-            case 'upcoming':
-                $now = new \DateTime();
-                $queryBuilder->andWhere('c.dateC > :now')
-                    ->setParameter('now', $now)
-                    ->andWhere('c.status = :status')
-                    ->setParameter('status', 'confirmed');
-                break;
-        }
-
-        $consultations = $queryBuilder->orderBy('c.dateC', 'ASC')->getQuery()->getResult();
-        $prescriptions = $ordonnanceRepository->findBy(['consultation' => $consultations]);
+        // Get consultations based on filter
+        $filter = $request->query->get('filter', '');
+        $consultations = match ($filter) {
+            'pending' => $consultationRepository->findBy(['status' => Consultation::STATUS_PENDING]),
+            'today' => $consultationRepository->findTodayConsultations(),
+            'week' => $consultationRepository->findThisWeekConsultations(),
+            'month' => $consultationRepository->findThisMonthConsultations(),
+            default => $consultationRepository->findUpcomingConsultations(),
+        };
 
         return $this->render('medical/dashboard.html.twig', [
             'consultations' => $consultations,
-            'prescriptions' => $prescriptions,
-            'currentFilter' => $filter
+            'statistiques' => [
+                'totalEvenements' => $totalEvenements,
+                'totalParticipations' => $totalParticipations,
+                'moyenneParticipations' => $moyenneParticipations,
+                'topEvenements' => $topEvenements
+            ]
         ]);
     }
 

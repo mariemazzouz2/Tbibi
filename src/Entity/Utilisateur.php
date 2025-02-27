@@ -103,7 +103,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', enumType: Specialite::class, nullable: true)]
     private ?Specialite $specialite = null;
 
-    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'participants')]
+    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'participation')]
     private Collection $evenements;
 
     #[ORM\OneToMany(mappedBy: 'medecin', targetEntity: Consultation::class)]
@@ -127,6 +127,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'medecin')]
     private Collection $votes;
 
+    /**
+     * @var Collection<int, Evenement>
+     */
+    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'participation')]
+    private Collection $no;
+
     public function __construct()
     {
         $this->evenements = new ArrayCollection();
@@ -136,6 +142,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->questions = new ArrayCollection();
         $this->reponses = new ArrayCollection();
         $this->votes = new ArrayCollection();
+        $this->no = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -311,25 +318,28 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Evenement>
+     */
     public function getEvenements(): Collection
     {
         return $this->evenements;
     }
 
-    public function addEvenement(Evenement $evenement): static
+    public function addEvenement(Evenement $evenement): self
     {
         if (!$this->evenements->contains($evenement)) {
             $this->evenements->add($evenement);
-            $evenement->addParticipant($this);
+            $evenement->addParticipation($this);
         }
 
         return $this;
     }
 
-    public function removeEvenement(Evenement $evenement): static
+    public function removeEvenement(Evenement $evenement): self
     {
         if ($this->evenements->removeElement($evenement)) {
-            $evenement->removeParticipant($this);
+            $evenement->removeParticipation($this);
         }
 
         return $this;
@@ -459,6 +469,33 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDiplome(?string $diplome): static
     {
         $this->diplome = $diplome;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Evenement>
+     */
+    public function getNo(): Collection
+    {
+        return $this->no;
+    }
+
+    public function addNo(Evenement $no): static
+    {
+        if (!$this->no->contains($no)) {
+            $this->no->add($no);
+            $no->addParticipation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNo(Evenement $no): static
+    {
+        if ($this->no->removeElement($no)) {
+            $no->removeParticipation($this);
+        }
 
         return $this;
     }

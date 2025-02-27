@@ -18,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class Evenement1Type extends AbstractType
 {
@@ -53,6 +54,22 @@ class Evenement1Type extends AbstractType
                 'constraints' => [
                     new NotBlank(['message' => 'Le lieu est obligatoire.']),
                 ],
+            ])
+            ->add('latitude', NumberType::class, [
+                'required' => false,
+                'label' => 'Latitude',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: 48.8566'
+                ]
+            ])
+            ->add('longitude', NumberType::class, [
+                'required' => false,
+                'label' => 'Longitude',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: 2.3522'
+                ]
             ])
             ->add('statut', ChoiceType::class, [
                 'choices' => [
