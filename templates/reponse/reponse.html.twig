@@ -8,7 +8,7 @@
         <!-- Titre de la question -->
         <div class="mb-4">
             <h1 class="display-4 text-center mb-3" style="font-size: 24px; color: #0056b3;">{{ question.titre }}</h1>
-            <p class="lead text-center text-muted" style="font-size: 18px;">{{ question.contenu }}</p>
+            
         </div>
 
         <h3 class="mt-5" style="color: #0056b3;">Ajouter une réponse :</h3>
@@ -35,6 +35,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="mb-2" style="font-size: 1.1rem;">{{ reponse.contenu }}</p>
+                                
                             </div>
                             <div>
                                 <!-- Bouton de suppression -->
@@ -65,7 +66,6 @@
         {% else %}
             <p class="text-muted text-center">Aucune réponse pour le moment.</p>
         {% endif %}
-       
-    
+   
     </div>
 {% endblock %}

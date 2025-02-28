@@ -29,15 +29,25 @@
 
                     <!-- Affichage des réponses -->
                     {% if question.reponses is not empty %}
-                        <div class="mt-2 p-2 border-top" style="font-size: 0.9rem; color: #495057;">
-                            <strong style="color: #007bff;">Réponses :</strong>
-                            <ul class="list-unstyled">
-                                {% for reponse in sortedReponses[question.id] %}
-                                    <li class="text-muted" style="margin: 5px 0;">{{ reponse.contenu }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
+    <div class="mt-2 p-2 border-top" style="font-size: 0.9rem; color: #495057;">
+        <strong style="color: #007bff; font-size: 1.1rem; font-weight: bold;">Réponses :</strong>
+        <ul class="list-unstyled mt-3">
+            {% for reponse in sortedReponses[question.id] %}
+                <li class="response-item" style="margin: 10px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <p style="font-size: 1rem; color: #333;">{{ reponse.contenu }}</p>
+                    <div class="d-flex justify-content-between align-items-center" style="font-size: 0.8rem; color: #6c757d;">
+                        <span><strong>Posté par :</strong> {{ reponse.medecin.nom }}</span>
+                        <span style="font-weight: bold; color: #007bff;">
+                            {{ reponse.votes|length }} Votes
+                        </span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+
                 </div>
 
                 <!-- Bouton de suppression -->

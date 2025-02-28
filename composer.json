@@ -16,6 +16,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.0",
+        "stichoza/google-translate-php": "^5.2",
         "symfony/asset": "6.4.*",
         "symfony/asset-mapper": "6.4.*",
         "symfony/console": "6.4.*",
