@@ -1,0 +1,55 @@
+{% block title %}Authentification Faciale{% endblock %}
+
+{% block body %}
+    <h2>Authentification par Reconnaissance Faciale</h2>
+    <video id="video" width="320" height="240" autoplay></video>
+    <button id="capture">Prendre une photo</button>
+    <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
+    <form id="uploadForm" style="display: none;">
+        <input type="file" id="imageInput" accept="image/*">
+        <button type="submit">Envoyer</button>
+    </form>
+    <p id="result"></p>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const resultText = document.getElementById('result');
+
+        // Accéder à la webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(error => {
+                console.error('Erreur accès caméra :', error);
+            });
+
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('image', blob, 'capture.jpg');
+
+                fetch('/face-auth/login', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resultText.innerHTML = `<span style="color: green;">Utilisateur reconnu : ${data.user}</span>`;
+                    } else {
+                        resultText.innerHTML = `<span style="color: red;">${data.message}</span>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l’envoi de la requête:', error);
+                });
+            }, 'image/jpeg');
+        });
+    </script>
+{% endblock %}

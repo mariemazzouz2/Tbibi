@@ -15,6 +15,8 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Karser\Recaptcha3Bundle\Form\Recaptcha3Type;
+use Karser\Recaptcha3Bundle\Validator\Constraints\Recaptcha3;
 
 class RegistrationFormType extends AbstractType
 {
@@ -76,6 +78,10 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('poids', NumberType::class, [
                 'required' => false,
+            ])
+            ->add('captcha', Recaptcha3Type::class, [
+                'constraints' => new Recaptcha3(),
+                'action_name' => 'tbibi',
             ]);
     }
 

@@ -127,6 +127,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'medecin')]
     private Collection $votes;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+private ?string $faceEncoding = null;
+
     public function __construct()
     {
         $this->evenements = new ArrayCollection();
@@ -462,4 +465,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+    public function getFaceEncoding(): ?string
+{
+    return $this->faceEncoding;
+}
+
+public function setFaceEncoding(?string $faceEncoding): static
+{
+    $this->faceEncoding = $faceEncoding;
+    return $this;
+}
 }

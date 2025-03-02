@@ -47,19 +47,24 @@ public function register(Request $request, UserPasswordHasherInterface $userPass
             $user->setStatus(1);
         }
         // Gestion de l'image de profil
-        $imageFile = $form->get('image')->getData();
-        if ($imageFile) {
-            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+        // Gérer l'image de profil
+$imageFile = $form->get('image')->getData();
+if ($imageFile) {
+    $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+    $safeFilename = $slugger->slug($originalFilename);
+    $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
-            try {
-                $imageFile->move($this->getParameter('images_directory'), $newFilename);
-                $user->setImage($newFilename);
-            } catch (FileException $e) {
-                // Gérer l'exception si quelque chose se passe mal lors du téléchargement
-            }
-        }
+    try {
+        // Déplacer l'image dans le répertoire configuré
+        $imageFile->move($this->getParameter('images_directory'), $newFilename);
+
+        // Enregistrer le chemin absolu de l'image dans la base de données
+        $absolutePath = $this->getParameter('images_directory') . DIRECTORY_SEPARATOR . $newFilename;
+        $user->setImage($absolutePath);  // Enregistrez le chemin absolu dans l'attribut 'image' de l'utilisateur
+    } catch (FileException $e) {
+        // Gérer l'exception si quelque chose se passe mal lors du téléchargement
+    }
+}
         $entityManager->persist($user);
         $entityManager->flush();
 
