@@ -1,0 +1,120 @@
+{% block body %}
+<link rel="stylesheet" href="{{asset('css/style2.css')}}" />
+<section class="container">
+    <header>Formulaire d'Inscription</header>
+    {{ form_start(registrationForm, {'attr': {'class': 'form', 'novalidate': 'novalidate'}}) }}
+    <div class="column">
+        <div class="input-box">
+            <label>Adresse e-mail</label>
+            {{ form_widget(registrationForm.email, {'attr': {'placeholder': 'Saisissez votre adresse e-mail'}}) }}
+            <div class="error-message">{{ form_errors(registrationForm.email) }}</div>
+        </div>
+        <div class="input-box">
+            <label>Mot de passe</label>
+            {{ form_widget(registrationForm.password, {'attr': {'placeholder': 'Saisissez votre mot de passe'}}) }}
+            <div class="error-message">{{ form_errors(registrationForm.password) }}</div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="input-box">
+            <label>Nom</label>
+            {{ form_widget(registrationForm.nom, {'attr': {'placeholder': 'Saisissez votre nom'}}) }} 
+            <div class="error-message">{{ form_errors(registrationForm.nom) }}</div>
+        </div>
+        <div class="input-box">
+            <label>Prénom</label>
+            {{ form_widget(registrationForm.prenom, {'attr': {'placeholder': 'Saisissez votre prénom'}}) }}
+            <div class="error-message">{{ form_errors(registrationForm.prenom) }}</div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="input-box">
+            <label>Numéro de téléphone</label>
+            {{ form_widget(registrationForm.telephone, {'attr': {'placeholder': 'Saisissez votre numéro de téléphone'}}) }}
+            <div class="error-message">{{ form_errors(registrationForm.telephone) }}</div>
+        </div>
+        <div class="input-box">
+            <label>Date de naissance</label>
+            {{ form_widget(registrationForm.dateNaissance) }}
+            <div class="error-message">{{ form_errors(registrationForm.dateNaissance) }}</div>
+        </div>
+    </div>
+    
+    <label>Sexe</label>
+    <div class="select-box">
+        {{ form_widget(registrationForm.sexe) }}
+        <div class="error-message">{{ form_errors(registrationForm.sexe) }}</div>
+    </div>
+    
+    <div class="input-box address">
+        <label>Adresse</label>
+        {{ form_widget(registrationForm.adresse, {'attr': {'placeholder': 'Saisissez votre adresse'}}) }}
+        <div class="error-message">{{ form_errors(registrationForm.adresse) }}</div>
+    </div>
+     <div class="input-box">
+        <label>Image de profil</label>
+        {{ form_widget(registrationForm.image) }}
+    </div>
+
+    <div id="rolesField" class="gender-box">
+         <label>Rôle</label>
+        {{ form_widget(registrationForm.roles) }}
+    </div>
+    
+    <div id="specialiteField" class="select-box" style="display: none;">
+        {{ form_widget(registrationForm.specialite) }}
+    </div>
+    
+    <div class="form-group-diplome input-box" style="display: none;">
+     <label>Diplôme</label>
+        {{ form_widget(registrationForm.diplome) }}
+    </div>
+    
+    <div id="taillePoidsFields" class="column" style="display: none;">
+        <div class="input-box">
+            <label>Taille</label>
+            {{ form_widget(registrationForm.taille) }}
+        </div>
+        <div class="input-box">
+            <label>Poids</label>
+            {{ form_widget(registrationForm.poids) }}
+        </div>
+    </div>
+    
+    <button type="submit" class="btn">S'inscrire</button>
+    {{ form_end(registrationForm) }}
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let roleFields = document.querySelectorAll("input[name='registration_form[roles]'], select[name='registration_form[roles]']");
+        let specialiteField = document.getElementById("specialiteField");
+        let taillePoidsFields = document.getElementById("taillePoidsFields");
+        let diplomeField = document.querySelector('.form-group-diplome');
+
+        function toggleFields() {
+            let selectedRole = document.querySelector("input[name='registration_form[roles]']:checked") 
+                                || document.querySelector("select[name='registration_form[roles]']");
+            if (!selectedRole) return;
+
+            let roleValue = selectedRole.value;
+            if (roleValue === "ROLE_MEDECIN") {
+                specialiteField.style.display = "block";
+                diplomeField.style.display = "block";
+                taillePoidsFields.style.display = "none";
+            } else if (roleValue === "ROLE_PATIENT") {
+                specialiteField.style.display = "none";
+                diplomeField.style.display = "none";
+                taillePoidsFields.style.display = "block";
+            } else {
+                specialiteField.style.display = "none";
+                diplomeField.style.display = "none";
+                taillePoidsFields.style.display = "none";
+            }
+        }
+        roleFields.forEach(field => field.addEventListener("change", toggleFields));
+        toggleFields();
+    });
+</script>
+{% endblock %}
