@@ -41,11 +41,7 @@ class Reponse
     #[ORM\Column]
     private ?DateTimeImmutable $date_reponse;
 
-    #[ORM\Column(type: 'text')]
-    private ?string $original = null;
     
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $translated = null;
     /**
      * @var Collection<int, Vote>
      */
@@ -114,26 +110,6 @@ class Reponse
     {
         return $this->votes;
     }
-public function getOriginal(): ?string
-{
-    return $this->original;
-}
 
-public function setOriginal(string $original): self
-{
-    $this->original = $original;
-    return $this;
-}
-
-public function getTranslated(): ?string
-{
-    return $this->translated;
-}
-
-public function setTranslated(?string $translated): self
-{
-    $this->translated = $translated;
-    return $this;
-}
     
 }
