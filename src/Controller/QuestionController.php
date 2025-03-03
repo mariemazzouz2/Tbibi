@@ -13,7 +13,6 @@ use App\Entity\Notii;
 use App\Repository\NotiiRepository;
 use App\Service\MailService;
 use App\Repository\ReponseRepository;
-
 use App\Form\QuestionType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -21,6 +20,7 @@ use App\Entity\Utilisateur;
 use App\Entity\Reponse;
 use App\Form\ReponseType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 final class QuestionController extends AbstractController
 {
@@ -236,4 +236,5 @@ public function showQuestion(
         $entityManager->flush();
         return $this->redirectToRoute('app_forum_admin');
     }
+
 }

@@ -26,8 +26,7 @@
                 <div style="flex-grow: 1;">
                     <h5 class="mb-1" style="font-size: 1.5rem; color: #007bff;">{{ question.titre }}</h5>
                     <p class="mb-1" style="font-size: 1rem; color: #6c757d;">{{ question.contenu|slice(0, 100) ~ '...' }}</p>
-
-                    <!-- Affichage des réponses -->
+<!-- Affichage des réponses -->
                     {% if question.reponses is not empty %}
     <div class="mt-2 p-2 border-top" style="font-size: 0.9rem; color: #495057;">
         <strong style="color: #007bff; font-size: 1.1rem; font-weight: bold;">Réponses :</strong>
@@ -35,6 +34,13 @@
             {% for reponse in sortedReponses[question.id] %}
                 <li class="response-item" style="margin: 10px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     <p style="font-size: 1rem; color: #333;">{{ reponse.contenu }}</p>
+                  <span style="cursor: pointer; font-size: 1.5rem;" onclick="playTextToSpeech('{{ reponse.contenu|escape('js') }}')">
+    🎧
+</span>
+<span style="cursor: pointer; font-size: 1.5rem; margin-left: 10px;" onclick="stopTextToSpeech()">
+    ⏹️
+</span>
+
                     <div class="d-flex justify-content-between align-items-center" style="font-size: 0.8rem; color: #6c757d;">
                         <span><strong>Posté par :</strong> {{ reponse.medecin.nom }}</span>
                         <span style="font-weight: bold; color: #007bff;">
@@ -46,6 +52,7 @@
         </ul>
     </div>
 {% endif %}
+       
 
 
                 </div>
@@ -156,17 +163,38 @@
 </div>
 
 <script>
-    // Fonction pour afficher le conseil en cliquant sur un item
-    function showAdvice(conseilId) {
-        let allAdvices = document.querySelectorAll('.advice-box');
-        allAdvices.forEach(advice => {
-            advice.style.display = 'none';
-        });
+function playTextToSpeech(text) {
+        console.log("Texte à lire :", text); // Affiche le texte dans la console
 
-        let conseil = document.getElementById(conseilId);
-        if (conseil) {
-            conseil.style.display = 'block';
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'fr-FR'; // Langue française
+            utterance.rate = 1; // Vitesse de lecture (1 = normal)
+            utterance.pitch = 1; // Hauteur de la voix (1 = normal)
+
+            // Vérifiez les voix disponibles
+            const voices = window.speechSynthesis.getVoices();
+            console.log("Voix disponibles :", voices);
+
+            // Choisir une voix française si disponible
+            const frenchVoice = voices.find(voice => voice.lang === 'fr-FR');
+            if (frenchVoice) {
+                utterance.voice = frenchVoice;
+                console.log("Voix sélectionnée :", frenchVoice.name);
+            } else {
+                console.warn("Aucune voix française trouvée. Utilisation de la voix par défaut.");
+            }
+
+            // Démarrer la lecture
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert('Votre navigateur ne supporte pas la synthèse vocale.');
         }
+    }
+
+    function stopTextToSpeech() {
+        window.speechSynthesis.cancel();
+        console.log("Lecture arrêtée.");
     }
 
     // Fonction pour effectuer la recherche en AJAX
