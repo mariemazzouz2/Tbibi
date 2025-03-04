@@ -7,30 +7,31 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <style>
         .calendar-container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 20px;
+            max-width: 800px; /* Réduire la largeur maximale */
+            margin: 20px auto; /* Réduire la marge */
+            padding: 15px;
             background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         #calendar {
             background: white;
-            padding: 20px;
+            padding: 10px;
+            height: 700px; /* Réduire la hauteur du calendrier */
         }
 
         /* En-tête du calendrier */
         .fc-header-toolbar {
             background: linear-gradient(135deg, #6366f1, #4f46e5);
-            padding: 20px !important;
+            padding: 15px !important;
             margin: 0 !important;
             border-radius: 10px;
-            margin-bottom: 20px !important;
+            margin-bottom: 15px !important;
         }
 
         .fc-toolbar-title {
-            font-size: 1.5em !important;
+            font-size: 1.3em !important;
             font-weight: 700 !important;
             color: white !important;
             text-transform: capitalize;
@@ -40,9 +41,9 @@
         .fc-button {
             background-color: rgba(255,255,255,0.2) !important;
             border: none !important;
-            padding: 8px 16px !important;
-            font-size: 0.9em !important;
-            border-radius: 8px !important;
+            padding: 6px 12px !important;
+            font-size: 0.85em !important;
+            border-radius: 6px !important;
             color: white !important;
             transition: all 0.3s ease !important;
         }
@@ -60,7 +61,7 @@
         /* Cellules des jours */
         .fc-daygrid-day {
             padding: 4px !important;
-            height: 100px !important;
+            height: 80px !important; /* Réduire la hauteur des cellules */
             transition: all 0.3s ease;
         }
 
@@ -69,8 +70,8 @@
         }
 
         .fc-daygrid-day-number {
-            font-size: 1em !important;
-            padding: 4px 8px !important;
+            font-size: 0.9em !important;
+            padding: 4px 6px !important;
             color: #1a1a1a !important;
             font-weight: 500;
         }
@@ -81,13 +82,13 @@
 
         /* En-têtes des jours de la semaine */
         .fc-col-header-cell {
-            padding: 10px !important;
+            padding: 8px !important;
             background-color: #f1f5f9 !important;
             border: none !important;
         }
 
         .fc-col-header-cell-cushion {
-            font-size: 1em !important;
+            font-size: 0.9em !important;
             font-weight: 600 !important;
             color: #1e293b !important;
             text-transform: uppercase;
@@ -96,9 +97,9 @@
 
         /* Style des événements */
         .fc-event {
-            padding: 4px 8px !important;
-            font-size: 0.85em !important;
-            border-radius: 6px !important;
+            padding: 4px 6px !important;
+            font-size: 0.8em !important;
+            border-radius: 4px !important;
             background-color: #f43f5e !important;
             border: none !important;
             color: white !important;
@@ -116,7 +117,7 @@
         /* Style pour les dates avec événements */
         .has-events {
             background-color: #fff1f2 !important;
-            border-radius: 8px;
+            border-radius: 6px;
         }
         
         .has-events .fc-daygrid-day-number {
@@ -127,32 +128,32 @@
         /* Style du modal */
         .modal-content {
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .modal-header {
             background: linear-gradient(135deg, #6366f1, #4f46e5);
-            border-radius: 15px 15px 0 0;
-            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            padding: 15px;
             border: none;
         }
 
         .modal-title {
             color: white !important;
-            font-size: 1.4em;
+            font-size: 1.2em;
             font-weight: 600;
         }
 
         .modal-body {
-            padding: 20px;
+            padding: 15px;
         }
 
         .event-detail-item {
             background: #f8fafc;
-            padding: 20px !important;
-            border-radius: 12px;
-            margin-bottom: 15px !important;
+            padding: 15px !important;
+            border-radius: 8px;
+            margin-bottom: 10px !important;
             border: 1px solid #e2e8f0 !important;
             transition: all 0.3s ease;
         }
@@ -163,39 +164,39 @@
         }
 
         .event-title {
-            font-size: 1.3em !important;
+            font-size: 1.1em !important;
             font-weight: 600;
             color: #1a1a1a !important;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .event-time {
             color: #4b5563 !important;
-            font-size: 1em !important;
+            font-size: 0.9em !important;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .no-events-message {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 15px;
             color: #6b7280;
         }
 
         .no-events-emoji {
-            font-size: 3em;
-            margin-bottom: 15px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
             display: block;
         }
 
         .btn-close {
             background-color: rgba(255,255,255,0.2);
-            padding: 8px;
-            border-radius: 8px;
+            padding: 6px;
+            border-radius: 6px;
         }
 
         .btn-close:hover {
@@ -221,7 +222,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div><br><br><br><br><br><br><br><br>
 {% endblock %}
 
 {% block javascripts %}

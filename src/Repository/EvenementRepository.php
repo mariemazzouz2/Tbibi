@@ -16,6 +16,20 @@ class EvenementRepository extends ServiceEntityRepository
         parent::__construct($registry, Evenement::class);
     }
 
+    // src/Repository/EvenementRepository.php
+
+public function getParticipationStatistics(): array
+{
+    return $this->createQueryBuilder('e')
+        ->select('e.id, e.titre, COUNT(p.id) as nbParticipants')
+        ->leftJoin('e.participation', 'p')
+        ->groupBy('e.id')
+        ->orderBy('nbParticipants', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
+
+
 //    /**
 //     * @return Evenement[] Returns an array of Evenement objects
 //     */

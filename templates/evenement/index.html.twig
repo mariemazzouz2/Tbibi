@@ -1,275 +1,281 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Liste des Événements{% endblock %}
+{% extends 'back.html.twig' %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/event.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        /* Styles pour le conteneur principal */
-        .container-fluid {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        .event-details-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px 0;
             min-height: 100vh;
-            padding: 20px;
         }
 
-        /* Styles pour le titre */
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-align: center;
+        .event-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
             margin-bottom: 30px;
         }
 
-        /* Style pour le bouton du calendrier */
-        .calendar-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid white;
+        .event-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
             color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-btn:hover {
-            background: white;
-            color: #6a11cb;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .calendar-btn i {
-            font-size: 1.2em;
-        }
-
-        /* Styles pour le message "Aucun événement trouvé" */
-        .no-events {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #ffffff;
-            margin-top: 2rem;
-        }
-
-        /* Styles pour la grille des événements */
-        .events-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
             padding: 20px;
+            border-radius: 15px 15px 0 0;
         }
 
-        /* Styles pour la carte d'événement */
-        .event-card {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+        .event-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
         }
 
-        .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        .event-body {
+            padding: 30px;
         }
 
-        /* Styles pour l'image de l'événement */
-        .event-image img {
+        .event-image {
             width: 100%;
-            height: 200px;
+            max-height: 400px;
             object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
-        /* Styles pour le contenu de l'événement */
-        .event-content {
+        .event-table {
+            margin-bottom: 30px;
+        }
+
+        .event-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: 15px;
+            width: 150px;
+        }
+
+        .event-table td {
+            padding: 15px;
+            color: #495057;
+        }
+
+        .event-footer {
+            background-color: #f8f9fa;
             padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .event-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-
-        .event-description {
-            font-size: 1rem;
-            color: #7f8c8d;
-            margin-bottom: 1.5rem;
-        }
-
-        .event-details p {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            margin-bottom: 0.5rem;
-        }
-
-        .event-details strong {
-            color: #2c3e50;
-        }
-
-        /* Styles pour le statut de l'événement */
-        .event-status {
-            font-weight: 600;
-            color: #e74c3c;
-        }
-
-        /* Styles pour les boutons */
-        .event-actions {
-            margin-top: auto;
+            border-radius: 0 0 15px 15px;
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            align-items: center;
         }
 
-        .btn-view-details, .btn-edit, .btn-success {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            flex: 1;
-            font-weight: 600;
-            font-size: 0.9rem;
+        .btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
             border: none;
-            cursor: pointer;
         }
 
-        .btn-view-details {
-            background-color: #3498db;  /* Bleu santé */
-            color: #ffffff;
+        .btn-back:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            color: white;
         }
 
-        .btn-view-details:hover {
-            background-color: #2980b9;  /* Bleu plus foncé */
-            transform: scale(1.05);
+        .btn-map {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
         }
 
-        .btn-edit {
-            background-color: #2ecc71;  /* Vert */
-            color: #ffffff;
+        .btn-map:hover {
+            background: linear-gradient(135deg, #224abe 0%, #1a3a97 100%);
+            transform: translateY(-2px);
+            color: white;
         }
 
-        .btn-edit:hover {
-            background-color: #27ae60;  /* Vert plus foncé */
-            transform: scale(1.05);
-        }
-
-        .btn-success {
-            background-color: #27ae60;  /* Vert foncé */
-            color: #ffffff;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-
-        .btn-success:disabled {
-            opacity: 0.7;
-        }
-
-        /* Style pour les messages flash */
-        .alert {
-            padding: 1rem;
-            margin-bottom: 1rem;
+        #map {
+            height: 300px;
+            width: 100%;
             border-radius: 8px;
         }
 
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .modal-map {
+            max-width: 600px;
+            margin: 1.75rem auto;
         }
 
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+        .modal-content {
+            border-radius: 15px;
         }
 
-        .alert-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
+        .modal-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header .close {
+            color: white;
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 20px;
         }
     </style>
 {% endblock %}
 
-{% block body %}
-    <div class="container-fluid">
-        <div class="text-center mb-4">
-            <h1>Liste des Événements</h1>
-            <a href="{{ path('app_events_calendar_public') }}" class="calendar-btn">
-                <i class="fas fa-calendar-alt"></i>
-                Voir le calendrier des événements
-            </a>
-        </div>
-
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success">
-                {{ message }}
-            </div>
-        {% endfor %}
-
-        {% for message in app.flashes('info') %}
-            <div class="alert alert-info">
-                {{ message }}
-            </div>
-        {% endfor %}
-
-        {% if evenements is empty %}
-            <p class="no-events">Aucun événement trouvé.</p>
-        {% else %}
-            <div class="events-grid">
-                {% for evenement in evenements %}
-                    <div class="event-card">
-                        <div class="event-image">
-                            {% if evenement.image %}
-                                <img src="{{ asset('uploads/' ~ evenement.image) }}" alt="{{ evenement.titre }}">
-                            {% else %}
-                                <img src="{{ asset('uploads/67b38b8547e7b2.58499614.png') }}" alt="Image par défaut">
-                            {% endif %}
-                        </div>
-                        <div class="event-content">
-                            <h2 class="event-title">{{ evenement.titre }}</h2>
-                            <p class="event-description">{{ evenement.description }}</p>
-                            <div class="event-details">
-                                <p><strong>Date de début :</strong> {{ evenement.dateDebut|date('d/m/Y') }}</p>
-                                <p><strong>Date de fin :</strong> {{ evenement.dateFin|date('d/m/Y') }}</p>
-                                <p><strong>Lieu :</strong> {{ evenement.lieu }}</p>
-                                <p><strong>Statut :</strong> <span class="event-status">{{ evenement.statut.value }}</span></p>
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        
+        function showMap() {
+            var modalHtml = `
+                <div class="modal fade" id="mapModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-map">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Localisation de {{ evenement.titre }}</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
-                            <div class="event-actions">
-                                <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" class="btn-view-details">Voir les détails</a>
-                                {% if app.user %}
-                                    {% if app.user in evenement.participation %}
-                                        <button class="btn-success" disabled>
-                                            <i class="fas fa-check"></i> Déjà inscrit
-                                        </button>
-                                    {% else %}
-                                        <a href="{{ path('app_participation_demande', {'id': evenement.id}) }}" class="btn-edit">
-                                            <i class="fas fa-user-plus"></i> S'inscrire
-                                        </a>
-                                    {% endif %}
-                                {% else %}
-                                    <a href="{{ path('app_login') }}" class="btn-edit">
-                                        <i class="fas fa-sign-in-alt"></i> Connectez-vous
-                                    </a>
-                                {% endif %}
+                            <div class="modal-body">
+                                <div id="map"></div>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
+                </div>
+            `;
+
+            if (!document.getElementById('mapModal')) {
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            }
+
+            var $modal = $('#mapModal');
+            $modal.modal('show');
+
+            $modal.on('shown.bs.modal', function() {
+                if (!map) {
+                    var lat = {{ evenement.latitude|default(36.8065) }};
+                    var lng = {{ evenement.longitude|default(10.1815) }};
+                    
+                    map = L.map('map').setView([lat, lng], 13);
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: ' OpenStreetMap contributors'
+                    }).addTo(map);
+                    
+                    var marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup("<b>{{ evenement.titre }}</b><br>{{ evenement.lieu }}").openPopup();
+                }
+                map.invalidateSize();
+            });
+
+            $modal.on('hidden.bs.modal', function() {
+                if (map) {
+                    map.remove();
+                    map = null;
+                }
+                $modal.remove();
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="event-details-container">
+        <div class="container">
+            <div class="event-card">
+                <div class="event-header">
+                    <h1><i class="fas fa-calendar-alt"></i> {{ evenement.titre }}</h1>
+                </div>
+
+                <div class="event-body">
+                    {% if evenement.image %}
+                        <img src="{{ asset('uploads/' ~ evenement.image) }}" alt="{{ evenement.titre }}" class="event-image">
+                    {% endif %}
+                    
+                    <table class="table event-table">
+                        <tbody>
+                            <tr>
+                                <th>Titre</th>
+                                <td>{{ evenement.titre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>{{ evenement.description }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de début</th>
+                                <td>{{ evenement.dateDebut ? evenement.dateDebut|date('Y-m-d') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de fin</th>
+                                <td>{{ evenement.dateFin ? evenement.dateFin|date('Y-m-d') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Lieu</th>
+                                <td>{{ evenement.lieu }}</td>
+                            </tr>
+                            <tr>
+                                <th>Statut</th>
+                                <td>
+                                    {% if app.user %}
+                                        {% if demandeParticipation %}
+                                            {% if demandeParticipation.statut == 'acceptee' %}
+                                                <button class="btn btn-success" disabled>
+                                                    <i class="fas fa-check"></i> Déjà inscrit
+                                                </button>
+                                            {% elseif demandeParticipation.statut == 'en_attente' %}
+                                                <button class="btn btn-warning" disabled>
+                                                    <i class="fas fa-clock"></i> Demande en attente
+                                                </button>
+                                            {% elseif demandeParticipation.statut == 'refuse' %}
+                                                <a href="{{ path('app_evenement_demande_participation', {'id': evenement.id}) }}" 
+                                                   class="btn btn-primary">
+                                                    <i class="fas fa-user-plus"></i> S'inscrire à nouveau
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{{ path('app_evenement_demande_participation', {'id': evenement.id}) }}" 
+                                               class="btn btn-primary">
+                                                <i class="fas fa-user-plus"></i> S'inscrire
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="{{ path('app_login') }}" class="btn btn-info">
+                                            <i class="fas fa-sign-in-alt"></i> Connectez-vous pour participer
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="event-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <a href="{{ path('app_evenement_index') }}" class="btn btn-back">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="button" class="btn btn-map" onclick="showMap()">
+                            <i class="fas fa-map-marker-alt"></i> Voir sur la carte
+                        </button>
+                    </div>
+                </div>
             </div>
-        {% endif %}
+        </div>
     </div>
 {% endblock %}

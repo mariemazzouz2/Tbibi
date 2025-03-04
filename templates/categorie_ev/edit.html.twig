@@ -2,84 +2,8 @@
 
 {% block title %}Modifier une Catégorie{% endblock %}
 
-{% block stylesheets %}
-    <style>
-        /* Centrage de la page */
-        .container-fluid {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-            padding: 20px;
-        }
 
-        /* Style de la carte */
-        .card {
-            width: 450px;
-            border-radius: 20px;
-            padding: 30px;
-            background: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Titre centré */
-        h1 {
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #34495e;
-            margin-bottom: 20px;
-        }
-
-        /* Labels au-dessus des champs */
-        .form-label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            text-align: left;
-            display: block;
-        }
-
-        /* Champs de saisie */
-        .form-control {
-            border-radius: 50px; /* Angles arrondis */
-            border: 1px solid #dcdde1;
-            padding: 12px;
-            font-size: 1rem;
-            width: 100%;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Agrandir la zone de texte */
-        .description-textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        /* Focus des champs */
-        .form-control:focus {
-            border-color: #4e73df;
-            box-shadow: 0 0 5px rgba(78, 115, 223, 0.5);
-        }
-
-        /* Boutons */
-        .btn-primary, .btn-secondary {
-            border-radius: 50px;
-            padding: 10px 20px;
-            width: 100%;
-            font-size: 1rem;
-            font-weight: bold;
-        }
-
-        /* Centrage des boutons */
-        .text-center {
-            text-align: center;
-        }
-    </style>
-{% endblock %}
-
-{% block body %}
+{% block content %}
     <div class="container-fluid">
         <div class="card">
             <div class="card-body">

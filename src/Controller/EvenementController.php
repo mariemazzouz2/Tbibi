@@ -14,8 +14,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Notifier\Notification\Notification;
-use Symfony\Component\Notifier\NotifierInterface;
+use App\Entity\Notification;
+use App\Enum\Statut;
 
 #[Route('/evenement')]
 final class EvenementController extends AbstractController
@@ -62,16 +62,30 @@ final class EvenementController extends AbstractController
     }
     
     #[Route('/eventfront', name: 'app1_evenementfront_index', methods: ['GET'])]
-    public function index1(EvenementRepository $evenementRepository): Response
+    public function index1(EvenementRepository $evenementRepository, EntityManagerInterface $entityManager): Response
     {
         $evenements = $evenementRepository->findAll();
-        return $this->render('evenement/index.html.twig', [
+        $user = $this->getUser();
+
+        if ($user) {
+            // Charger les demandes de participation pour l'utilisateur connecté
+            $demandesParticipation = $entityManager->getRepository(DemandeParticipation::class)
+                ->findBy(['utilisateur' => $user]);
+
+            // Créer un tableau associatif des statuts de participation
+            $participationStatuts = [];
+            foreach ($demandesParticipation as $demande) {
+                $participationStatuts[$demande->getEvenement()->getId()] = $demande->getStatut();
+            }
+        }
+
+        return $this->render('evenement/eventfront.html.twig', [
             'evenements' => $evenements,
+            'participationStatuts' => $participationStatuts ?? []
         ]);
     }
 
     #[Route('/new', name: 'app_evenement_new', methods: ['GET', 'POST'])]
-    
     public function new(Request $request, EntityManagerInterface $entityManager, #[Autowire('%uploads_directory%')] string $uploadDirectory): Response
     {
         $evenement = new Evenement();
@@ -130,13 +144,31 @@ final class EvenementController extends AbstractController
         ]);
     }
 
+    #[Route('/evenement_back/{id}', name: 'app_evenement_show_back', methods: ['GET'])]
+    public function show_back(Evenement $evenement, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $demandeParticipation = null;
+        
+        if ($user) {
+            $demandeParticipation = $entityManager->getRepository(DemandeParticipation::class)
+                ->findOneBy([
+                    'utilisateur' => $user,
+                    'evenement' => $evenement
+                ]);
+        }
+
+        return $this->render('evenement/index.html.twig', [
+            'evenement' => $evenement,
+            'demandeParticipation' => $demandeParticipation
+        ]);
+    }
+
     #[Route('/evenement/{id}/edit', name: 'app_evenement_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Evenement $evenement, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(Evenement1Type::class, $evenement);
         $form->handleRequest($request);
-    
-        dump($evenement, $form); // Ajoutez cette ligne pour déboguer
     
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
@@ -160,8 +192,9 @@ final class EvenementController extends AbstractController
 
         return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
     }
+
     #[Route('/{id}/demande-participation', name: 'app_evenement_demande_participation', methods: ['GET'])]
-    public function demandeParticipation(Evenement $evenement, EntityManagerInterface $entityManager, Security $security, NotifierInterface $notifier): Response
+    public function demandeParticipation(Evenement $evenement, EntityManagerInterface $entityManager, Security $security): Response
     {
         $utilisateur = $security->getUser();
 
@@ -172,7 +205,7 @@ final class EvenementController extends AbstractController
 
         // Vérifier si une demande existe déjà
         $demandeExistante = $entityManager->getRepository(DemandeParticipation::class)
-            ->findOneBy(['utilisateur' => $utilisateur, 'evenement' => $evenement, 'statut' => 'en_attente']);
+            ->findOneBy(['utilisateur' => $utilisateur, 'evenement' => $evenement]);
 
         if ($demandeExistante) {
             $this->addFlash('info', 'Vous avez déjà fait une demande pour cet événement.');
@@ -182,17 +215,21 @@ final class EvenementController extends AbstractController
         $demande = new DemandeParticipation();
         $demande->setUtilisateur($utilisateur);
         $demande->setEvenement($evenement);
+        $demande->setStatut(Statut::EN_ATTENTE->value);
 
         $entityManager->persist($demande);
+
+        // Créer une notification pour l'administrateur
+        $notification = new Notification();
+        $notification->setMessage("Nouvelle demande de participation pour l'événement : " . $evenement->getTitre() . " par " . $utilisateur->getEmail());
+        $notification->setDemandeParticipation($demande);
+        
+        $entityManager->persist($notification);
         $entityManager->flush();
 
-        // Notifier l'admin
-        $notifier->send(new Notification(
-            "Nouvelle demande de participation pour l'événement : " . $evenement->getTitre(),
-            ['email']
-        ));
-
-        $this->addFlash('success', 'Votre demande de participation a été envoyée à l\'administrateur.');
+        // Ajouter un message flash de succès
+        $this->addFlash('success', 'Votre demande de participation a été envoyée avec succès.');
+        
         return $this->redirectToRoute('app1_evenementfront_index');
     }
 
@@ -231,47 +268,54 @@ final class EvenementController extends AbstractController
 
         return $this->redirectToRoute('app_evenement_index');
     }
-
-    #[Route('/evenement/calendar', name: 'app_evenement_calendar')]
-    public function calendar(EntityManagerInterface $entityManager): Response
+    #[Route('/stats', name: 'app_evenement_stats', methods: ['GET'])]
+    public function stats(EvenementRepository $evenementRepository): Response
     {
-        $evenements = $entityManager->getRepository(Evenement::class)->findAll();
-        
-        $events = [];
-        foreach ($evenements as $evenement) {
-            $events[] = [
-                'title' => $evenement->getTitre(),
-                'start' => $evenement->getDateDebut()->format('Y-m-d'),
-                'end' => $evenement->getDateFin()->format('Y-m-d'),
-                'url' => $this->generateUrl('app_evenement_show', ['id' => $evenement->getId()]),
-                'description' => $evenement->getDescription()
-            ];
-        }
-
-        return $this->render('evenement/calendar.html.twig', [
-            'events' => json_encode($events)
+        // Récupérer les statistiques de participation depuis le repository
+        $participationStats = $evenementRepository->getParticipationStatistics();
+    
+        // Passer les données au template
+        return $this->render('evenement/stat.html.twig', [
+            'participation_stats' => $participationStats,
         ]);
     }
-
-    #[Route('/events/calendar', name: 'app_events_calendar_public')]
-    public function calendarPublic(EntityManagerInterface $entityManager): Response
+    #[Route('/calendar', name: 'app_event_calendar', methods: ['GET'])]
+    public function calendar(Request $request, EvenementRepository $eventRepository): Response
     {
-        $evenements = $entityManager->getRepository(Evenement::class)->findAll();
-        
-        $events = [];
-        foreach ($evenements as $evenement) {
-            $events[] = [
-                'title' => $evenement->getTitre(),
-                'start' => $evenement->getDateDebut()->format('Y-m-d'),
-                'url' => $this->generateUrl('app_evenement_show', ['id' => $evenement->getId()]),
-                'description' => $evenement->getDescription(),
-                'backgroundColor' => '#4e73df',
-                'borderColor' => '#4e73df'
-            ];
+        if ($request->isXmlHttpRequest()) {
+            // Si c'est une requête AJAX, retourner les événements en JSON
+            $start = new \DateTime($request->query->get('start'));
+            $end = new \DateTime($request->query->get('end'));
+    
+            $events = $eventRepository->findEventsBetweenDates($start, $end);
+    
+            $calendarEvents = array_map(function($event) {
+                return [
+                    'id' => $event->getId(),
+                    'title' => $event->getTitre(),
+                    'start' => $event->getDateDebut()->format('Y-m-d H:i:s'),
+                    'location' => $event->getLieu(),
+                    'image' => $event->getImage()
+                ];
+            }, $events);
+    
+            return $this->json($calendarEvents);
         }
-
-        return $this->render('evenement/calendar_public.html.twig', [
-            'events' => json_encode($events)
+    
+        // Pour le rendu initial de la page
+        $events = $eventRepository->findAll();
+        $calendarEvents = array_map(function($event) {
+            return [
+                'id' => $event->getId(),
+                'title' => $event->getTitre(),
+                'start' => $event->getDateDebut()->format('Y-m-d H:i:s'),
+                'location' => $event->getLieu(),
+                'image' => $event->getImage()
+            ];
+        }, $events);
+    
+        return $this->render('evenement/calendar.html.twig', [
+            'events' => json_encode($calendarEvents)
         ]);
     }
 }

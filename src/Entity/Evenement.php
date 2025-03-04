@@ -62,12 +62,6 @@ class Evenement
     )]
     private ?string $lieu = null;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $latitude = null;
-
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $longitude = null;
-
     #[ORM\Column(type: 'string', enumType: Statut::class)]
     #[Assert\NotNull(message: "Le statut est obligatoire.")]
     #[Assert\Choice(choices: [Statut::EN_ATTENTE, Statut::CONFIRME, Statut::ANNULE, Statut::TERMINE], message: "Le statut doit être valide.")]
@@ -161,28 +155,6 @@ class Evenement
         return $this;
     }
 
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(?float $latitude): self
-    {
-        $this->latitude = $latitude;
-        return $this;
-    }
-
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(?float $longitude): self
-    {
-        $this->longitude = $longitude;
-        return $this;
-    }
-
     public function getStatut(): Statut
     {
         return $this->statut;
@@ -239,6 +211,7 @@ class Evenement
 
         return $this;
     }
+   
 
     /**
      * @return Collection<int, DemandeParticipation>

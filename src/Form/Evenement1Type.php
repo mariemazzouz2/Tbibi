@@ -55,22 +55,6 @@ class Evenement1Type extends AbstractType
                     new NotBlank(['message' => 'Le lieu est obligatoire.']),
                 ],
             ])
-            ->add('latitude', NumberType::class, [
-                'required' => false,
-                'label' => 'Latitude',
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Ex: 48.8566'
-                ]
-            ])
-            ->add('longitude', NumberType::class, [
-                'required' => false,
-                'label' => 'Longitude',
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Ex: 2.3522'
-                ]
-            ])
             ->add('statut', ChoiceType::class, [
                 'choices' => [
                     'En attente' => Statut::EN_ATTENTE,

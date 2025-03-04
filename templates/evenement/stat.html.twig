@@ -1,0 +1,100 @@
+{% extends 'back.html.twig' %}
+
+
+
+
+{% block content %}
+   
+    {# Conteneur du graphique #}
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <div id="lineChart" style="max-width: 800px; width: 100%;">
+            {# Le graphique sera rendu ici #}
+        </div>
+    </div>
+
+    {# Styles pour le conteneur du graphique #}
+    <style>
+        #lineChart {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+    </style>
+
+    {# Script ApexCharts #}
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Données passées depuis le contrôleur
+        const participationStats = {{ participation_stats|json_encode|raw }};
+
+        // Préparer les labels et les données
+        const labels = participationStats.map(stat => stat.title);
+        const data = participationStats.map(stat => stat.participantCount);
+
+        // Options du graphique
+        const options = {
+            chart: {
+                type: 'line',
+                height: 400,
+                toolbar: {
+                    show: true,
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                },
+            },
+            series: [{
+                name: 'Participants',
+                data: data,
+            }],
+            xaxis: {
+                categories: labels,
+                labels: {
+                    style: {
+                        colors: '#666',
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: '#666',
+                    }
+                }
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3,
+            },
+            colors: ['#4BC0C0'],
+            title: {
+                text: 'Événements les plus participés',
+                align: 'center',
+                style: {
+                    fontSize: '18px',
+                    color: '#333',
+                }
+            },
+            grid: {
+                borderColor: '#f1f1f1',
+            },
+            markers: {
+                size: 5,
+                colors: ['#4BC0C0'],
+                strokeColors: '#fff',
+                strokeWidth: 2,
+            },
+            tooltip: {
+                enabled: true,
+                theme: 'light',
+            }
+        };
+
+        // Créer et afficher le graphique
+        const chart = new ApexCharts(document.querySelector("#lineChart"), options);
+        chart.render();
+    </script>
+{% endblock %}
