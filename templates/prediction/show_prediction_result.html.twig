@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Résultat de la prédiction{% endblock %}
+
+{% block body %}
+    <h1>Résultat de la prédiction</h1>
+
+    {% if predictionResult is not empty %}
+        <p><strong>Résultat :</strong> {{ predictionResult }}</p>
+    {% else %}
+        <p>Aucune prédiction disponible.</p>
+    {% endif %}
+{% endblock %}

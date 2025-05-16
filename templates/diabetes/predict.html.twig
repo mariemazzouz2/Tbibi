@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Prédiction du Diabète</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"], input[type="radio"] {
+            margin-right: 10px;
+            padding: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prédiction du Diabète</h1>
+    
+    <form id="diabetesForm" method="post" action="{{ path('diabetes_predict_post') }}">
+        <div class="form-group">
+            <label for="age">Âge : <input type="number" id="age" name="age" required min="0" placeholder="Entrez votre âge"></label>
+        </div>
+        <div class="form-group">
+            <label for="hypertension">Hypertension (0 = non, 1 = oui) : <input type="number" id="hypertension" name="hypertension" min="0" max="1" required placeholder="0 ou 1"></label>
+        </div>
+        <div class="form-group">
+            <label for="heart_disease">Maladie cardiaque (0 = non, 1 = oui) : <input type="number" id="heart_disease" name="heart_disease" min="0" max="1" required placeholder="0 ou 1"></label>
+        </div>
+        <div class="form-group">
+            <label for="bmi">IMC : <input type="number" id="bmi" name="bmi" step="0.01" required min="0" placeholder="Entrez votre IMC"></label>
+        </div>
+        <div class="form-group">
+            <label for="hba1c">HbA1c (%) : <input type="number" id="hba1c" name="HbA1c_level" step="0.1" required min="0" placeholder="Entrez votre HbA1c"></label>
+        </div>
+        <div class="form-group">
+            <label for="glucose">Glycémie (mg/dL) : <input type="number" id="glucose" name="blood_glucose_level" required min="0" placeholder="Entrez votre glycémie"></label>
+        </div>
+        
+        <div class="form-group">
+            <label>Genre :</label><br>
+            <input type="radio" id="genderFemale" name="gender" value="Female" required> <label for="genderFemale">Femme</label><br>
+            <input type="radio" id="genderMale" name="gender" value="Male"> <label for="genderMale">Homme</label><br>
+            <input type="radio" id="genderOther" name="gender" value="Other"> <label for="genderOther">Autre</label>
+        </div>
+        
+        <div class="form-group">
+            <label>Historique de tabac :</label><br>
+            <input type="radio" id="smokingNoInfo" name="smoking_history" value="No Info" required> <label for="smokingNoInfo">Pas d'info</label><br>
+            <input type="radio" id="smokingCurrent" name="smoking_history" value="current"> <label for="smokingCurrent">Actuel</label><br>
+            <input type="radio" id="smokingEver" name="smoking_history" value="ever"> <label for="smokingEver">Ancien</label><br>
+            <input type="radio" id="smokingFormer" name="smoking_history" value="former"> <label for="smokingFormer">Ancien fumeur</label><br>
+            <input type="radio" id="smokingNever" name="smoking_history" value="never"> <label for="smokingNever">Jamais</label><br>
+            <input type="radio" id="smokingNotCurrent" name="smoking_history" value="not current"> <label for="smokingNotCurrent">Non actuel</label>
+        </div>
+        
+        <button type="submit">Prédire</button>
+    </form>
+
+    <div id="result" class="error"></div>
+
+    <script>
+        document.getElementById('diabetesForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            // Validation des champs requis
+            const requiredFields = ['age', 'hypertension', 'heart_disease', 'bmi', 'HbA1c_level', 'blood_glucose_level'];
+            for (const field of requiredFields) {
+                if (!data[field] || data[field].trim() === '' || data[field] === 'undefined' || data[field] === 'null') {
+                    console.error(`${field} est manquant, vide, ou invalide`);
+                    document.getElementById('result').innerText = `Erreur : ${field} est manquant, vide, ou invalide`;
+                    document.getElementById('result').style.display = 'block';
+                    return;
+                }
+            }
+
+            // Validation des champs numériques avec conversion stricte
+            const age = parseFloat(data.age);
+            if (isNaN(age) || age < 0) {
+                console.error('Âge invalide');
+                document.getElementById('result').innerText = "Erreur : Âge doit être un nombre positif";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            const hypertension = parseInt(data.hypertension);
+            if (isNaN(hypertension) || ![0, 1].includes(hypertension)) {
+                console.error('Hypertension invalide');
+                document.getElementById('result').innerText = "Erreur : Hypertension doit être 0 ou 1";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            const heartDisease = parseInt(data.heart_disease);
+            if (isNaN(heartDisease) || ![0, 1].includes(heartDisease)) {
+                console.error('Maladie cardiaque invalide');
+                document.getElementById('result').innerText = "Erreur : Maladie cardiaque doit être 0 ou 1";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            const bmi = parseFloat(data.bmi);
+            if (isNaN(bmi) || bmi < 0) {
+                console.error('IMC invalide');
+                document.getElementById('result').innerText = "Erreur : IMC doit être un nombre positif";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            const hba1c = parseFloat(data.HbA1c_level);
+            if (isNaN(hba1c) || hba1c < 0) {
+                console.error('HbA1c invalide');
+                document.getElementById('result').innerText = "Erreur : HbA1c doit être un nombre positif";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            const glucose = parseInt(data.blood_glucose_level);
+            if (isNaN(glucose) || glucose < 0) {
+                console.error('Glycémie invalide');
+                document.getElementById('result').innerText = "Erreur : Glycémie doit être un nombre positif";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            // Validation des champs radio (gender et smoking_history)
+            const gender = data.gender;
+            const smoking = data.smoking_history;
+
+            if (!gender || !['Female', 'Male', 'Other'].includes(gender)) {
+                console.error('Genre invalide');
+                document.getElementById('result').innerText = "Erreur : Genre invalide (choisissez Femme, Homme ou Autre)";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+            if (!smoking || !['No Info', 'current', 'ever', 'former', 'never', 'not current'].includes(smoking)) {
+                console.error('Historique de tabac invalide');
+                document.getElementById('result').innerText = "Erreur : Historique de tabac invalide (choisissez une option)";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            // Encoder manuellement en one-hot
+            const encodedData = {
+                age: age,
+                hypertension: hypertension,
+                heart_disease: heartDisease,
+                bmi: bmi,
+                HbA1c_level: hba1c,
+                blood_glucose_level: glucose,
+                gender_Female: gender === 'Female' ? 1 : 0,
+                gender_Male: gender === 'Male' ? 1 : 0,
+                gender_Other: gender === 'Other' ? 1 : 0,
+                smoking_history_No Info: smoking === 'No Info' ? 1 : 0,
+                smoking_history_current: smoking === 'current' ? 1 : 0,
+                smoking_history_ever: smoking === 'ever' ? 1 : 0,
+                smoking_history_former: smoking === 'former' ? 1 : 0,
+                smoking_history_never: smoking === 'never' ? 1 : 0,
+                smoking_history_not current: smoking === 'not current' ? 1 : 0
+            };
+
+            // Vérification finale avant envoi
+            if (Object.values(encodedData).some(v => v === undefined || v === null || isNaN(v))) {
+                console.error('Données invalides détectées avant envoi');
+                document.getElementById('result').innerText = "Erreur : Données invalides détectées";
+                document.getElementById('result').style.display = 'block';
+                return;
+            }
+
+            console.log('Données encodées envoyées :', encodedData);
+
+            try {
+                const response = await fetch('{{ path('diabetes_predict_post') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(encodedData)
+                });
+                const result = await response.json();
+                document.getElementById('result').innerText = result.message + " : " + result.result;
+                document.getElementById('result').style.display = 'block';
+            } catch (error) {
+                console.error('Erreur lors de la requête :', error);
+                document.getElementById('result').innerText = "Erreur : " + error.message;
+                document.getElementById('result').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

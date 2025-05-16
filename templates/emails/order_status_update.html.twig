@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mise à jour de votre commande</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .header {
+            background-color: #4e73df;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        
+        .footer {
+            background-color: #f3f3f3;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        
+        .button {
+            display: inline-block;
+            background-color: #4e73df;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .status-info {
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 5px solid;
+        }
+        
+        .status-info.en-cours {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .status-info.expediee {
+            background-color: #cce5ff;
+            border-left-color: #007bff;
+        }
+        
+        .status-info.livree {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .status-info.annulee {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mise à jour de votre commande</h1>
+        </div>
+        
+        <div class="content">
+            <p>Bonjour {{ user.prenom ?? '' }} {{ user.nom ?? 'Cher client' }},</p>
+            
+            <p>Nous vous informons que votre commande a été mise à jour.</p>
+            
+            <div class="status-info {{ commande.statut|lower|replace({'é': 'e'}) }}">
+                <h3>Votre commande #{{ commande.id }} {{ statusMessage }}.</h3>
+            </div>
+            
+            <h3>Détails de la commande:</h3>
+            <table>
+                <tr>
+                    <th>Numéro de commande</th>
+                    <td>#{{ commande.id }}</td>
+                </tr>
+                <tr>
+                    <th>Date de commande</th>
+                    <td>{{ commande.dateCommande|date('d/m/Y') }}</td>
+                </tr>
+                <tr>
+                    <th>Statut actuel</th>
+                    <td><strong>{{ commande.statut }}</strong></td>
+                </tr>
+                <tr>
+                    <th>Montant total</th>
+                    <td>{{ commande.montantTotal }} TND</td>
+                </tr>
+            </table>
+            
+            {% if commande.statut == 'Expédiée' %}
+                <p>Votre colis est actuellement en transit. Vous pouvez suivre votre commande en consultant votre facture.</p>
+            {% elseif commande.statut == 'Livrée' %}
+                <p>Nous vous remercions pour votre confiance et espérons que vous êtes satisfait(e) de votre achat.</p>
+            {% elseif commande.statut == 'Annulée' %}
+                <p>Si vous n'avez pas demandé cette annulation, veuillez nous contacter immédiatement.</p>
+            {% endif %}
+            
+            <p>Pour consulter tous les détails de votre commande, veuillez cliquer sur le bouton ci-dessous :</p>
+            
+            <div style="text-align: center;">
+                <a href="{{ invoiceUrl }}" class="button">Voir ma facture</a>
+            </div>
+            
+            <p>Si vous avez des questions concernant votre commande, n'hésitez pas à nous contacter.</p>
+            
+            <p>Cordialement,<br>
+            L'équipe de Mon Site E-commerce</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; {{ "now"|date('Y') }} Mon Site E-commerce. Tous droits réservés.</p>
+            <p>Cet email a été envoyé automatiquement. Merci de ne pas y répondre.</p>
+        </div>
+    </div>
+</body>
+</html>

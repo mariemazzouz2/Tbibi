@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prediction index{% endblock %}
+
+{% block body %}
+    <h1>Prediction index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Hypertension</th>
+                <th>Heart_disease</th>
+                <th>Smoking_history</th>
+                <th>Bmi</th>
+                <th>HbA1c_level</th>
+                <th>Blood_glucose_level</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for prediction in predictions %}
+            <tr>
+                <td>{{ prediction.id }}</td>
+                <td>{{ prediction.hypertension ? 'Yes' : 'No' }}</td>
+                <td>{{ prediction.heartDisease ? 'Yes' : 'No' }}</td>
+                <td>{{ prediction.smokingHistory }}</td>
+                <td>{{ prediction.bmi }}</td>
+                <td>{{ prediction.HbA1cLevel }}</td>
+                <td>{{ prediction.bloodGlucoseLevel }}</td>
+                <td>
+                    <a href="{{ path('app_prediction_show', {'id': prediction.id}) }}">show</a>
+                    <a href="{{ path('app_prediction_edit', {'id': prediction.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_prediction_new') }}">Create new</a>
+{% endblock %}

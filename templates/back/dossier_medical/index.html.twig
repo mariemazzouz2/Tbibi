@@ -1,0 +1,222 @@
+{% extends 'back.html.twig' %}
+
+{% block content %}
+    <style>
+        .dossier-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .dossier-header {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #1A76D1;
+            margin-bottom: 30px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .table th {
+            background: #1A76D1;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border-radius: 5px;
+        }
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        .btn-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            margin: 5px;
+            display: inline-block;
+        }
+        .btn-primary {
+            background-color: blue;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: darkblue;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+        .btn-warning:hover {
+            background-color: #d39e00;
+        }
+        /* Pagination personnalisée */
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination .page-item .page-link {
+            border-radius: 5px;
+            color: #1A76D1;
+            border: 1px solid #1A76D1;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #1A76D1;
+            border-color: #1A76D1;
+            color: white;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: #e6f0fa;
+            color: #1A76D1;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #aaa;
+            border-color: #ddd;
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Style pour la barre de recherche */
+        .search-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-container input {
+            padding: 10px;
+            width: 50%;
+            border: 1px solid #1A76D1;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+    </style>
+
+    <div class="dossier-container">
+        <div class="dossier-header">📁 Liste des Dossiers Médicaux</div>
+
+        <!-- Barre de recherche -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Rechercher par date, unité ou mesure...">
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th> </th>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Fichier</th>
+                    <th>Unité</th>
+                    <th>Mesure</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="dossierTableBody">
+            {% for dossier_medical in dossier_medicals %}
+                <tr>
+                    <td><img src="{{ asset('img/' ~ dossier_medical.utilisateur.image) }}" alt="Image de l'utilisateur" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px;"></td>
+                    <td>{{ dossier_medical.id }}</td>
+                    <td>{{ dossier_medical.date ? dossier_medical.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    <td>
+                        {% if dossier_medical.fichier %}
+                            <a href="{{ asset('uploads/' ~ dossier_medical.fichier) }}" target="_blank" class="btn btn-primary">📄 Aperçu</a>
+                        {% else %}
+                            Aucun fichier
+                        {% endif %}
+                    </td>
+                    <td>{{ dossier_medical.unite ?? 'Non spécifiée' }}</td>
+                    <td>{{ dossier_medical.mesure ?? 'Non spécifiée' }}</td>
+                    <td>
+                        <a href="{{ path('app_back_dossier_medical_show', {'id': dossier_medical.id}) }}" class="btn btn-primary">👀 Afficher</a>
+                        <a href="{{ path('app_back_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">Aucun dossier médical trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="navigation">
+            {{ knp_pagination_render(dossier_medicals, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig', {}, {
+                'prev_label': '« Précédent',
+                'next_label': 'Suivant »'
+            }) }}
+        </div>
+
+        <div class="btn-container">
+            <a href="{{ path('app_back_dossier_medical_new') }}" class="btn btn-primary">➕ Nouveau Dossier</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const tableBody = document.getElementById('dossierTableBody');
+            let debounceTimeout;
+
+            searchInput.addEventListener('input', function () {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    const searchTerm = this.value.trim();
+
+                    fetch(`/back/dossier/medical/search?q=${encodeURIComponent(searchTerm)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        tableBody.innerHTML = ''; // Vider le tableau
+
+                        if (data.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="7">Aucun dossier médical trouvé</td></tr>';
+                            return;
+                        }
+
+                        data.forEach(dossier => {
+                            const row = `
+                                <tr>
+                                    <td><img src="/public/uploads/image/${dossier.utilisateur_image}" alt="Image de l'utilisateur" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px;"></td>
+                                    <td>${dossier.id}</td>
+                                    <td>${dossier.date}</td>
+                                    <td>
+                                        ${dossier.fichier 
+                                            ? `<a href="assets/uploads/${dossier.fichier}" target="_blank" class="btn btn-primary">📄 Aperçu</a>` 
+                                            : 'Aucun fichier'}
+                                    </td>
+                                    <td>${dossier.unite}</td>
+                                    <td>${dossier.mesure}</td>
+                                    <td>
+                                        <a href="/back/dossier/medical/show/${dossier.id}" class="btn btn-primary">👀 Afficher</a>
+                                        <a href="/back/dossier/medical/${dossier.id}/edit" class="btn btn-warning">✏️ Modifier</a>
+                                    </td>
+                                </tr>
+                            `;
+                            tableBody.innerHTML += row;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la recherche:', error);
+                        tableBody.innerHTML = '<tr><td colspan="7">Erreur lors de la recherche</td></tr>';
+                    });
+                }, 300); // Délai de 300ms pour le debouncing
+            });
+        });
+    </script>
+{% endblock %}

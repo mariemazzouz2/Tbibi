@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture #{{ commande.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4e73df;
+        }
+        
+        .company-info {
+            float: left;
+            width: 50%;
+        }
+        
+        .invoice-details {
+            float: right;
+            width: 50%;
+            text-align: right;
+        }
+        
+        .customer-info {
+            clear: both;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .bill-to {
+            float: left;
+            width: 50%;
+        }
+        
+        .payment-info {
+            float: right;
+            width: 50%;
+            text-align: right;
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .products-table th,
+        .products-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .products-table th {
+            background-color: #f8f9fa;
+            text-align: left;
+        }
+        
+        .products-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .total-info {
+            float: right;
+            width: 40%;
+        }
+        
+        .total-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .total-table th,
+        .total-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .total-table th {
+            text-align: left;
+        }
+        
+        .total-table td {
+            text-align: right;
+        }
+        
+        .footer {
+            clear: both;
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        .conditions {
+            margin-top: 40px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            font-size: 12px;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>FACTURE</h2>
+    </div>
+    
+    <div class="customer-info">
+        <div class="company-info">
+            <h3>Mon Site E-commerce</h3>
+            <p>
+                123 Rue du Commerce<br>
+                75000 Paris, France<br>
+                Email: contact@monsite.com<br>
+                Téléphone: +33 1 23 45 67 89
+            </p>
+        </div>
+        
+        <div class="invoice-details">
+            <h3>Facture #{{ commande.id }}</h3>
+            <p>
+                Date d'émission: {{ date_emission|date('d/m/Y') }}<br>
+                Date de commande: {{ commande.dateCommande|date('d/m/Y') }}<br>
+                Statut: {{ commande.statut }}
+            </p>
+        </div>
+    </div>
+    
+    <div class="customer-info">
+        <div class="bill-to">
+            <h4>Facturé à:</h4>
+            <p>
+                {{ commande.user.nom ?? 'Client' }} {{ commande.user.prenom ?? '' }}<br>
+                {{ commande.user.adresse ?? '' }}<br>
+                Email: {{ commande.user.email ?? '' }}
+            </p>
+        </div>
+    </div>
+    
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Produit</th>
+                <th>Prix unitaire</th>
+                <th>Quantité</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set produits_count = {} %}
+            {% for produit in commande.produit %}
+                {% set produit_id = produit.id %}
+                {% set produits_count = produits_count|merge({
+                    (produit_id): (produits_count[produit_id] is defined) ? produits_count[produit_id] + 1 : 1
+                }) %}
+            {% endfor %}
+            
+            {% set unique_produits = {} %}
+            {% for produit in commande.produit %}
+                {% set produit_id = produit.id %}
+                {% if unique_produits[produit_id] is not defined %}
+                    {% set unique_produits = unique_produits|merge({(produit_id): produit}) %}
+                {% endif %}
+            {% endfor %}
+            
+            {% for id, produit in unique_produits %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ produit.nom }}</td>
+                    <td>{{ produit.prix }} TND</td>
+                    <td>{{ produits_count[id] }}</td>
+                    <td class="text-right">{{ produit.prix * produits_count[id] }} TND</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="total-info">
+        <table class="total-table">
+            <tr>
+                <th>Sous-total:</th>
+                <td>{{ commande.montantTotal }} TND</td>
+            </tr>
+            <tr>
+                <th>TVA (19%):</th>
+                <td>{{ (commande.montantTotal * 0.19)|round(2) }} TND</td>
+            </tr>
+            <tr>
+                <th class="bold">Total:</th>
+                <td class="bold">{{ (commande.montantTotal * 1.19)|round(2) }} TND</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="conditions">
+        <h4>Conditions et notes:</h4>
+        <p>Nous vous remercions pour votre commande. Le paiement est dû dans les 15 jours suivant la date d'émission de la facture.</p>
+        <p>Pour toute question concernant cette facture, veuillez contacter notre service client au +33 1 23 45 67 89 ou par email à support@monsite.com.</p>
+    </div>
+    
+    <div class="footer">
+        <p>Cette facture a été générée automatiquement et ne requiert pas de signature.</p>
+        <p>Mon Site E-commerce - SIRET: 123 456 789 00012 - TVA: FR12 345 678 901</p>
+    </div>
+</body>
+</html>

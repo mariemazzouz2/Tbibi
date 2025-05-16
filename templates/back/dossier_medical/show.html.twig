@@ -1,0 +1,173 @@
+{% extends 'back.html.twig' %}
+
+{% block content %}
+    <style>
+        /* Conteneur principal */
+        .medical-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Titre */
+        .medical-header {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #1A76D1;
+            margin-bottom: 30px;
+        }
+
+        /* Contenu structuré avec espacement */
+        .medical-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px; /* Ajout d'espace entre les colonnes */
+        }
+
+        .medical-left, .medical-right {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px; /* Espacement entre le titre et la table */
+        }
+
+        .table th {
+            background: #1A76D1;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Espacement entre les sections */
+        .medical-left h3, .medical-right h3 {
+            margin-bottom: 15px; /* Espacement sous le titre */
+        }
+
+        /* Espacement des boutons */
+        .btn-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            margin: 10px; /* Espacement entre les boutons */
+        }
+
+        .btn-primary {
+            background-color: blue;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: darkblue;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-warning:hover {
+            background-color: #d39e00;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+
+    <div class="medical-container">
+        <div class="medical-header">📁 Dossier Médical #{{ dossier_medical.id }}</div>
+
+        <div class="medical-content">
+            <!-- Colonne gauche : Infos patient -->
+            <div class="medical-left">
+                <h3>🩺 Informations du Patient</h3>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Nom :</th>
+                            <td>{{ dossier_medical.utilisateur.nom ?? 'Non disponible' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Âge :</th>
+                            <td>{{ dossier_medical.utilisateur.age ?? 'Non spécifié' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Genre :</th>
+                            <td>{{ dossier_medical.utilisateur.sexe ?? 'Non spécifié' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date de Création :</th>
+                            <td>{{ dossier_medical.date ? dossier_medical.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Colonne droite : Mesures médicales -->
+            <div class="medical-right">
+                <h3>📊 Mesures Médicales</h3>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Type de Mesure :</th>
+                            <td>{{ dossier_medical.mesure ?? 'Non renseigné' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Valeur :</th>
+                            <td>
+                                {% if dossier_medical.mesure and dossier_medical.unite %}
+                                    {{ dossier_medical.mesure }} {{ dossier_medical.unite }}
+                                {% else %}
+                                    Non renseigné
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Boutons d'actions -->
+        <div class="btn-container">
+            <a href="{{ path('app_back_dossier_medical_index') }}" class="btn btn-primary">⬅ Retour à la liste</a>
+            <a href="{{ path('app_back_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+            <a href="{{ path('app_back_analyse_new') }}" class="btn btn-success">➕ Nouvelle Analyse</a>
+            <a href="{{ path('app_prediction_new') }}" class="btn btn-success">Prédiction</a>
+            <a href="{{ path('app_back_analyse_index', {'dossierId': dossier_medical.id}) }}" class="btn btn-primary">👀 Afficher Analyses</a>
+            <form method="post" action="{{ path('app_dossier_medical_delete', {'id': dossier_medical.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce dossier ?');" style="display:inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ dossier_medical.id) }}">
+                <button type="submit" class="btn btn-danger">🗑 Supprimer</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

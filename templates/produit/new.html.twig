@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Produit{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f8f9fa;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .card {
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 1.4rem;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .card-body {
+        background: white;
+        padding: 25px;
+        border-radius: 0 0 15px 15px;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #ccc;
+        transition: 0.3s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: #6a11cb;
+        box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+    }
+
+    .btn-success {
+        background: #28a745;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        transition: 0.3s;
+        width: 100%;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        transform: scale(1.02);
+    }
+
+    .text-danger {
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+
+    .img-preview {
+        max-width: 150px;
+        border-radius: 10px;
+        margin-top: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .required-field::after {
+        content: " *";
+        color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            Ajouter un Nouveau Produit
+        </div>
+        <div class="card-body">
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+
+            <div class="mb-3">
+                {{ form_label(form.nom, 'Nom du produit', {'label_attr': {'class': 'form-label required-field'}}) }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                <div class="text-danger">{{ form_errors(form.nom) }}</div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.prix, 'Prix', {'label_attr': {'class': 'form-label required-field'}}) }}
+                {{ form_widget(form.prix, {'attr': {'class': 'form-control'}}) }}
+                <div class="text-danger">{{ form_errors(form.prix) }}</div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.type, 'Type de produit', {'label_attr': {'class': 'form-label required-field'}}) }}
+                {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                <div class="text-danger">{{ form_errors(form.type) }}</div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label required-field'}}) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+                <div class="text-danger">{{ form_errors(form.description) }}</div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.imageFile, 'Image du produit', {'label_attr': {'class': 'form-label required-field'}}) }}
+                {{ form_widget(form.imageFile, {'attr': {'class': 'form-control'}}) }}
+                <div class="text-danger">{{ form_errors(form.imageFile) }}</div>
+                <small class="text-muted">Formats acceptés: JPEG, PNG. Taille maximale: 2MB</small>
+
+                {% if produit.image %}
+                    <div class="text-center mt-2">
+                        <img src="{{ asset('uploads/images/' ~ produit.image) }}" alt="Image actuelle" class="img-preview">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(form.commande, 'Commande associée', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.commande, {'attr': {'class': 'form-control'}}) }}
+                <div class="text-danger">{{ form_errors(form.commande) }}</div>
+            </div>
+
+           <form action="{{ path('app_produitAdmin') }}" method="POST">
+    <button type="submit" class="btn btn-success">Enregistrer</button>
+</form>
+
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

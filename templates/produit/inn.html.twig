@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Produits{% endblock %}
+
+{% block body %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eafaf1;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: #ffcc00;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .product-info {
+            margin-bottom: 10px;
+        }
+
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .image-preview img {
+            max-width: 100px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            padding: 5px;
+        }
+    </style>
+
+    {% for produit in produits %}
+        <div class="card">
+        
+            <div class="card-header">{{ produit.nom }}</div>
+            <div class="image-preview">
+                {% if produit.image %}
+                    <img src="{{ asset('uploads/' ~ produit.image) }}" alt="Image du produit">
+                {% else %}
+                    <p>Aucune image disponible</p>
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <strong>Prix :</strong> {{ produit.prix }} TND
+            </div>
+
+            <div class="product-info">
+                <strong>Type :</strong> {{ produit.type }}
+            </div>
+
+            <div class="product-info">
+                <strong>Description :</strong> {{ produit.description }}
+            </div>
+
+           
+            <a href="{{ path('app_commande_new', { 'idProduit': produit.id }) }}" class="btn">Commander</a>
+        </div>
+    {% endfor %}
+{% endblock %}

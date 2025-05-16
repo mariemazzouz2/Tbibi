@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une nouvelle prédiction{% endblock %}
+
+{% block body %}
+    <h1>Créer une nouvelle prédiction</h1>
+
+    {{ form_start(form) }}
+
+    <div>
+        {{ form_label(form.smokingHistory) }}
+        {{ form_widget(form.smokingHistory) }}
+    </div>
+
+    <div>
+        {{ form_label(form.hypertension) }}
+        {{ form_widget(form.hypertension) }}
+    </div>
+
+    <div>
+        {{ form_label(form.heart_disease) }}
+        {{ form_widget(form.heart_disease) }}
+    </div>
+
+    <div>
+        {{ form_label(form.bmi) }}
+        {{ form_widget(form.bmi) }}
+    </div>
+
+    <div>
+        {{ form_label(form.HbA1c_level) }}
+        {{ form_widget(form.HbA1c_level) }}
+    </div>
+
+    <div>
+        {{ form_label(form.blood_glucose_level) }}
+        {{ form_widget(form.blood_glucose_level) }}
+    </div>
+
+    <div>
+        <button type="submit">Soumettre</button>
+    </div>
+{% if predictionResult %}
+    <h3>Résultat de la prédiction</h3>
+    <p><strong>Résultat :</strong> {{ predictionResult }}</p>  {# Affichez la chaîne directement #}
+{% endif %}
+
+    {{ form_end(form) }}
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Facture #{{ commande.id }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>FACTURE #{{ commande.id }}</h3>
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="{{ path('app_facture_pdf', {'id': commande.id}) }}" class="btn btn-light" target="_blank">
+                        <i class="fas fa-file-pdf"></i> Télécharger PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <h6 class="mb-3">De:</h6>
+                    <div>
+                        <strong>Mon Site E-commerce</strong>
+                    </div>
+                    <div>123 Rue du Commerce</div>
+                    <div>75000 Paris, France</div>
+                    <div>Email: contact@monsite.com</div>
+                    <div>Téléphone: +33 1 23 45 67 89</div>
+                </div>
+                
+                <div class="col-sm-6">
+                    <h6 class="mb-3">À:</h6>
+                    <div>
+                        <strong>{{ commande.user.nom ?? 'Client' }} {{ commande.user.prenom ?? '' }}</strong>
+                    </div>
+                    <div>{{ commande.user.adresse ?? '' }}</div>
+                    <div>Email: {{ commande.user.email ?? '' }}</div>
+                </div>
+            </div>
+            
+            <div class="table-responsive-sm">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="center">#</th>
+                            <th>Produit</th>
+                            <th class="right">Prix unitaire</th>
+                            <th class="center">Quantité</th>
+                            <th class="right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set produits_count = {} %}
+                        {% for produit in commande.produit %}
+                            {% set produit_id = produit.id %}
+                            {% set produits_count = produits_count|merge({
+                                (produit_id): (produits_count[produit_id] is defined) ? produits_count[produit_id] + 1 : 1
+                            }) %}
+                        {% endfor %}
+                        
+                        {% set unique_produits = {} %}
+                        {% for produit in commande.produit %}
+                            {% set produit_id = produit.id %}
+                            {% if unique_produits[produit_id] is not defined %}
+                                {% set unique_produits = unique_produits|merge({(produit_id): produit}) %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% for id, produit in unique_produits %}
+                            <tr>
+                                <td class="center">{{ loop.index }}</td>
+                                <td class="left">{{ produit.nom }}</td>
+                                <td class="right">{{ produit.prix }} TND</td>
+                                <td class="center">{{ produits_count[id] }}</td>
+                                <td class="right">{{ produit.prix * produits_count[id] }} TND</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-sm-5">
+                    <div class="mb-4">
+                        <h6>Informations sur la commande:</h6>
+                        <div>Numéro de commande: <strong>{{ commande.id }}</strong></div>
+                        <div>Date de commande: {{ commande.dateCommande|date('d/m/Y') }}</div>
+                        <div>Statut: {{ commande.statut }}</div>
+                        <div>Date d'émission: {{ date_emission|date('d/m/Y') }}</div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-sm-5 offset-lg-4 offset-sm-2 ml-auto">
+                    <table class="table table-clear">
+                        <tbody>
+                            <tr>
+                                <td class="left">
+                                    <strong>Sous-total</strong>
+                                </td>
+                                <td class="right">{{ commande.montantTotal }} TND</td>
+                            </tr>
+                            <tr>
+                                <td class="left">
+                                    <strong>TVA (19%)</strong>
+                                </td>
+                                <td class="right">{{ (commande.montantTotal * 0.19)|round(2) }} TND</td>
+                            </tr>
+                            <tr>
+                                <td class="left">
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="right">
+                                    <strong>{{ (commande.montantTotal * 1.19)|round(2) }} TND</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <h6>Conditions et notes:</h6>
+                    <p>Nous vous remercions pour votre commande. Le paiement est dû dans les 15 jours suivant la date d'émission de la facture.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer text-center">
+            <p class="mb-0">Cette facture a été générée automatiquement et ne requiert pas de signature.</p>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ path('app_produit_index') }}" class="btn btn-secondary mr-2">
+            <i class="fas fa-shopping-bag"></i> Continuer mes achats
+        </a>
+        <a href="{{ path('app_commande_index') }}" class="btn btn-primary">
+            <i class="fas fa-list"></i> Mes commandes
+        </a>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border: none;
+    }
+    
+    .table th {
+        font-weight: bold;
+        background-color: #f8f9fa;
+    }
+    
+    .table-clear td {
+        padding: 15px;
+    }
+    
+    .right {
+        text-align: right;
+    }
+    
+    .center {
+        text-align: center;
+    }
+    
+    .left {
+        text-align: left;
+    }
+    
+    .card-footer {
+        background-color: #f8f9fa;
+        border-top: 1px dashed #ddd;
+    }
+</style>
+{% endblock %}

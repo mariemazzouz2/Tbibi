@@ -1,0 +1,67 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Liste des Catégories{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <h1>
+                            <i class="fas fa-list"></i> Liste des Catégories
+                        </h1>
+
+                        <div class="table-container">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for categorie_ev in categorie_evs %}
+                                        <tr>
+                                            <td>{{ categorie_ev.id }}</td>
+                                            <td>{{ categorie_ev.nom }}</td>
+                                            <td>{{ categorie_ev.description }}</td>
+                                            <td>
+                                                <div class="btn-container">
+                                                    <a href="{{ path('app_categorie_ev_show', {'id': categorie_ev.id}) }}" class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-eye"></i> Voir
+                                                    </a>
+                                                    <a href="{{ path('app_categorie_ev_edit', {'id': categorie_ev.id}) }}" class="btn btn-secondary btn-sm">
+                                                        <i class="fas fa-pen"></i> Modifier
+                                                    </a>
+                                                    <form action="{{ path('app_categorie_ev_delete', {'id': categorie_ev.id}) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                                                        <button type="submit" class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-trash"></i> Supprimer
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">Aucun enregistrement trouvé</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="{{ path('app_categorie_ev_new') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Nouvelle Catégorie
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

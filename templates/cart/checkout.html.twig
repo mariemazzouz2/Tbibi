@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Finaliser votre commande{% endblock %}
+
+{% block body %}
+<style>
+    .checkout-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .checkout-heading {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .checkout-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+    
+    .checkout-table th, .checkout-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .checkout-table th {
+        background-color: #f2f2f2;
+    }
+    
+    .checkout-total {
+        text-align: right;
+        font-weight: bold;
+        font-size: 18px;
+        margin: 20px 0;
+    }
+    
+    .checkout-actions {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+    }
+</style>
+
+<div class="checkout-container">
+    <h1 class="checkout-heading">Finaliser votre commande</h1>
+    
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    <table class="checkout-table">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix unitaire</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.produit.nom }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.produit.prix|number_format(2, ',', ' ') }} TND</td>
+                    <td>{{ (item.produit.prix * item.quantity)|number_format(2, ',', ' ') }} TND</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="checkout-total">
+        Total : {{ total|number_format(2, ',', ' ') }} TND
+    </div>
+    
+    <form action="{{ path('app_cart_confirm') }}" method="post">
+        <div class="checkout-actions">
+            <a href="{{ path('app_cart_index') }}" class="btn btn-secondary">Retour au panier</a>
+            <button type="submit" class="btn">Confirmer la commande</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

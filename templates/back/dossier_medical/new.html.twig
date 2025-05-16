@@ -1,0 +1,43 @@
+{% extends 'back.html.twig' %}
+
+{% block content %}
+    <div class="container" style="display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px;">
+        <div class="form-container" style="width: 600px; padding: 30px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);">
+            {{ form_start(form) }}
+                {% if form_errors(form) %}
+                    <div class="alert alert-danger">
+                        {{ form_errors(form) }}
+                    </div>
+                {% endif %}
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_label(form.date) }}
+                    {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.date) }}
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_label(form.fichier) }}
+                    {{ form_widget(form.fichier, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.fichier) }}
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_label(form.unite) }}
+                    {{ form_widget(form.unite, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.unite) }}
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_label(form.mesure) }}
+                    {{ form_widget(form.mesure, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.mesure) }}
+                </div>
+
+                <button class="btn" style="width: 100%; padding: 12px; font-size: 18px; background-color: #007BFF; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; margin-top: 20px;">
+                    {{ button_label|default('Enregistrer') }}
+                </button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

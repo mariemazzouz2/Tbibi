@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome!</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <style>
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination .page-item .page-link {
+            border-radius: 5px;
+            color: #4e73df;
+            border: 1px solid #4e73df;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #4e73df;
+            border-color: #4e73df;
+            color: white;
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: #e6f0fa;
+            color: #4e73df;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #aaa;
+            border-color: #ddd;
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        /* Style pour la barre de recherche */
+        .search-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-container input {
+            padding: 10px;
+            width: 50%;
+            border: 1px solid #4e73df;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .analyse-container {
+            padding: 20px;
+        }
+        .analyse-header {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #4e73df;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">Interface</div>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Utilisateurs</span>
+                </a>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Listes des utilisateurs:</h6>
+                        <a class="collapse-item" href="{{ path('liste_Demande') }}">Demandes</a>
+                        <a class="collapse-item" href="{{ path('liste_Medecin') }}">Médecins</a>
+                        <a class="collapse-item" href="{{ path('liste_Patient') }}">Patients</a>
+                    </div>
+                </div>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+                    {% block body %}
+                        <div class="analyse-container">
+                            <div class="analyse-header">📊 Liste des Analyses</div>
+
+                            <!-- Barre de recherche -->
+                            <div class="search-container">
+                                <input type="text" id="searchInput" placeholder="Rechercher par type, date ou diagnostic..." data-dossier-id="{{ dossierId }}">
+                            </div>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Données</th>
+                                        <th>Diagnostic</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="analyseTableBody">
+                                {% for analyse in analyses %}
+                                    <tr>
+                                        <td>{{ analyse.id }}</td>
+                                        <td>{{ analyse.type }}</td>
+                                        <td>{{ analyse.dateanalyse ? analyse.dateanalyse|date('d/m/Y') : 'Non spécifiée' }}</td>
+                                        <td>
+                                            {% if analyse.donneesAnalyse %}
+                                                <a href="{{ asset('uploads/' ~ analyse.donneesAnalyse) }}" target="_blank" class="btn btn-primary">📄 Aperçu</a>
+                                            {% else %}
+                                                Aucun fichier
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ analyse.diagnostic }}</td>
+                                        <td>
+                                            <a href="{{ path('app_back_analyse_show', {'id': analyse.id}) }}" class="btn btn-primary">👀 Afficher</a>
+                                            <a href="{{ path('app_back_analyse_edit', {'id': analyse.id}) }}" class="btn btn-warning">✏️ Modifier</a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6">Aucun enregistrement trouvé</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <div class="navigation">
+                                {{ knp_pagination_render(analyses, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig', {}, {
+                                    'prev_label': '« Précédent',
+                                    'next_label': 'Suivant »'
+                                }) }}
+                            </div>
+
+                            <div class="btn-container">
+                                <a href="{{ path('app_back_analyse_new') }}" class="btn btn-success">➕ Nouvelle Analyse</a>
+                            </div>
+                        </div>
+                    {% endblock %}
+                </div>
+            </div>
+
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Your Website 2021</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+    <script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
+    <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const tableBody = document.getElementById('analyseTableBody');
+            const dossierId = searchInput.getAttribute('data-dossier-id');
+            let debounceTimeout;
+
+            searchInput.addEventListener('input', function () {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    const searchTerm = this.value.trim();
+
+                    fetch(`/back/analyse/search/${dossierId}?q=${encodeURIComponent(searchTerm)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        tableBody.innerHTML = ''; // Vider le tableau
+
+                        if (data.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="6">Aucun enregistrement trouvé</td></tr>';
+                            return;
+                        }
+
+                        data.forEach(analyse => {
+                            const row = `
+                                <tr>
+                                    <td>${analyse.id}</td>
+                                    <td>${analyse.type}</td>
+                                    <td>${analyse.dateanalyse}</td>
+                                    <td>
+                                        ${analyse.donneesAnalyse 
+                                            ? `<a href="/uploads/${analyse.donneesAnalyse}" target="_blank" class="btn btn-primary">📄 Aperçu</a>` 
+                                            : 'Aucun fichier'}
+                                    </td>
+                                    <td>${analyse.diagnostic}</td>
+                                    <td>
+                                        <a href="/back/analyse/show/${analyse.id}" class="btn btn-primary">👀 Afficher</a>
+                                        <a href="/back/analyse/${analyse.id}/edit" class="btn btn-warning">✏️ Modifier</a>
+                                    </td>
+                                </tr>
+                            `;
+                            tableBody.innerHTML += row;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la recherche:', error);
+                        tableBody.innerHTML = '<tr><td colspan="6">Erreur lors de la recherche</td></tr>';
+                    });
+                }, 300); // Délai de 300ms pour le debouncing
+            });
+        });
+    </script>
+</body>
+</html>

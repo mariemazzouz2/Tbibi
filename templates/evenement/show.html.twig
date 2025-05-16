@@ -1,0 +1,281 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .event-details-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px 0;
+            min-height: 100vh;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .event-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .event-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .event-body {
+            padding: 30px;
+        }
+
+        .event-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .event-table {
+            margin-bottom: 30px;
+        }
+
+        .event-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: 15px;
+            width: 150px;
+        }
+
+        .event-table td {
+            padding: 15px;
+            color: #495057;
+        }
+
+        .event-footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-map {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+        }
+
+        .btn-map:hover {
+            background: linear-gradient(135deg, #224abe 0%, #1a3a97 100%);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .modal-map {
+            max-width: 600px;
+            margin: 1.75rem auto;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header .close {
+            color: white;
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        
+        function showMap() {
+            var modalHtml = `
+                <div class="modal fade" id="mapModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-map">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Localisation de {{ evenement.titre }}</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="map"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (!document.getElementById('mapModal')) {
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            }
+
+            var $modal = $('#mapModal');
+            $modal.modal('show');
+
+            $modal.on('shown.bs.modal', function() {
+                if (!map) {
+                    var lat = {{ evenement.latitude|default(36.8065) }};
+                    var lng = {{ evenement.longitude|default(10.1815) }};
+                    
+                    map = L.map('map').setView([lat, lng], 13);
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: ' OpenStreetMap contributors'
+                    }).addTo(map);
+                    
+                    var marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup("<b>{{ evenement.titre }}</b><br>{{ evenement.lieu }}").openPopup();
+                }
+                map.invalidateSize();
+            });
+
+            $modal.on('hidden.bs.modal', function() {
+                if (map) {
+                    map.remove();
+                    map = null;
+                }
+                $modal.remove();
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="event-details-container">
+        <div class="container">
+            <div class="event-card">
+                <div class="event-header">
+                    <h1><i class="fas fa-calendar-alt"></i> {{ evenement.titre }}</h1>
+                </div>
+
+                <div class="event-body">
+                    {% if evenement.image %}
+                        <img src="{{ asset('uploads/' ~ evenement.image) }}" alt="{{ evenement.titre }}" class="event-image">
+                    {% endif %}
+                    
+                    <table class="table event-table">
+                        <tbody>
+                            <tr>
+                                <th>Titre</th>
+                                <td>{{ evenement.titre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>{{ evenement.description }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de début</th>
+                                <td>{{ evenement.dateDebut ? evenement.dateDebut|date('Y-m-d') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de fin</th>
+                                <td>{{ evenement.dateFin ? evenement.dateFin|date('Y-m-d') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Lieu</th>
+                                <td>{{ evenement.lieu }}</td>
+                            </tr>
+                            <tr>
+                                <th>Statut</th>
+                                <td>
+                                    {% if app.user %}
+                                        {% if demandeParticipation %}
+                                            {% if demandeParticipation.statut == 'acceptee' %}
+                                                <button class="btn btn-success" disabled>
+                                                    <i class="fas fa-check"></i> Déjà inscrit
+                                                </button>
+                                            {% elseif demandeParticipation.statut == 'en_attente' %}
+                                                <button class="btn btn-warning" disabled>
+                                                    <i class="fas fa-clock"></i> Demande en attente
+                                                </button>
+                                            {% elseif demandeParticipation.statut == 'refuse' %}
+                                                <a href="{{ path('app_evenement_demande_participation', {'id': evenement.id}) }}" 
+                                                   class="btn btn-primary">
+                                                    <i class="fas fa-user-plus"></i> S'inscrire à nouveau
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{{ path('app_evenement_demande_participation', {'id': evenement.id}) }}" 
+                                               class="btn btn-primary">
+                                                <i class="fas fa-user-plus"></i> S'inscrire
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="{{ path('app_login') }}" class="btn btn-info">
+                                            <i class="fas fa-sign-in-alt"></i> Connectez-vous pour participer
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="event-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <a href="{{ path('app1_evenementfront_index') }}" class="btn btn-back">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="button" class="btn btn-map" onclick="showMap()">
+                            <i class="fas fa-map-marker-alt"></i> Voir sur la carte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

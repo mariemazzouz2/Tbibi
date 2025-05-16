@@ -1,0 +1,80 @@
+CREATE TABLE Membre (
+    idMembre NUMBER PRIMARY KEY,
+    nom VARCHAR2(50),
+    prenom VARCHAR2(50),
+    dateInscription DATE
+);
+
+CREATE TABLE Activite (
+    idActivite NUMBER PRIMARY KEY,
+    nomActivite VARCHAR2(50),
+    duree NUMBER, -- Durée en minutes
+    entraineur VARCHAR2(50)
+);
+
+CREATE TABLE Participation (
+    idMembre NUMBER,
+    idActivite NUMBER,
+    dateParticipation DATE,
+    PRIMARY KEY (idMembre, idActivite),
+    FOREIGN KEY (idMembre) REFERENCES Membre(idMembre),
+    FOREIGN KEY (idActivite) REFERENCES Activite(idActivite)
+);
+
+
+INSERT INTO Membre VALUES (1, 'Dupont', 'Alice', TO_DATE('2023-05-10', 'YYYY-MM-DD'));
+INSERT INTO Membre VALUES (2, 'Martin', 'Jean', TO_DATE('2023-05-15', 'YYYY-MM-DD'));
+INSERT INTO Membre VALUES (3, 'Morel', 'Sophie', TO_DATE('2023-07-20', 'YYYY-MM-DD'));
+
+INSERT INTO Activite VALUES (1, 'Yoga', 90, 'Claire Lefevre');
+INSERT INTO Activite VALUES (2, 'CrossFit', 60, 'Thomas Durand');
+INSERT INTO Activite VALUES (3, 'Natation', 120, 'Elodie Bernard');
+INSERT INTO Activite VALUES (4, 'Zumba', 60, 'Thomas Durand');
+INSERT INTO Activite VALUES (5, 'Pilates', 45, 'Elodie Bernard');
+
+INSERT INTO Participation VALUES (1, 1, TO_DATE('2023-08-05', 'YYYY-MM-DD'));
+INSERT INTO Participation VALUES (1, 2, TO_DATE('2023-08-10', 'YYYY-MM-DD'));
+INSERT INTO Participation VALUES (2, 3, TO_DATE('2023-08-15', 'YYYY-MM-DD'));
+
+SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE 
+FROM USER_CONSTRAINTS
+WHERE TABLE_NAME = 'PARTICIPATION';
+
+SELECT M.nom, M.prenom 
+FROM Membre M
+JOIN Participation P ON M.idMembre = P.idMembre
+JOIN Activite A ON P.idActivite = A.idActivite
+WHERE A.nomActivite = 'CrossFit';
+
+
+SELECT A.entraineur 
+FROM Activite A
+WHERE A.duree = (SELECT duree FROM Activite WHERE nomActivite = 'Pilates');
+
+SELECT entraineur, COUNT(*) AS nombreActivites, LISTAGG(nomActivite, ', ') WITHIN GROUP (ORDER BY nomActivite) AS activites
+FROM Activite
+WHERE entraineur IN ('Thomas Durand', 'Elodie Bernard')
+GROUP BY entraineur
+ORDER BY nombreActivites DESC;
+
+SELECT SUM(duree) AS dureeTotale 
+FROM Activite
+WHERE entraineur = 'Thomas Durand';
+
+
+
+SELECT A.nomActivite
+FROM Activite A
+JOIN Participation P ON A.idActivite = P.idActivite
+GROUP BY A.nomActivite
+HAVING COUNT(DISTINCT P.idMembre) = (SELECT COUNT(*) FROM Membre);
+
+
+
+
+UPDATE Participation
+SET dateParticipation = TO_DATE('2024-04-23', 'YYYY-MM-DD')
+WHERE idMembre = (SELECT idMembre FROM Membre WHERE nom = 'Martin' AND prenom = 'Jean');
+
+
+

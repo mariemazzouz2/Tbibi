@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prediction{% endblock %}
+
+{% block body %}
+    <h1>Prediction</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ prediction.id }}</td>
+            </tr>
+            <tr>
+                <th>Hypertension</th>
+                <td>{{ prediction.hypertension ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Heart_disease</th>
+                <td>{{ prediction.heartDisease ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Smoking_history</th>
+                <td>{{ prediction.smokingHistory }}</td>
+            </tr>
+            <tr>
+                <th>Bmi</th>
+                <td>{{ prediction.bmi }}</td>
+            </tr>
+            <tr>
+                <th>HbA1c_level</th>
+                <td>{{ prediction.HbA1cLevel }}</td>
+            </tr>
+            <tr>
+                <th>Blood_glucose_level</th>
+                <td>{{ prediction.bloodGlucoseLevel }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_prediction_index') }}">back to list</a>
+
+    <a href="{{ path('app_prediction_edit', {'id': prediction.id}) }}">edit</a>
+
+    {{ include('prediction/_delete_form.html.twig') }}
+{% endblock %}

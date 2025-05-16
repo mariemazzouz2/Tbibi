@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la Commande{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+            <h5 class="mb-0">Modifier la Commande #{{ commande.id }}</h5>
+        </div>
+        
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show m-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        
+        <div class="card-body">
+            {{ form_start(form) }}
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Date</label>
+                {{ form_widget(form.dateCommande, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Statut</label>
+                <div class="input-group">
+                    {{ form_widget(form.statut, {'attr': {'class': 'form-select'}}) }}
+                    <div class="form-text text-muted w-100 mt-1">
+                        <i class="fas fa-info-circle"></i> La modification du statut enverra automatiquement une notification au client par email.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Utilisateur</label>
+                {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Produits commandés</label>
+                {{ form_widget(form.produit, {'attr': {'class': 'form-select'}}) }}
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="{{ path('app_commande_index') }}" class="btn btn-secondary me-2">Retour</a>
+                <button type="submit" class="btn btn-success px-4">Enregistrer</button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Informations supplémentaires</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Email du client:</strong> {{ commande.user.email ?? 'Email non disponible' }}</p>
+            <p><strong>Montant total de la commande:</strong> {{ commande.montantTotal }} TND</p>
+            <a href="{{ path('app_facture_show', {'id': commande.id}) }}" class="btn btn-info" target="_blank">
+                <i class="fas fa-file-invoice"></i> Voir la facture
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the original status when the page loads
+    const originalStatus = document.querySelector('#commande_statut').value;
+    
+    // Add event listener for status changes
+    document.querySelector('#commande_statut').addEventListener('change', function(e) {
+        if (e.target.value !== originalStatus) {
+            // Show notification that email will be sent
+            const infoElement = document.createElement('div');
+            infoElement.className = 'alert alert-info mt-2';
+            infoElement.innerHTML = '<i class="fas fa-envelope"></i> Un email sera envoyé au client pour l\'informer du changement de statut.';
+            
+            // Remove any existing notification
+            const existingInfo = document.querySelector('.status-change-info');
+            if (existingInfo) {
+                existingInfo.remove();
+            }
+            
+            // Add the new notification
+            infoElement.classList.add('status-change-info');
+            e.target.parentNode.appendChild(infoElement);
+        } else {
+            // Remove notification if status is changed back to original
+            const existingInfo = document.querySelector('.status-change-info');
+            if (existingInfo) {
+                existingInfo.remove();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

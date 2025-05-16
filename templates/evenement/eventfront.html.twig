@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Styles pour le conteneur principal */
+        .container-fluid {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Styles pour le titre */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Styles pour la grille des événements */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Styles pour la carte d'événement */
+        .event-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Styles pour l'image de l'événement */
+        .event-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        /* Styles pour le contenu de l'événement */
+        .event-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .event-details p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Styles pour les boutons */
+        .event-actions {
+            margin-top: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .btn-view-details, .btn-register {
+            display: inline-block;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            color: #ffffff;
+            min-width: 120px;
+        }
+
+        .btn-view-details {
+            background-color: #4e73df;
+        }
+
+        .btn-view-details:hover {
+            background-color: #2e59d9;
+            transform: scale(1.05);
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .btn-register {
+            background-color: #2ecc71;
+        }
+
+        .btn-register:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-pending {
+            background-color: #f1c40f;
+            cursor: default;
+        }
+
+        .btn-registered {
+            background-color: #3498db;
+            cursor: default;
+        }
+    </style>
+    <style>
+        .btn-view-details {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #B0A695, #D9C7A1, #F1E7DA);
+            color: #3D3D3D;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-view-details:hover {
+            background: linear-gradient(45deg, #F1E7DA, #D9C7A1, #B0A695);
+            transform: scale(1.05);
+            color: #2B2B2B;
+        }
+
+        .btn-view-details i {
+            margin-right: 8px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="text-center">Événements</h1>
+
+        <div class="btn-container">
+            <a href="{{ path('app_event_calendar') }}" class="btn-view-details">
+                <i class="fas fa-info-circle"></i> Calendrier
+            </a>
+        </div>
+
+        <div class="events-grid">
+            {% for evenement in evenements %}
+                <div class="event-card">
+                    {% if evenement.image %}
+                        {% set imagePath = evenement.image starts with 'file:/' ? evenement.image|split('/')|last : evenement.image %}
+                        <img src="{{ asset('uploads/' ~ imagePath) }}" class="event-image" alt="{{ evenement.titre }}" onerror="this.onerror=null; this.src='{{ asset('uploads/default-image.jpg') }}';">
+                    {% else %}
+                        <img src="{{ asset('uploads/default-image.jpg') }}" class="event-image" alt="Image par défaut">
+                    {% endif %}
+                    <div class="event-content">
+                        <h3 class="event-title">{{ evenement.titre }}</h3>
+                        <div class="event-details">
+                            <p>
+                                <i class="fas fa-calendar-alt"></i> 
+                                {{ evenement.dateDebut|date('d/m/Y') }}
+                            </p>
+                            <p>
+                                <i class="fas fa-map-marker-alt"></i> 
+                                {{ evenement.lieu }}
+                            </p>
+                        </div>
+                        <div class="event-actions">
+                            <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}" 
+                               class="btn-view-details">
+                                <i class="fas fa-info-circle"></i> Détails
+                            </a>
+                            
+                            {% if app.user %}
+                                {% set demande = evenement.demandesParticipation|filter(d => d.utilisateur == app.user)|first %}
+                                {% if demande %}
+                                    {% if demande.statut == 'En attente' %}
+                                        <button class="btn-pending" disabled>
+                                            <i class="fas fa-clock"></i> En attente
+                                        </button>
+                                    {% elseif demande.statut == 'Confirmé' %}
+                                        <button class="btn-registered" disabled>
+                                            <i class="fas fa-check"></i> Confirmé
+                                        </button>
+                                    {% elseif demande.statut == 'Annulé' %}
+                                        <a href="{{ path('app_evenement_demande_participation', {'id': evenement.id}) }}" 
+                                           class="btn-register">
+                                            <i class="fas fa-user-plus"></i> S'inscrire à nouveau
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ path('app_evenement_demande_participation', {'id': evenement.id}) }}" 
+                                       class="btn-register">
+                                        <i class="fas fa-user-plus"></i> S'inscrire
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <a href="{{ path('app_login') }}" 
+                                   class="btn-register">
+                                    <i class="fas fa-user-plus"></i> S'inscrire
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
